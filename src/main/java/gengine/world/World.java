@@ -1,4 +1,4 @@
-package gengine.util;
+package gengine.world;
 
 import gengine.util.coords.Coords3D;
 
@@ -11,6 +11,7 @@ public interface World {
     /**
      * Polls the World size.
      *
+     * @deprecated This function will be removed by the time of the next commit.
      * @return returns the size of the World.
      */
     public Coords3D getWorldSize();

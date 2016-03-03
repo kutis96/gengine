@@ -1,7 +1,7 @@
-package gengine.tile;
+package gengine.world;
 
 import gengine.util.coords.Coords3D;
-import gengine.util.World;
+import gengine.world.tile.Tile;
 
 /**
  * A World made of Tiles!
@@ -12,11 +12,10 @@ public class TiledWorld implements World {
 
     private final Coords3D size;
 
-    //TODO: switch to something more efficient, most of the world would probably end up being empty anyway.
     private final Tile[][][] worldtiles;
 
     //TODO: add entity handling
-    //private LinkedList<TiledWorldEntity> entities;
+    
     /**
      * Constructs a TiledWorld of a specified size.
      *
@@ -26,7 +25,7 @@ public class TiledWorld implements World {
         //TODO: size validation
 
         this.size = size;
-        this.worldtiles = new Tile[size.getX()][size.getY()][size.getZ()];
+        this.worldtiles = new Tile[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
 
         //this.entities = new LinkedList<>();
     }
@@ -35,23 +34,12 @@ public class TiledWorld implements World {
      * Returns a tile with given coordinates.
      *
      * @param pos
-     *
-     * @return
+     * @return tile on the given position
      */
     public Tile getWorldtile(Coords3D pos) {
-        return this.worldtiles[pos.getX()][pos.getY()][pos.getZ()];
+        return this.worldtiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()];
     }
-
-    /**
-     * Returns an array of all world tiles. Should not be used like ever. This
-     * function is about to be deprecated.
-     *
-     * @return a three-dimensional array of tiles.
-     */
-    public Tile[][][] getWorldtiles() {
-        return this.worldtiles;
-    }
-
+    
     /**
      * Sets a given tile in this World to a specified Tile.
      *
@@ -59,7 +47,7 @@ public class TiledWorld implements World {
      * @param pos       the position to place the tile on
      */
     public void setWorldtile(Tile worldtile, Coords3D pos) {
-        this.worldtiles[pos.getX()][pos.getY()][pos.getZ()] = worldtile;
+        this.worldtiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = worldtile;
     }
 
     @Override
@@ -74,29 +62,11 @@ public class TiledWorld implements World {
                 for (Tile[] tt : ttt) {
                     for (Tile t : tt) {
                         if (t != null) {
-                            {
-                                {
-                                    {
-                                        {
-                                            {
-                                                {
-                                                    {
-                                                        {
-                                                            //TODO: ADD EVEN MORE CURLY BRACKETS AND NESTED LOOPS!
-                                                            t.tick(this, dt);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            t.tick(this, dt);
                         }
                     }
                 }
             }
         }
     }
-
 }

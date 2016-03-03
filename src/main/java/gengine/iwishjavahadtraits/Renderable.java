@@ -1,4 +1,4 @@
-package gengine.util;
+package gengine.iwishjavahadtraits;
 
 import java.awt.Image;
 

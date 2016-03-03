@@ -1,8 +1,8 @@
 package gengine.rendering.isometric;
 
 import gengine.rendering.RendererOptions;
-import gengine.tile.Tile;
-import gengine.tile.TiledWorld;
+import gengine.world.tile.Tile;
+import gengine.world.TiledWorld;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -73,6 +73,9 @@ public class IsometricRenderer {
 
         int th = tilesize / 2;
         int tq = tilesize / 4;
+        
+        int xoffset = bi.getWidth()/2;
+        int yoffset = bi.getHeight()/2;
 
         for (int x = 0; x < wrld.getWorldSize().getX(); x++) {
             for (int y = 0; y < wrld.getWorldSize().getY(); y++) {
@@ -87,8 +90,8 @@ public class IsometricRenderer {
 
                         //draw image on the rendered surface
                         g.drawImage(rendered_tile,
-                                ro.cameraOffset.getX() + th * x - th * y,
-                                ro.cameraOffset.getY() + th + tq * y + tq * x - (th + tq) * z - (int) (rendered_tile.getHeight(null) * rescratio),
+                                (int)ro.cameraOffset.getX() + th * x - th * y + xoffset,
+                                (int)ro.cameraOffset.getY() + th + tq * y + tq * x - (th + tq) * z - (int) (rendered_tile.getHeight(null) * rescratio + yoffset),
                                 tilesize,
                                 (int) (rendered_tile.getHeight(null) * rescratio),
                                 null);

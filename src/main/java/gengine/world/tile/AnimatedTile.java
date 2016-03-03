@@ -1,5 +1,6 @@
-package gengine.tile;
+package gengine.world.tile;
 
+import gengine.world.TiledWorld;
 import gengine.anim.AnimatedImage;
 import gengine.util.coords.Coords;
 import java.awt.Image;
@@ -20,8 +21,7 @@ public class AnimatedTile extends Tile {
      * @param pos tile's coordinates in the world
      * @param ai the AnimatedImage to use
      */
-    public AnimatedTile(Coords pos, AnimatedImage ai) {
-        super(pos);
+    public AnimatedTile(AnimatedImage ai) {
         this.ai = ai;
     }
 

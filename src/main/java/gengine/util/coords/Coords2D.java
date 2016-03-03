@@ -26,24 +26,14 @@ public class Coords2D implements Coords {
     public int getDimensions() {
         return 2;
     }
-
+    
     @Override
-    public void setCoords(int[] ic) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setCoords(float[] coords) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setCoords(double[] dc) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int[] getCoordsI() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public double[] getCoordsD() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public float[] getCoords() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -7,8 +7,6 @@ package gengine.util.coords;
  */
 public interface Coords {    
     int getDimensions();
-    void setCoords(int[] ic);
-    void setCoords(double[] dc);
-    int[] getCoordsI();
-    double[] getCoordsD();
+    void setCoords(float[] coords);
+    float[] getCoords();
 }

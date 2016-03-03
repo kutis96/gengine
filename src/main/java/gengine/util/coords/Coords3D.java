@@ -7,21 +7,19 @@ package gengine.util.coords;
  */
 public class Coords3D implements Coords {
 
-    private int[] pos;
+    private float[] pos;
 
     public Coords3D(int x, int y, int z) {
-        this.pos = new int[]{x,y,z};
+        this.pos = new float[]{x,y,z};
     }
     
-    public int getX() {
+    public float getX() {
         return pos[0];
     }
-    
-    public int getY() {
+    public float getY() {
         return pos[1];
     }
-    
-    public int getZ() {
+    public float getZ() {
         return pos[2];
     }
 
@@ -31,22 +29,12 @@ public class Coords3D implements Coords {
     }
 
     @Override
-    public void setCoords(int[] ic) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setCoords(float[] coords) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void setCoords(double[] dc) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public int[] getCoordsI() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public double[] getCoordsD() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public float[] getCoords() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
