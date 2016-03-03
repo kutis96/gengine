@@ -41,8 +41,11 @@ public class AnimatedImage {
      */
     public void tick(long dt) {
         sum_dt += dt;
+
         if (sum_dt >= this.frames[current_frame].dt) {
+
             sum_dt = sum_dt - this.frames[current_frame].dt;
+
             current_frame = (current_frame + 1) % frames.length;
         }
     }

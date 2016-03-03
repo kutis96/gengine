@@ -19,7 +19,7 @@ public class ImageTile extends Tile {
     public ImageTile(Image img) {
         this.img = img;
     }
-
+    
     /**
      * Does nothing, ImageTile is completely static (as in it doesn't animate or
      * react to anything).

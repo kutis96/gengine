@@ -9,6 +9,6 @@ import gengine.util.Visible;
  */
 public abstract class Tile extends Visible implements Renderable {
     public void tick(TiledWorld iw, long dt){
-        //TODO: add logger here
+        //do nothing whatsoever.
     }
 }
