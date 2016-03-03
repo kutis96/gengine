@@ -1,5 +1,6 @@
 package gengine.tile;
 
+import gengine.util.coords.Coords;
 import java.awt.Image;
 
 /**
@@ -16,7 +17,8 @@ public class ImageTile extends Tile {
      *
      * @param img image to be associated with this tile.
      */
-    public ImageTile(Image img) {
+    public ImageTile(Coords pos, Image img) {
+        super(pos);
         this.img = img;
     }
     

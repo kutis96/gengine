@@ -1,5 +1,6 @@
 package gengine.tile;
 
+import gengine.util.coords.Coords;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -14,8 +15,10 @@ public class SillyTile extends Tile {
 
     /**
      * Constructs the SillyTile with a completely random color.
+     * @param pos
      */
-    public SillyTile() {
+    public SillyTile(Coords pos) {
+        super(pos);
         this.col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
     }
 
@@ -24,7 +27,8 @@ public class SillyTile extends Tile {
      *
      * @param col The color of this SillyTile.
      */
-    public SillyTile(Color col) {
+    public SillyTile(Coords pos, Color col) {
+        super(pos);
         this.col = col;
     }
 

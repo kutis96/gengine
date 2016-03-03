@@ -1,5 +1,6 @@
 package gengine.util;
 
+import gengine.util.coords.Coords3D;
 import gengine.tile.TiledWorld;
 
 /**

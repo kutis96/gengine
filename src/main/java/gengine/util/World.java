@@ -1,5 +1,7 @@
 package gengine.util;
 
+import gengine.util.coords.Coords3D;
+
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>

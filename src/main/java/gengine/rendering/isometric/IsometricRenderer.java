@@ -1,5 +1,6 @@
-package gengine.rendering;
+package gengine.rendering.isometric;
 
+import gengine.rendering.RendererOptions;
 import gengine.tile.Tile;
 import gengine.tile.TiledWorld;
 import java.awt.*;

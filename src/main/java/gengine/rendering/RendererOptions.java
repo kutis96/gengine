@@ -1,6 +1,6 @@
 package gengine.rendering;
 
-import gengine.util.Coords3D;
+import gengine.util.coords.Coords3D;
 
 /**
  * A container used to store various options for the Renderers.
