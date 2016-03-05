@@ -1,8 +1,9 @@
-package gengine.world.tile;
+package gengine.world.tile.tiles;
 
 import gengine.world.TiledWorld;
 import gengine.anim.AnimatedImage;
 import gengine.util.coords.Coords;
+import gengine.world.tile.Tile;
 import java.awt.Image;
 
 /**
@@ -18,7 +19,6 @@ public class AnimatedTile extends Tile {
      * Constructs the AnimatedTile with a specified AnimatedImage as its
      * texture.
      *
-     * @param pos tile's coordinates in the world
      * @param ai the AnimatedImage to use
      */
     public AnimatedTile(AnimatedImage ai) {

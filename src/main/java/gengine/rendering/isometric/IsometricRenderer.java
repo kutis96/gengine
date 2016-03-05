@@ -1,6 +1,8 @@
 package gengine.rendering.isometric;
 
 import gengine.rendering.RendererOptions;
+import gengine.util.coords.Coords2D;
+import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
 import gengine.world.TiledWorld;
 import java.awt.*;
@@ -42,15 +44,16 @@ public class IsometricRenderer {
 
         //TODO: add entity rendering -- after I add the actual entities first
         //TODO: add clickmap rendering (opt?) -- to be done waaay later on
-        //TODO: refactor - everyone loves refactoring!
-        //TODO: modify the rendering so it actually renders by rows (back to front) instead of the ;cartesian sweep'
+        //TODO: modify the rendering so it actually renders by rows (back to front) instead of the 'cartesian sweep'
         //TODO: draw only the stuff that's actually visible (in the given window)
         //      ^ can be solved with a tiny bit of math.
         //TODO: end up using something a bit more universal at some point
         //      ^ soon.
+        //TODO: visibility prediction, so one doesn't need to render the whole world all the time, but only the visible portion
         //
         // WIP:
         //----------------------------------------------------------------------
+        // refactor - everyone loves refactoring!
         //
         // DONE:
         //----------------------------------------------------------------------
@@ -58,40 +61,44 @@ public class IsometricRenderer {
         // - replace screen blanking with something less silly
         // - RO nullchecking
         // - modify scaling, so it actually scales the whole texture correctly
-        
         if (ro == null) {
             ro = new RendererOptions();
         }
 
         Graphics2D g = bi.createGraphics();
-        
+
         g.setBackground(Color.BLACK);
-        
-        Tile[][][] tiles = wrld.getWorldtiles();
 
         int tilesize = (int) (this.tilewidth * ro.zoom);
 
-        int th = tilesize / 2;
-        int tq = tilesize / 4;
-        
-        int xoffset = bi.getWidth()/2;
-        int yoffset = bi.getHeight()/2;
+        int gx = (int) wrld.getWorldSize().getX();
+        int gy = (int) wrld.getWorldSize().getY();
 
         for (int x = 0; x < wrld.getWorldSize().getX(); x++) {
             for (int y = 0; y < wrld.getWorldSize().getY(); y++) {
                 for (int z = 0; z < wrld.getWorldSize().getZ(); z++) {
-                    Tile current_tile = tiles[x][y][z];
 
-                    if (current_tile != null && current_tile.isVisible()) {
+                    Coords3D isomcoord = new Coords3D(x, y, z);
+
+                    Tile current_tile = wrld.getWorldtile(isomcoord);
+
+                    if (current_tile != null) {
 
                         Image rendered_tile = current_tile.render();
 
-                        double rescratio = tilesize / (double) rendered_tile.getWidth(null);   //rescaling ratio
+                        double rescratio = tilesize / (double) rendered_tile.getWidth(null);
+
+                        Coords2D conv = IsometricUtils.convIsom2Graph(
+                                isomcoord,
+                                ro.cameraOffset,
+                                ro.cameraPosition,
+                                tilesize,
+                                3 * tilesize / 4);
 
                         //draw image on the rendered surface
                         g.drawImage(rendered_tile,
-                                (int)ro.cameraOffset.getX() + th * x - th * y + xoffset,
-                                (int)ro.cameraOffset.getY() + th + tq * y + tq * x - (th + tq) * z - (int) (rendered_tile.getHeight(null) * rescratio + yoffset),
+                                (int) conv.getX(),
+                                (int) (conv.getY() - rendered_tile.getHeight(null) * rescratio),
                                 tilesize,
                                 (int) (rendered_tile.getHeight(null) * rescratio),
                                 null);
@@ -99,6 +106,15 @@ public class IsometricRenderer {
                 }
             }
         }
+
+        Coords2D camaimpos = IsometricUtils.convIsom2Graph(
+                new Coords3D(0, 0, 0),
+                ro.cameraOffset,
+                ro.cameraPosition,
+                tilesize,
+                3 * tilesize / 4);
+
+        g.drawRect((int) camaimpos.getX(), (int) camaimpos.getY(), -tilesize, -tilesize / 2);
 
         g.dispose();
     }

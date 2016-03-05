@@ -1,0 +1,11 @@
+TODO:
+    - Add entity handling and rendering
+    - Add event handling and event generation
+    - Add click/mousehover handling
+    - Add window handling
+    - Create a proper controller/a set of controllers
+    - Add world loading/saving
+    - Add entity loading/saving
+    - Add some menus etc.
+
+Done:

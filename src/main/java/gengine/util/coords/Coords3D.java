@@ -5,36 +5,28 @@ package gengine.util.coords;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Coords3D implements Coords {
+public class Coords3D extends CoordFixedD {
 
     private float[] pos;
 
-    public Coords3D(int x, int y, int z) {
-        this.pos = new float[]{x,y,z};
+    public Coords3D() {
+        super(3);
     }
     
+    public Coords3D(float x, float y, float z) {
+        super(3);
+        this.pos = new float[]{x, y, z};
+    }
+
     public float getX() {
         return pos[0];
     }
+
     public float getY() {
         return pos[1];
     }
+
     public float getZ() {
         return pos[2];
-    }
-
-    @Override
-    public int getDimensions() {
-        return 3;
-    }
-
-    @Override
-    public void setCoords(float[] coords) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public float[] getCoords() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

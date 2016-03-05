@@ -1,0 +1,7 @@
+TODO:
+
+- Add tick method to update entities
+- Add various event handlers
+- Add entity controller to handle various events that only
+   happen just inside the world - ie. 'AI' for various mostly passive entities,
+   etc.

@@ -2,38 +2,31 @@ package gengine.util.coords;
 
 /**
  * Coordinates to specify position in 2D worlds with integer coordinates.
- * 
+ *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Coords2D implements Coords {
-    
-    private final int x, y;
-    
-    public Coords2D(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
-    
-    public int getX(){
-        return x;
-    }
-    
-    public int getY(){
-        return y;
+public class Coords2D extends CoordFixedD {
+
+    private float[] pos;
+
+    public Coords2D() {
+        super(2);
     }
 
-    @Override
-    public int getDimensions() {
-        return 2;
-    }
-    
-    @Override
-    public void setCoords(float[] coords) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Coords2D(float x, float y) {
+        super(2);
+        this.pos = new float[]{x, y};
     }
 
-    @Override
-    public float[] getCoords() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public float getX() {
+        return pos[0];
+    }
+
+    public float getY() {
+        return pos[1];
+    }
+
+    public float getZ() {
+        return pos[2];
     }
 }

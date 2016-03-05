@@ -1,7 +1,7 @@
-package gengine.world.tile;
+package gengine.world.tile.tiles;
 
 import gengine.world.TiledWorld;
-import gengine.util.coords.Coords;
+import gengine.world.tile.Tile;
 import java.awt.Image;
 
 /**

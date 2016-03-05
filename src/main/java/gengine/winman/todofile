@@ -1,8 +1,4 @@
-gengine.winman
---------------------------------------------------------------------------------
-| TODO:                                                                        |
---------------------------------------------------------------------------------
-
+TODO:
 - Implement some sort of a window manager
     + usable for various menus and generic windowy stuff
     * add some way to move windows around and catch their events
