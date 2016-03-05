@@ -1,4 +1,4 @@
 TODO:
-
+    - Prevent all the possible nullpointer situations from happening
 DONE:
-- Update Coords2D/Coords3D to use Coords interface properly
+    - Update Coords2D/Coords3D to use Coords interface properly
