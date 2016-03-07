@@ -10,4 +10,8 @@ public class DimMismatchException extends Exception {
     public DimMismatchException(String message) {
         super(message);
     }
+
+    public DimMismatchException() {
+        super();
+    }
 }

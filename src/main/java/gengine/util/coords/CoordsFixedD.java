@@ -6,12 +6,12 @@ import java.util.Arrays;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class CoordFixedD implements Coords {
+public class CoordsFixedD implements Coords {
 
     private final int dim;
     private float[] coords;
 
-    public CoordFixedD(int dim) {
+    public CoordsFixedD(int dim) {
         if (dim > 0) {
             this.dim = dim;
             this.coords = new float[dim];

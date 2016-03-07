@@ -1,9 +1,10 @@
 package gengine.world;
 
+import gengine.rendering.isometric.IsometricUtils;
 import gengine.util.coords.Coords3D;
 import gengine.world.entity.Entity;
 import gengine.world.tile.Tile;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * A World made of Tiles!
@@ -13,7 +14,7 @@ import java.util.LinkedList;
 public class TiledWorld implements World {
 
     private final Tile[][][] tiles;
-    private LinkedList<Entity> entities;
+    private ArrayList<Entity> entities;
 
     /**
      * Maximum allowed amount of tiles. Mostly pointless.
@@ -40,8 +41,8 @@ public class TiledWorld implements World {
         }
 
         this.tiles = new Tile[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
-        
-        this.entities = new LinkedList<>();
+
+        this.entities = new ArrayList<>();
     }
 
     /**
@@ -62,25 +63,37 @@ public class TiledWorld implements World {
      * @param pos       the position to place the tile on
      */
     public void setWorldtile(Tile worldtile, Coords3D pos) {
-        
+
         System.out.println("set\t" + pos.toString());
-        
+
         this.tiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = worldtile;
     }
 
+    /**
+     * Returns the size of this world. If it just so happens the world's tile
+     * array is null, a null is returned.
+     *
+     * @return Coords3D containing the size of the world array. May return null
+     *         when something goes horribly wrong.
+     */
     @Override
     public Coords3D getWorldSize() {
-        if(this.tiles == null){
-            return new Coords3D(-1, -1, -1);
+        if (this.tiles == null) {
+            return null;
         }
-        
+
         return new Coords3D(
-                this.tiles.length,          //X
-                this.tiles[0].length,       //Y
-                this.tiles[0][0].length     //Z
+                this.tiles.length, //X
+                this.tiles[0].length, //Y
+                this.tiles[0][0].length //Z
         );
     }
 
+    /**
+     * 'Ticks' all the entities and tiles.
+     *
+     * @param dt Delta Tee in milliseconds.
+     */
     @Override
     public void tick(long dt) {
         if (this.tiles != null) {
@@ -94,22 +107,21 @@ public class TiledWorld implements World {
                 }
             }
         }
+
+        for (Entity e : this.entities) {
+            if (e != null) {
+                e.tick(this, dt);
+            }
+        }
     }
 
     @Override
-    public int addEntity(Entity entity) {
+    public void addEntity(Entity entity) {
         this.entities.add(entity);
-        
-        return -1;
     }
 
     @Override
     public Entity[] getEntities() {
         return this.entities.toArray(new Entity[this.entities.size()]);
-    }
-
-    @Override
-    public Entity getEntity(int entity_id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

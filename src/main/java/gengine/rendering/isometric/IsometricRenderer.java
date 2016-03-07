@@ -1,10 +1,11 @@
 package gengine.rendering.isometric;
 
-import gengine.rendering.RendererOptions;
+import gengine.rendering.*;
 import gengine.util.coords.Coords2D;
 import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
 import gengine.world.TiledWorld;
+import gengine.world.World;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -12,7 +13,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class IsometricRenderer {
+public class IsometricRenderer implements WorldRenderer {
 
     private final int tilewidth;
 
@@ -33,14 +34,35 @@ public class IsometricRenderer {
     }
 
     /**
-     * Renders the TiledWorld into a specified Graphics objects with given
-     * RendererOptions. This functions is to be heavily remade.
+     * Renders the TiledWorld into a specified BufferedImage object with given
+     * WorldRendererOptions. May throw an exception when supplied some other
+     * World.
      *
-     * @param wrld TiledWorld to render.
-     * @param bi   BufferedImage object to render onto.
-     * @param ro   RendererOptions supplying all the renderer options!
+     * @param world World to render
+     * @param bi    BufferedImage to render onto
+     * @param ro    WorldRendererOptions for rendering
+     *
+     * @throws WorldTypeMismatchException Thrown when the supplied World happens
+     *                                    to be something other than TileWorld
      */
-    public void render(TiledWorld wrld, BufferedImage bi, RendererOptions ro) {
+    @Override
+    public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws WorldTypeMismatchException {
+        if (world instanceof TiledWorld) {
+            this.render((TiledWorld) world, bi, ro);
+        } else {
+            throw new WorldTypeMismatchException();
+        }
+    }
+
+    /**
+     * Renders the TiledWorld into a specified BufferedImage object with given
+     * WorldRendererOptions.
+     *
+     * @param world   TiledWorld to render.
+     * @param surface BufferedImage object to render onto.
+     * @param wrop    WorldRendererOptions supplying all the renderer options!
+     */
+    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) {
 
         //TODO:
         //----------------------------------------------------------------------
@@ -50,52 +72,59 @@ public class IsometricRenderer {
         // - end up using something a bit more universal at some point
         //     ^ soon.
         //
+        // - add entity rendering
+        //
+        // - May be nice to create a WorldRenderer interface for World rendererers.
+        //
         // WIP:
         //----------------------------------------------------------------------
-        // - add entity rendering -- after I add the actual entities first
         // - refactor - everyone loves refactoring!
         //
         // DONE:
         //----------------------------------------------------------------------
         // - modify the rendering so it actually renders by rows (back to front) instead of the 'XY sweep'
+        //   ^ I HAVE NO IDEA WHY THE HELL DID I WANT TO DO THAT
         //
-        
-        if (ro == null) {
-            ro = new RendererOptions();
+        if (wrop == null) {
+            wrop = new WorldRendererOptions();
         }
 
-        Graphics2D g = bi.createGraphics();
+        surface.setAccelerationPriority(1);
+
+        Graphics2D g = surface.createGraphics();
 
         g.setBackground(Color.BLACK);   //blanking
 
         //Size of tiles in pixels, scaled by zoom
-        int tilesize = (int) (this.tilewidth * ro.zoom);
+        int tilesize = (int) (this.tilewidth * wrop.zoom);
 
         //Gets the current worldsize
-        Coords3D wrldsize = wrld.getWorldSize();
-        
+        Coords3D wrldsize = world.getWorldSize();
+
         //Width and height of the rendered area, in tiles
         //  this shall be changed accordingly later, based on the tile size and rendered area size
         int drawheight = (int) wrldsize.getY();
         int drawwidth = (int) wrldsize.getX();
-        
-        //Loops!
-        for (int r = 0; r < (2 * Math.max(drawheight, drawwidth) - Math.abs(drawheight - drawwidth)) - 1; r++){
-            for (int h = Math.max(0, r - drawwidth + 1); h <= Math.min(r, drawheight - 1); h++) {
-                
-                //Actual X and Y positions of the tiles (in tile coords)
-                //  this shall be offset later, based on the camera position, tile size, and rendered area size
-                int x = r - h;
-                int y = h;                
-                
+
+//        //Loops orignally used for row scanning, which turned out to be a facepalming failure.
+//          I'll keep this snipped commented out in here anyway, it could come in handy at some point.
+//        for (int r = 0; r < (2 * Math.max(drawheight, drawwidth) - Math.abs(drawheight - drawwidth)) - 1; r++){
+//            for (int h = Math.max(0, r - drawwidth + 1); h <= Math.min(r, drawheight - 1); h++) {
+//                
+//                //Actual X and Y positions of the tiles (in tile coords)
+//                //  this shall be offset later, based on the camera position, tile size, and rendered area size
+//                int x = r - h;
+//                int y = h;                
+//                
+        for (int x = 0; x < world.getWorldSize().getX(); x++) {
+            for (int y = 0; y < world.getWorldSize().getY(); y++) {
                 //Z sweep
                 for (int z = 0; z < wrldsize.getZ(); z++) {
-                    
+
                     //ACTUAL DRAWING GOES HERE
-                    
                     Coords3D coords = new Coords3D(x, y, z);
 
-                    Tile current_tile = wrld.getWorldtile(coords);
+                    Tile current_tile = world.getWorldtile(coords);
 
                     if (current_tile != null) {
 
@@ -108,8 +137,8 @@ public class IsometricRenderer {
                         //Converts isometric coordinates into graphic coordinates (aka pixel coordinates on the screen
                         Coords2D conv = IsometricUtils.convIsom2Graph(
                                 coords,
-                                ro.cameraOffset,
-                                ro.cameraPosition,
+                                wrop.cameraOffset,
+                                wrop.cameraPosition,
                                 tilesize,
                                 3 * tilesize / 4);
 
@@ -117,17 +146,15 @@ public class IsometricRenderer {
                         g.drawImage(
                                 //Image to draw
                                 rendered_tile,
-                                
                                 //position gotten from the converter
                                 (int) conv.getX(),
                                 (int) (conv.getY() - rendered_tile.getHeight(null) * scaling),
-                                
-                                tilesize,                                           //Width
-                                (int) (rendered_tile.getHeight(null) * scaling),    //Height
-                                null    //Observer
+                                tilesize, //Width
+                                (int) (rendered_tile.getHeight(null) * scaling), //Height
+                                null //Observer
                         );
                     }
-       
+
                     //ACTUAL DRAWING ENDS HERE
                 }
             }
@@ -135,8 +162,8 @@ public class IsometricRenderer {
 
         Coords2D camaimpos = IsometricUtils.convIsom2Graph(
                 new Coords3D(0, 0, 0),
-                ro.cameraOffset,
-                ro.cameraPosition,
+                wrop.cameraOffset,
+                wrop.cameraPosition,
                 tilesize,
                 3 * tilesize / 4);
 

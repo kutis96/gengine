@@ -27,9 +27,8 @@ public interface World {
      * Adds an Entity to this World.
      * @param entity Entity to add to this world.
      *
-     * @return EntityID Assigned ID of the entity added.
      */
-    public int addEntity(Entity entity);
+    public void addEntity(Entity entity);
 
     /**
      * Gets an array of all the entities in this World.
@@ -37,14 +36,4 @@ public interface World {
      * @return an array of all world entities.
      */
     public Entity[] getEntities();
-
-    /**
-     * Gets entity by its ID.
-     *
-     * @param entity_id ID of the Entity to get.
-     *
-     * @return returns the Entity with the given ID. Will return null if an
-     *         Entity with the given ID wasn't found.
-     */
-    public Entity getEntity(int entity_id);
 }

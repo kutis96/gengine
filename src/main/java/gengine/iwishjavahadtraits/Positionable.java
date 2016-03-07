@@ -14,7 +14,7 @@ public interface Positionable {
      *
      * @return the object's coordinates
      */
-    public Coords getCoords();
+    public Coords getPos();
     
     /**
      * Sets the object's position. Should return false on failure - i.e. when
@@ -24,5 +24,5 @@ public interface Positionable {
      *
      * @return true on success, false on failure.
      */
-    public boolean setCoords(Coords pos);
+    public boolean setPos(Coords pos);
 }

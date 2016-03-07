@@ -3,6 +3,7 @@ package gengine.world.entity;
 import gengine.iwishjavahadtraits.Positionable;
 import gengine.iwishjavahadtraits.Renderable;
 import gengine.util.coords.Coords;
+import gengine.world.World;
 
 /**
  *
@@ -14,7 +15,7 @@ public interface Entity extends Positionable, Renderable{
      * @return coordinates of this entity
      */ 
     @Override
-    Coords getCoords();
+    Coords getPos();
     
     /**
      * Sets the Entity's new position
@@ -23,5 +24,7 @@ public interface Entity extends Positionable, Renderable{
      * @return returns true on success, false on failure.
      */
     @Override
-    boolean setCoords(Coords pos);
+    boolean setPos(Coords pos);
+    
+    public void tick(World w, long dt);
 }

@@ -7,8 +7,11 @@ import gengine.util.coords.Coords3D;
  * 
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class RendererOptions {
+public class WorldRendererOptions {
+    
     public Coords3D cameraOffset   = new Coords3D(0,0,0);
+    
     public Coords3D cameraPosition = new Coords3D(0,0,0);
+    
     public double zoom = 1;
 }

@@ -61,19 +61,6 @@ public class IsometricUtils {
      * @return Z-depth of the supplied coordinate.
      */
     public static float getIsomZ(Coords3D coords, float zmult) {
-
-        /*
-         ____ 0 0
-         ___ / . \
-         __ x . . y    
-         _ / . . . \   
-         _/ . . . . \  
-         _ . . . . .   |
-         __ . . . .    |
-         ___ . . .    \|/iz
-         ____ . .  
-         _____ .          
-         */
         return coords.getX() + coords.getY() - zmult * coords.getZ();
     }
 

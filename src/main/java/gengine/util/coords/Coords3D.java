@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Coords3D extends CoordFixedD {
+public class Coords3D extends CoordsFixedD {
 
     /**
      * Constructs the Coords2D with a default value of (0, 0, 0).
