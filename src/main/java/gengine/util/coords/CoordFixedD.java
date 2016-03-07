@@ -21,6 +21,19 @@ public class CoordFixedD implements Coords {
         }
     }
 
+    public float[] getRaw() {
+        return coords;
+    }
+
+    public void sanityCheck() throws DimMismatchException {
+        if (this.coords == null) {
+            throw new DimMismatchException("Can't live with a null coordinate array. Life is hard.");
+        }
+        if (this.coords.length != this.dim) {
+            throw new DimMismatchException("Dimension mismatch: expected " + this.dim + ", found " + coords.length);
+        }
+    }
+
     @Override
     public int getDimensions() {
         return this.dim;
@@ -28,12 +41,6 @@ public class CoordFixedD implements Coords {
 
     @Override
     public void setCoords(float[] coords) throws DimMismatchException {
-        if (coords == null) {
-            throw new DimMismatchException("Cannot assign a null");
-        }
-        if (coords.length != this.dim) {
-            throw new DimMismatchException("Dimension mismatch: expected " + this.dim + ", got " + coords.length);
-        }
 
         this.coords = Arrays.copyOf(coords, this.dim);
     }
@@ -58,7 +65,7 @@ public class CoordFixedD implements Coords {
                 ret += this.coords[i];
             }
             return ret + ")[" + this.dim + "]";
-        }else{
+        } else {
             return "(null)[-1]";
         }
     }

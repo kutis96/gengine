@@ -1,6 +1,7 @@
 package gengine.world;
 
 import gengine.util.coords.Coords3D;
+import gengine.world.entity.Entity;
 
 /**
  *
@@ -9,9 +10,8 @@ import gengine.util.coords.Coords3D;
 public interface World {
 
     /**
-     * Polls the World size.
+     * Gets the World size.
      *
-     * @deprecated This function will be removed by the time of the next commit.
      * @return returns the size of the World.
      */
     public Coords3D getWorldSize();
@@ -22,4 +22,29 @@ public interface World {
      * @param dt time elapsed since last tick in millisecods.
      */
     public void tick(long dt);
+
+    /**
+     * Adds an Entity to this World.
+     * @param entity Entity to add to this world.
+     *
+     * @return EntityID Assigned ID of the entity added.
+     */
+    public int addEntity(Entity entity);
+
+    /**
+     * Gets an array of all the entities in this World.
+     *
+     * @return an array of all world entities.
+     */
+    public Entity[] getEntities();
+
+    /**
+     * Gets entity by its ID.
+     *
+     * @param entity_id ID of the Entity to get.
+     *
+     * @return returns the Entity with the given ID. Will return null if an
+     *         Entity with the given ID wasn't found.
+     */
+    public Entity getEntity(int entity_id);
 }

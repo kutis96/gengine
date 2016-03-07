@@ -7,9 +7,7 @@ import gengine.world.TiledWorld;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class Tile implements Renderable {
+public interface Tile extends Renderable {
     
-    public void tick(TiledWorld iw, long dt){
-        //TODO: add logger here
-    }
+    public void tick(TiledWorld iw, long dt);
 }

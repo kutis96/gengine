@@ -2,7 +2,6 @@ package gengine.world.tile.tiles;
 
 import gengine.world.TiledWorld;
 import gengine.anim.AnimatedImage;
-import gengine.util.coords.Coords;
 import gengine.world.tile.Tile;
 import java.awt.Image;
 
@@ -11,7 +10,7 @@ import java.awt.Image;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class AnimatedTile extends Tile {
+public class AnimatedTile implements Tile {
 
     private final AnimatedImage ai;
 

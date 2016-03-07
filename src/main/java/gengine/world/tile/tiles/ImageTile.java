@@ -9,7 +9,7 @@ import java.awt.Image;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class ImageTile extends Tile {
+public class ImageTile implements Tile {
 
     private final Image img;
 

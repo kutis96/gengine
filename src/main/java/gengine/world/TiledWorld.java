@@ -1,7 +1,9 @@
 package gengine.world;
 
 import gengine.util.coords.Coords3D;
+import gengine.world.entity.Entity;
 import gengine.world.tile.Tile;
+import java.util.LinkedList;
 
 /**
  * A World made of Tiles!
@@ -10,36 +12,49 @@ import gengine.world.tile.Tile;
  */
 public class TiledWorld implements World {
 
-    private final Coords3D size;
+    private final Tile[][][] tiles;
+    private LinkedList<Entity> entities;
 
-    private final Tile[][][] worldtiles;
+    /**
+     * Maximum allowed amount of tiles. Mostly pointless.
+     */
+    public static final int MAXTILES = 1000000;
 
-    //TODO: add entity handling
-    
     /**
      * Constructs a TiledWorld of a specified size.
      *
      * @param size Size of the given world.
+     *
+     * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
-    public TiledWorld(Coords3D size) {
-        //TODO: size validation
+    public TiledWorld(Coords3D size) throws WorldSizeException {
 
-        this.size = size;
-        this.worldtiles = new Tile[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
+        if (size == null) {
+            throw new WorldSizeException("Invalid world size: null supplied");
+        }
+        if (size.getX() < 1 || size.getY() < 1 || size.getZ() < 1) {
+            throw new WorldSizeException("Invalid world size: " + size.toString());
+        }
+        if (size.getX() * size.getY() * size.getZ() > MAXTILES) {
+            throw new WorldSizeException("Invalid world size: requested size too large");
+        }
 
-        //this.entities = new LinkedList<>();
+        this.tiles = new Tile[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
+        
+        this.entities = new LinkedList<>();
     }
 
     /**
      * Returns a tile with given coordinates.
      *
      * @param pos
+     *
      * @return tile on the given position
      */
     public Tile getWorldtile(Coords3D pos) {
-        return this.worldtiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()];
+        return this.tiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()];
     }
-    
+
     /**
      * Sets a given tile in this World to a specified Tile.
      *
@@ -47,18 +62,29 @@ public class TiledWorld implements World {
      * @param pos       the position to place the tile on
      */
     public void setWorldtile(Tile worldtile, Coords3D pos) {
-        this.worldtiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = worldtile;
+        
+        System.out.println("set\t" + pos.toString());
+        
+        this.tiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = worldtile;
     }
 
     @Override
     public Coords3D getWorldSize() {
-        return size;
+        if(this.tiles == null){
+            return new Coords3D(-1, -1, -1);
+        }
+        
+        return new Coords3D(
+                this.tiles.length,          //X
+                this.tiles[0].length,       //Y
+                this.tiles[0][0].length     //Z
+        );
     }
 
     @Override
     public void tick(long dt) {
-        if (this.worldtiles != null) {
-            for (Tile[][] ttt : this.worldtiles) {
+        if (this.tiles != null) {
+            for (Tile[][] ttt : this.tiles) {
                 for (Tile[] tt : ttt) {
                     for (Tile t : tt) {
                         if (t != null) {
@@ -68,5 +94,22 @@ public class TiledWorld implements World {
                 }
             }
         }
+    }
+
+    @Override
+    public int addEntity(Entity entity) {
+        this.entities.add(entity);
+        
+        return -1;
+    }
+
+    @Override
+    public Entity[] getEntities() {
+        return this.entities.toArray(new Entity[this.entities.size()]);
+    }
+
+    @Override
+    public Entity getEntity(int entity_id) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

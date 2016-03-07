@@ -1,7 +1,6 @@
 package gengine.world.tile.tiles;
 
 import gengine.world.TiledWorld;
-import gengine.util.coords.Coords;
 import gengine.world.tile.Tile;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,7 +10,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class SillyTile extends Tile {
+public class SillyTile implements Tile {
 
     final Color col;
 
