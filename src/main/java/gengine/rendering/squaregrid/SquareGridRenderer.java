@@ -65,21 +65,8 @@ public class SquareGridRenderer implements WorldRenderer {
         //sort entities by X for rendering
         Collections.sort(rentities, new SquareGridUtils.EntityXComparator());
 
-        int rex = 0;
-
+        //Tile rendering
         for (int x = 0; x < max_x; x++) {
-
-            //Entity rendering
-            try {
-                //entities are already sorted by X, so I can do this
-                for (; ((int) rentities.get(rex).getPos().getCoords()[0] == x) && (rex < rentities.size()); rex++) {
-                    Image i = rentities.get(rex).render();
-                }
-            } catch (NullPointerException nex) {
-                Logger.getLogger(SquareGridRenderer.class.getName()).log(Level.WARNING, "Found a Null in the entity rendering bit.");
-            }
-
-            //Tile rendering
             for (int y = 0; y < max_y; y++) {
                 Tile t = tw.getWorldtile(new Coords3D(x, y, 0));
                 Image i = t.render();
@@ -91,6 +78,20 @@ public class SquareGridRenderer implements WorldRenderer {
                         draww,
                         drawh,
                         null);
+            }
+        }
+
+        int rex = 0;
+
+        //Entity rendering
+        for (int x = 0; x < max_x; x++) {
+            try {
+                //entities are already sorted by X, so I can do this
+                for (; ((int) rentities.get(rex).getPos().getCoords()[0] == x) && (rex < rentities.size()); rex++) {
+                    Image i = rentities.get(rex).render();
+                }
+            } catch (NullPointerException nex) {
+                Logger.getLogger(SquareGridRenderer.class.getName()).log(Level.WARNING, "Found a Null in the entity rendering bit.");
             }
         }
     }
