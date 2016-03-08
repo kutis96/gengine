@@ -1,5 +1,6 @@
 package gengine.world.tile.tiles;
 
+import gengine.util.coords.Coords3D;
 import gengine.world.TiledWorld;
 import gengine.world.tile.Tile;
 import java.awt.Image;
@@ -9,7 +10,7 @@ import java.awt.Image;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class ImageTile implements Tile {
+public class ImageTile extends Tile {
 
     private final Image img;
 
@@ -26,11 +27,12 @@ public class ImageTile implements Tile {
      * Does nothing, ImageTile is completely static (as in it doesn't animate or
      * react to anything).
      *
-     * @param iw See Tile documentation.
-     * @param dt See Tile documentation.
+     * @param iw See Tile documentation. Not used here.
+     * @param pos See Tile documentation. Not used here.
+     * @param dt See Tile documentation. Not used here.
      */
     @Override
-    public void tick(TiledWorld iw, long dt) {
+    public void tick(TiledWorld iw, Coords3D pos, long dt) {
         //do nothing whatsoever
     }
 

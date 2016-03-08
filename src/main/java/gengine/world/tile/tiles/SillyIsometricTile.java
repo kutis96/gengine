@@ -1,5 +1,6 @@
 package gengine.world.tile.tiles;
 
+import gengine.util.coords.Coords3D;
 import gengine.world.TiledWorld;
 import gengine.world.tile.Tile;
 import java.awt.*;
@@ -10,7 +11,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class SillyTile implements Tile {
+public class SillyIsometricTile extends Tile {
 
     final Color col;
 
@@ -18,29 +19,29 @@ public class SillyTile implements Tile {
      * Constructs the SillyTile with a completely random color.
      * @param pos
      */
-    public SillyTile() {
+    public SillyIsometricTile() {
         this.col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
     }
 
     /**
      * Constructs the SillyTile with a specified color.
      *
-     * @param pos Coordinates of the given tile
      * @param col The color of this SillyTile.
      */
-    public SillyTile(Color col) {
+    public SillyIsometricTile(Color col) {
         this.col = col;
     }
 
     /**
-     * Does nothing whatsoever, SillyTile is completely static. (as in it
+     * Does nothing whatsoever, SillyIsometricTile is completely static. (as in it
      * doesn't animate or react to anything).
      *
-     * @param iw See Tile documentation.
-     * @param dt See Tile documentation.
+     * @param iw See Tile documentation, not used here.
+     * @param pos See Tile documentation, not used here.
+     * @param dt See Tile documentation, not used here.
      */
     @Override
-    public void tick(TiledWorld iw, long dt) {
+    public void tick(TiledWorld iw, Coords3D pos, long dt) {
         //do nothing whatsoever
     }
 

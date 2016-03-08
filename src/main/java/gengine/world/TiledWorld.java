@@ -97,11 +97,12 @@ public class TiledWorld implements World {
     @Override
     public void tick(long dt) {
         if (this.tiles != null) {
-            for (Tile[][] ttt : this.tiles) {
-                for (Tile[] tt : ttt) {
-                    for (Tile t : tt) {
+            for (int x = 0; x < this.tiles.length; x++) {
+                for (int y = 0; y < this.tiles[x].length; y++) {
+                    for (int z = 0; z < this.tiles[x][y].length; z++) {
+                        Tile t = this.tiles[x][y][z];
                         if (t != null) {
-                            t.tick(this, dt);
+                            t.tick(this, new Coords3D(x, y, z), dt);
                         }
                     }
                 }
