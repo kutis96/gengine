@@ -1,8 +1,7 @@
 package gengine.world;
 
-import gengine.rendering.isometric.IsometricUtils;
 import gengine.util.coords.Coords3D;
-import gengine.world.entity.Entity;
+import gengine.world.entity.WorldEntity;
 import gengine.world.tile.Tile;
 import java.util.ArrayList;
 
@@ -13,8 +12,10 @@ import java.util.ArrayList;
  */
 public class TiledWorld implements World {
 
+    //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
+    
     private final Tile[][][] tiles;
-    private ArrayList<Entity> entities;
+    private ArrayList<WorldEntity> entities;
 
     /**
      * Maximum allowed amount of tiles. Mostly pointless.
@@ -109,7 +110,7 @@ public class TiledWorld implements World {
             }
         }
 
-        for (Entity e : this.entities) {
+        for (WorldEntity e : this.entities) {
             if (e != null) {
                 e.tick(this, dt);
             }
@@ -117,12 +118,12 @@ public class TiledWorld implements World {
     }
 
     @Override
-    public void addEntity(Entity entity) {
+    public void addEntity(WorldEntity entity) {
         this.entities.add(entity);
     }
 
     @Override
-    public Entity[] getEntities() {
-        return this.entities.toArray(new Entity[this.entities.size()]);
+    public WorldEntity[] getEntities() {
+        return this.entities.toArray(new WorldEntity[this.entities.size()]);
     }
 }

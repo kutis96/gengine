@@ -1,7 +1,7 @@
 package gengine.world;
 
 import gengine.util.coords.Coords3D;
-import gengine.world.entity.Entity;
+import gengine.world.entity.WorldEntity;
 
 /**
  *
@@ -24,16 +24,16 @@ public interface World {
     public void tick(long dt);
 
     /**
-     * Adds an Entity to this World.
-     * @param entity Entity to add to this world.
+     * Adds an WorldEntity to this World.
+     * @param entity WorldEntity to add to this world.
      *
      */
-    public void addEntity(Entity entity);
+    public void addEntity(WorldEntity entity);
 
     /**
      * Gets an array of all the entities in this World.
      *
      * @return an array of all world entities.
      */
-    public Entity[] getEntities();
+    public WorldEntity[] getEntities();
 }

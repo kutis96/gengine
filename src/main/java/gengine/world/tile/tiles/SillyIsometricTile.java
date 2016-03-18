@@ -17,7 +17,6 @@ public class SillyIsometricTile extends Tile {
 
     /**
      * Constructs the SillyTile with a completely random color.
-     * @param pos
      */
     public SillyIsometricTile() {
         this.col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());

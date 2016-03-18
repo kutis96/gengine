@@ -21,6 +21,20 @@ public class CoordsFixedD implements Coords {
         }
     }
 
+    public CoordsFixedD(float[] coords) {
+        if (coords != null) {
+            this.coords = coords;
+            this.dim = coords.length;
+        } else {
+            this.dim = -1;
+            this.coords = null;
+        }
+    }
+
+    /**
+     * @return 
+     * @deprecated 
+     */
     public float[] getRaw() {
         return coords;
     }
@@ -70,4 +84,51 @@ public class CoordsFixedD implements Coords {
         }
     }
 
+    /**
+     * Adds the given coordinates to this CoordsFixedD coordinates, and creates
+     * a new CoordsFixedD with those new coordinates. Useful for handling
+     * offsets.
+     *
+     * @param c Coordinates to add to this object's coordinates.
+     *
+     * @return New object with those new coordinates. Returns null when the
+     *         dimensions don't match.
+     */
+    public CoordsFixedD add(CoordsFixedD c) {
+        if (this.dim == c.getDimensions()) {
+            float[] newvals = new float[dim];
+
+            for (int i = 0; i < this.dim; i++) {
+                newvals[i] = this.coords[i] + this.getCoords()[i];
+            }
+
+            return new CoordsFixedD(newvals);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Subtracts the given coordinates from this CoordsFixedD coordinates, and
+     * creates a new CoordsFixedD with those new coordinates. Useful for
+     * handling offsets.
+     *
+     * @param c Coordinates to add to this object's coordinates.
+     *
+     * @return New object with those new coordinates. Returns null when the
+     *         dimensions don't match.
+     */
+    public CoordsFixedD subtract(CoordsFixedD c) {
+        if (this.dim == c.getDimensions()) {
+            float[] newvals = new float[dim];
+
+            for (int i = 0; i < this.dim; i++) {
+                newvals[i] = this.coords[i] - this.getCoords()[i];
+            }
+
+            return new CoordsFixedD(newvals);
+        } else {
+            return null;
+        }
+    }
 }

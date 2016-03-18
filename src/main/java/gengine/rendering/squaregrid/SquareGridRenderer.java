@@ -4,7 +4,7 @@ import gengine.rendering.*;
 import gengine.util.coords.Coords3D;
 import gengine.world.TiledWorld;
 import gengine.world.World;
-import gengine.world.entity.Entity;
+import gengine.world.entity.WorldEntity;
 import gengine.world.tile.Tile;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -58,7 +58,7 @@ public class SquareGridRenderer implements WorldRenderer {
 
         surface.setAccelerationPriority(1);
 
-        ArrayList<Entity> rentities = new ArrayList<>();
+        ArrayList<WorldEntity> rentities = new ArrayList<>();
 
         rentities.addAll(Arrays.asList(tw.getEntities()));
 

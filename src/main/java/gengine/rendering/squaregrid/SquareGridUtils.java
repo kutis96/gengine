@@ -1,6 +1,6 @@
 package gengine.rendering.squaregrid;
 
-import gengine.world.entity.Entity;
+import gengine.world.entity.WorldEntity;
 import java.util.Comparator;
 
 /**
@@ -9,10 +9,10 @@ import java.util.Comparator;
  */
 public class SquareGridUtils {
 
-    public static class EntityXComparator implements Comparator<Entity> {
+    public static class EntityXComparator implements Comparator<WorldEntity> {
 
         @Override
-        public int compare(final Entity a, final Entity b) {
+        public int compare(final WorldEntity a, final WorldEntity b) {
             if (a.getPos().getCoords()[0] < b.getPos().getCoords()[0]) {
                 return -1;
             } else if (a.getPos().getCoords()[0] > b.getPos().getCoords()[0]) {
@@ -23,10 +23,10 @@ public class SquareGridUtils {
         }
     }
 
-    public static class EntityYComparator implements Comparator<Entity> {
+    public static class EntityYComparator implements Comparator<WorldEntity> {
 
         @Override
-        public int compare(final Entity a, final Entity b) {
+        public int compare(final WorldEntity a, final WorldEntity b) {
             if (a.getPos().getCoords()[1] < b.getPos().getCoords()[1]) {
                 return -1;
             } else if (a.getPos().getCoords()[1] > b.getPos().getCoords()[1]) {
