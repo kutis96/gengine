@@ -1,7 +1,6 @@
 package gengine.world.tile.tiles;
 
-import gengine.util.coords.Coords3D;
-import gengine.world.TiledWorld;
+import gengine.world.tile.Tile;
 import gengine.world.tile.Tile;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -34,13 +33,9 @@ public class SillyIsometricTile extends Tile {
     /**
      * Does nothing whatsoever, SillyIsometricTile is completely static. (as in it
      * doesn't animate or react to anything).
-     *
-     * @param iw See Tile documentation, not used here.
-     * @param pos See Tile documentation, not used here.
-     * @param dt See Tile documentation, not used here.
      */
     @Override
-    public void tick(TiledWorld iw, Coords3D pos, long dt) {
+    public void tick(long dt) {
         //do nothing whatsoever
     }
 

@@ -11,3 +11,5 @@
 nbactions.xml
 /src/main/java/gengine/ctrls/
 /src/main/java/gengine/winman/
+/src/main/java/gengine/util/AdvancedKeyValueLoader.java
+/src/main/java/gengine/world/tile/TilesetLoader.java

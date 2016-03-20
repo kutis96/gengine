@@ -6,14 +6,19 @@ import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
 import gengine.world.TiledWorld;
 import gengine.world.World;
+import gengine.world.tile.TilesetIndexException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class IsometricRenderer implements WorldRenderer {
+    
+    private static final Logger LOG = Logger.getLogger(IsometricRenderer.class.getName());  
 
     private final int tilewidth;
 
@@ -46,7 +51,7 @@ public class IsometricRenderer implements WorldRenderer {
      *                                    to be something other than TileWorld
      */
     @Override
-    public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws WorldTypeMismatchException {
+    public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws WorldTypeMismatchException, RendererException {
         if (world instanceof TiledWorld) {
             this.render((TiledWorld) world, bi, ro);
         } else {
@@ -62,7 +67,7 @@ public class IsometricRenderer implements WorldRenderer {
      * @param surface BufferedImage object to render onto.
      * @param wrop    WorldRendererOptions supplying all the renderer options!
      */
-    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) {
+    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
 
         //TODO:
         //----------------------------------------------------------------------
@@ -124,35 +129,49 @@ public class IsometricRenderer implements WorldRenderer {
                     //ACTUAL DRAWING GOES HERE
                     Coords3D coords = new Coords3D(x, y, z);
 
-                    Tile current_tile = world.getWorldtile(coords);
+                    try {
+                        Tile current_tile = world.getWorldtile(coords);
 
-                    if (current_tile != null) {
+                        if (current_tile != null) {
 
-                        Image rendered_tile = current_tile.render();
+                            Image rendered_tile = current_tile.render();
+                            
+                            if (rendered_tile == null){
+                                continue;
+                            }
 
-                        //Scaling ratio of the tiles.
-                        //  calculated on the horizontal axis
-                        double scaling = tilesize / (double) rendered_tile.getWidth(null);
+                            //Scaling ratio of the tiles.
+                            //  calculated on the horizontal axis
+                            double scaling = tilesize / (double) rendered_tile.getWidth(null);
 
-                        //Converts isometric coordinates into graphic coordinates (aka pixel coordinates on the screen
-                        Coords2D conv = IsometricUtils.convIsom2Graph(
-                                coords,
-                                wrop.cameraOffset,
-                                wrop.cameraPosition,
-                                tilesize,
-                                3 * tilesize / 4);
+                            //Converts isometric coordinates into graphic coordinates (aka pixel coordinates on the screen
+                            Coords2D conv = IsometricUtils.convIsom2Graph(
+                                    coords,
+                                    wrop.cameraOffset,
+                                    wrop.cameraPosition,
+                                    tilesize,
+                                    3 * tilesize / 4);
 
-                        //draw image on the rendered surface
-                        g.drawImage(
-                                //Image to draw
-                                rendered_tile,
-                                //position gotten from the converter
-                                (int) conv.getX(),
-                                (int) (conv.getY() - rendered_tile.getHeight(null) * scaling),
-                                tilesize, //Width
-                                (int) (rendered_tile.getHeight(null) * scaling), //Height
-                                null //Observer
-                        );
+                            //draw image on the rendered surface
+                            g.drawImage(
+                                    //Image to draw
+                                    rendered_tile,
+                                    //position gotten from the converter
+                                    (int) conv.getX(),
+                                    (int) (conv.getY() - rendered_tile.getHeight(null) * scaling),
+                                    tilesize, //Width
+                                    (int) (rendered_tile.getHeight(null) * scaling), //Height
+                                    null //Observer
+                            );
+                        }
+                    } catch (TilesetIndexException ex) {
+                        String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
+                        
+                        LOG.log(Level.WARNING, message);
+                        
+                        if((wrop.flags & WorldRendererOptions.RenderFlags.DIE_ON_MISSING_TILES.getFlagValue()) != 0){
+                            throw new RendererException(message);
+                        }
                     }
 
                     //ACTUAL DRAWING ENDS HERE

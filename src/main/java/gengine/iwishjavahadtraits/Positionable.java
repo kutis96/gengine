@@ -1,6 +1,7 @@
 package gengine.iwishjavahadtraits;
 
 import gengine.util.coords.Coords;
+import gengine.util.coords.DimMismatchException;
 
 /**
  * A 'trait' used by anything with
@@ -22,7 +23,7 @@ public interface Positionable {
      *
      * @param pos The new coordinates
      *
-     * @return true on success, false on failure.
+     * @throws DimMismatchException thrown on dimension mismatch
      */
-    public boolean setPos(Coords pos);
+    public void setPos(Coords pos) throws DimMismatchException;
 }

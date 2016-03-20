@@ -22,4 +22,8 @@ public abstract class NPCEntity extends WorldEntity{
         return this.inv;
     }
     
+    public void tick(long dt){
+        
+    }
+    
 }

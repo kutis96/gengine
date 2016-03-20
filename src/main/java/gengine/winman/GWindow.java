@@ -8,5 +8,5 @@ import javax.swing.JPanel;
  */
 @SuppressWarnings("serial")
 public class GWindow extends JPanel {
-    //TODO: add random controller stuff.
+    
 }

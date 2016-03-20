@@ -35,9 +35,7 @@ public abstract class Tile implements Renderable {
     /**
      * Tick, used for various animations
      *
-     * @param iw      The world this tile rests in
-     * @param tilepos Position of the tile itself, so it knows where it is
      * @param dt      Delta-tee in milliseconds
      */
-    public abstract void tick(TiledWorld iw, Coords3D tilepos, long dt);
+    public abstract void tick(long dt);
 }

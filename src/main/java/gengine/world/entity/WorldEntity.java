@@ -3,8 +3,7 @@ package gengine.world.entity;
 import gengine.ctrls.Controller;
 import gengine.ctrls.events.Event;
 import gengine.iwishjavahadtraits.*;
-import gengine.util.coords.Coords;
-import gengine.util.coords.Coords3D;
+import gengine.util.coords.*;
 import gengine.world.World;
 import java.util.ArrayList;
 
@@ -32,17 +31,14 @@ public abstract class WorldEntity implements Positionable, Renderable, Controlla
      * Sets the WorldEntity's new position
      *
      * @param pos
-     *
-     * @return returns true on success, false on failure.
+     * @throws gengine.util.coords.DimMismatchException
      */
     @Override
-    public boolean setPos(Coords pos) {
+    public void setPos(Coords pos) throws DimMismatchException {
         if (pos == null || pos.getDimensions() != 3) {
-            return false;
+            throw new DimMismatchException();
         }
         this.pos = (Coords3D) pos;
-
-        return true;
     }
 
     /**

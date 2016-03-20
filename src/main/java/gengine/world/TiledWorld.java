@@ -2,8 +2,10 @@ package gengine.world;
 
 import gengine.util.coords.Coords3D;
 import gengine.world.entity.WorldEntity;
-import gengine.world.tile.Tile;
+import gengine.world.tile.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A World made of Tiles!
@@ -11,10 +13,12 @@ import java.util.ArrayList;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class TiledWorld implements World {
+    
+    private static final Logger LOG = Logger.getLogger(TiledWorld.class.getName());
 
     //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
-    
-    private final Tile[][][] tiles;
+    private final int[][][] tileIDmap;
+    private final Tileset tileset;
     private ArrayList<WorldEntity> entities;
 
     /**
@@ -23,13 +27,14 @@ public class TiledWorld implements World {
     public static final int MAXTILES = 1000000;
 
     /**
-     * Constructs a TiledWorld of a specified size.
+     * Constructs a TiledWorldWithTileSet of a specified size.
      *
-     * @param size Size of the given world.
+     * @param size    Size of the given world.
+     * @param tileset Tileset to use.
      *
      * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
-    public TiledWorld(Coords3D size) throws WorldSizeException {
+    public TiledWorld(Coords3D size, Tileset tileset) throws WorldSizeException {
 
         if (size == null) {
             throw new WorldSizeException("Invalid world size: null supplied");
@@ -41,7 +46,9 @@ public class TiledWorld implements World {
             throw new WorldSizeException("Invalid world size: requested size too large");
         }
 
-        this.tiles = new Tile[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
+        this.tileIDmap = new int[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
+
+        this.tileset = tileset;
 
         this.entities = new ArrayList<>();
     }
@@ -53,21 +60,38 @@ public class TiledWorld implements World {
      *
      * @return tile on the given position
      */
-    public Tile getWorldtile(Coords3D pos) {
-        return this.tiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()];
+    public Tile getWorldtile(Coords3D pos) throws TilesetIndexException {
+        return this.tileset.getTileFromId(
+                this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
+        );
     }
 
     /**
      * Sets a given tile in this World to a specified Tile.
      *
-     * @param worldtile new tile to place at the given position
-     * @param pos       the position to place the tile on
+     * @param tileID the ID of a tile to set
+     * @param pos    the position to place the tile on
      */
-    public void setWorldtile(Tile worldtile, Coords3D pos) {
+    public void setWorldtile(int tileID, Coords3D pos) {
+        this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = tileID;
+    }
 
-        System.out.println("set\t" + pos.toString());
+    /**
+     * Sets a given tile in this World to a specified Tile.
+     *
+     * @param tile
+     * @param pos    the position to place the tile on
+     */
+    public void setWorldtile(Tile tile, Coords3D pos) {
 
-        this.tiles[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = worldtile;
+        int id = this.tileset.getTileID(tile);
+        
+        if(id == -1){
+            LOG.log(Level.FINE, "Adding new tile to the world's tileset through setWorldTile");
+            id = this.tileset.addTile(tile);
+        }
+
+        this.setWorldtile(id, pos);
     }
 
     /**
@@ -79,14 +103,14 @@ public class TiledWorld implements World {
      */
     @Override
     public Coords3D getWorldSize() {
-        if (this.tiles == null) {
+        if (this.tileIDmap == null) {
             return null;
         }
 
         return new Coords3D(
-                this.tiles.length, //X
-                this.tiles[0].length, //Y
-                this.tiles[0][0].length //Z
+                this.tileIDmap.length, //X
+                this.tileIDmap[0].length, //Y
+                this.tileIDmap[0][0].length //Z
         );
     }
 
@@ -97,18 +121,7 @@ public class TiledWorld implements World {
      */
     @Override
     public void tick(long dt) {
-        if (this.tiles != null) {
-            for (int x = 0; x < this.tiles.length; x++) {
-                for (int y = 0; y < this.tiles[x].length; y++) {
-                    for (int z = 0; z < this.tiles[x][y].length; z++) {
-                        Tile t = this.tiles[x][y][z];
-                        if (t != null) {
-                            t.tick(this, new Coords3D(x, y, z), dt);
-                        }
-                    }
-                }
-            }
-        }
+        this.tileset.updateAll(dt);
 
         for (WorldEntity e : this.entities) {
             if (e != null) {
@@ -125,5 +138,9 @@ public class TiledWorld implements World {
     @Override
     public WorldEntity[] getEntities() {
         return this.entities.toArray(new WorldEntity[this.entities.size()]);
+    }
+    
+    public Tileset getTileSet(){
+        return this.tileset;
     }
 }

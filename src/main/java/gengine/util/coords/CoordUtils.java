@@ -1,4 +1,4 @@
-package gengine.util.coords.coordutils;
+package gengine.util.coords;
 
 import gengine.util.coords.CoordsFixedD;
 import gengine.util.coords.DimMismatchException;

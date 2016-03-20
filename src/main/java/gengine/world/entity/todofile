@@ -4,5 +4,15 @@ TODO:
    happen just inside the world - ie. 'AI' for various mostly passive entities,
    etc.
 
-DONE:
-- Add tick method to update entities
+
+Expected events:
+- onMouseClick(mpos)
+- onMouseHover(mpos)
+- onMouseDrag(mpos-offset, mpos-newpos)
+- onMouseLeave()
+- onUse(perpetrator,itemstack)
+- onHit(perpetrator,itemstack)
+- onCollide(perpetrator)
+extended for NPCentity:
+- onTradeRequest(perpetrator)
+- onWorldChange(tileschanged[]) --possibly silly, could be useful for follower bots, so they know some doors have opened/closed without needing to update their paths 24/7
