@@ -22,7 +22,8 @@ public class WorldRendererOptions {
         WARN_ON_MISSING_TILES,
         DIE_ON_MISSING_TILES,
         NO_ENTITIES,
-        NO_TILES;
+        NO_TILES,
+        ANTIALIAS;
         
         public long getFlagValue() {
             return 1 << this.ordinal();

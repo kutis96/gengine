@@ -179,15 +179,20 @@ public class IsometricRenderer implements WorldRenderer {
             }
         }
 
-        Coords2D camaimpos = IsometricUtils.convIsom2Graph(
+        Coords2D camerapos = IsometricUtils.convIsom2Graph(
                 new Coords3D(0, 0, 0),
                 wrop.cameraOffset,
                 wrop.cameraPosition,
                 tilesize,
                 3 * tilesize / 4);
 
-        g.drawRect((int) camaimpos.getX(), (int) camaimpos.getY(), -tilesize, -tilesize / 2);
+        g.drawRect((int) camerapos.getX(), (int) camerapos.getY(), -tilesize, -tilesize / 2);
 
         g.dispose();
+    }
+
+    @Override
+    public Coords3D getWorldCoords(World world, Point point) throws WorldTypeMismatchException, RendererException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

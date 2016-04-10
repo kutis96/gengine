@@ -1,7 +1,8 @@
 package gengine.world.entity;
 
-import gengine.ctrls.Controller;
-import gengine.ctrls.events.Event;
+import gengine.world.entity.hitbox.Hitbox;
+import gengine.ctrls.ent.EntityController;
+import gengine.ctrls.ent.Event;
 import gengine.iwishjavahadtraits.*;
 import gengine.util.coords.*;
 import gengine.world.World;
@@ -11,11 +12,13 @@ import java.util.ArrayList;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldEntity implements Positionable, Renderable, Controllable {
+public abstract class WorldEntity implements Positionable, Renderable {
 
     private Coords3D pos;
 
-    private ArrayList<Controller> controllers;
+    private ArrayList<EntityController> controllers;
+    
+    private Hitbox hb;
 
     /**
      * Gets the WorldEntity's position
@@ -49,20 +52,41 @@ public abstract class WorldEntity implements Positionable, Renderable, Controlla
      */
     public abstract void tick(World w, long dt);
 
-    @Override
-    public void attachController(Controller c) {
+    public Hitbox getHitbox(){
+        return this.hb;
+    }
+
+    public void attachController(EntityController c) {
         this.controllers.add(c);
     }
 
-    @Override
+
     public void clearControllers() {
         this.controllers.clear();
     }
 
-    @Override
     public void dispatchEvent(Event e) {
-        for(Controller c : this.controllers){
+        for(EntityController c : this.controllers){
             c.dispatchEvent(e);
         }
     }
+    
+    /*
+    
+    //mouse events
+    public abstract void onMouseClick(MouseClickEvent e);
+    public abstract void onMouseHover(MouseHoverEvent e);
+    public abstract void onMouseDrag(MouseDragEvent e);
+    public abstract void onMouseEnter(MouseHoverEvent e);
+    public abstract void onMouseLeave(MouseHoverEvent e);
+    
+    //item use events
+    public abstract void onUse(ItemUseEvent e);
+    public abstract void onHit(HitEvent e);
+    
+    //world events
+    public abstract void onCollide(CollisionEvent e);
+    public abstract void onWorldChange(WorldChangeEvent e);
+    
+    */
 }

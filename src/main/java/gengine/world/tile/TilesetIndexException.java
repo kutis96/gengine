@@ -1,8 +1,6 @@
 package gengine.world.tile;
 
 /**
- * An exception thrown on a world type mismatch, typically for rendering.
- *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 @SuppressWarnings("serial")

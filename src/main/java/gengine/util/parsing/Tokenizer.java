@@ -31,7 +31,7 @@ public class Tokenizer {
         tokenInfos.add(new TokenInfo(Pattern.compile("^(" + regex + ")"), tokenID));
     }
 
-    public void tokenize(String str) throws Exception {
+    public void tokenize(String str) throws ParserException {
         String s = str.trim() + " ";
         
         while (!s.equals(" ")) {
@@ -47,7 +47,7 @@ public class Tokenizer {
                 }
             }
             if (!match) {
-                throw new Exception("Unexpected character in input: " + s);
+                throw new ParserException("Unexpected character in input: " + s);
             }
         }
     }
