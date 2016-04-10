@@ -1,6 +1,5 @@
-package gengine.util.loaders;
+package gengine.util;
 
-import gengine.util.UnsupportedFormatException;
 import java.io.*;
 import java.util.HashMap;
 import java.util.logging.Level;

@@ -15,15 +15,10 @@ public class Token {
     private final String sequence;
 
     public int getTokenID() {
-        return this.tokenID;
+        return tokenID;
     }
 
     public String getSequence() {
-        return this.sequence;
-    }
-    
-    @Override
-    public String toString(){
-        return "ID : " + this.tokenID + "\nStr: " + this.sequence + "\n";
+        return sequence;
     }
 }

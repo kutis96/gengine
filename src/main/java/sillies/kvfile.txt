@@ -1,4 +1,0 @@
-#just a comment
-
-hello : world           
-123 : w343  24 #this is a comment

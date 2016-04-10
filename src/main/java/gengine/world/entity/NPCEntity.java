@@ -21,4 +21,9 @@ public abstract class NPCEntity extends WorldEntity{
     public Inventory getInventory(){
         return this.inv;
     }
+    
+    public void tick(long dt){
+        
+    }
+    
 }
