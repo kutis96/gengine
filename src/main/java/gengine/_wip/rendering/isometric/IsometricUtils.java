@@ -10,6 +10,9 @@ import gengine.util.coords.*;
  */
 public class IsometricUtils {
 
+    public IsometricUtils() {
+    }
+
     /**
      * Converts isometric coordinates into renderable coordinates.
      *
@@ -42,9 +45,7 @@ public class IsometricUtils {
                 + tq * x
                 - zmult * (z + campos.getZ()));
 
-        Coords2D ret = new Coords2D(cx, cy);
-
-        return ret;
+        return new Coords2D(cx, cy);
     }
 
     public static Coords2D convIsom2Graph(Coords3D isomcoords, int tilewidth, int zmult) {

@@ -1,14 +1,13 @@
 package gengine.util.coords;
 
-import gengine.util.coords.CoordsFixedD;
-import gengine.util.coords.DimMismatchException;
-
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class CoordUtils {
 
+    public CoordUtils(){}
+    
     /**
      * Checks whether a coordinate is inside a bounding box given by the other
      * two coordinates. This assumes box edges being parallel with the base

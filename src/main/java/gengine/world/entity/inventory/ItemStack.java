@@ -8,7 +8,7 @@ package gengine.world.entity.inventory;
 public class ItemStack {
 
     private final InventoryItem prototype;
-    private final int max_amount;
+    private final int maxAmount;
     private int amount;
 
     /**
@@ -20,10 +20,10 @@ public class ItemStack {
         this(prototype, prototype.getStackability());
     }
 
-    private ItemStack(InventoryItem prototype, int max_amount) {
+    private ItemStack(InventoryItem prototype, int maxAmount) {
         this.prototype = prototype;
         this.amount = 1;
-        this.max_amount = max_amount;
+        this.maxAmount = maxAmount;
     }
 
     /**
@@ -63,7 +63,7 @@ public class ItemStack {
      * @return true when the stack is empty.
      */
     public boolean isEmpty() {
-        return (this.amount <= 0);
+        return this.amount <= 0;
     }
 
     /**
@@ -72,7 +72,7 @@ public class ItemStack {
      * @return true when the stack is full.
      */
     public boolean isFull() {
-        return (this.amount >= this.max_amount);
+        return this.amount >= this.maxAmount;
     }
 
     /**

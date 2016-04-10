@@ -9,27 +9,28 @@ import java.util.Comparator;
  */
 public class SquareGridUtils {
 
-    public static class EntityXComparator implements Comparator<WorldEntity> {
-
-        @Override
-        public int compare(final WorldEntity a, final WorldEntity b) {
-            if (a.getPos().getCoords()[0] < b.getPos().getCoords()[0]) {
-                return -1;
-            } else if (a.getPos().getCoords()[0] > b.getPos().getCoords()[0]) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
+    public SquareGridUtils() {
     }
 
-    public static class EntityYComparator implements Comparator<WorldEntity> {
+    public static enum Direction {
+        X,
+        Y,
+        Z
+    }
+
+    public static class EntityXYZComparator implements Comparator<WorldEntity> {
+
+        private final int dir;
+
+        public EntityXYZComparator(Direction dir) {
+            this.dir = dir.ordinal();
+        }
 
         @Override
         public int compare(final WorldEntity a, final WorldEntity b) {
-            if (a.getPos().getCoords()[1] < b.getPos().getCoords()[1]) {
+            if (a.getPos().getCoords()[dir] < b.getPos().getCoords()[dir]) {
                 return -1;
-            } else if (a.getPos().getCoords()[1] > b.getPos().getCoords()[1]) {
+            } else if (a.getPos().getCoords()[dir] > b.getPos().getCoords()[dir]) {
                 return 1;
             } else {
                 return 0;

@@ -1,6 +1,7 @@
 package gengine.rendering.squaregrid;
 
 import gengine.rendering.*;
+import gengine.rendering.WorldRendererOptions.Flags;
 import gengine.util.coords.Coords3D;
 import gengine.world.TiledWorld;
 import gengine.world.World;
@@ -39,34 +40,34 @@ public class SquareGridRenderer implements WorldRenderer {
     }
 
     @Override
-    public void render(World world, BufferedImage surface, WorldRendererOptions wropt) throws WorldTypeMismatchException, RendererException {
+    public void render(World world, BufferedImage surface, WorldRendererOptions wropt) throws RendererException {
         if (world instanceof TiledWorld) {
             this.render((TiledWorld) world, surface, wropt);
         } else {
-            throw new WorldTypeMismatchException();
+            throw new RendererException("Invalid World Type Detected");
         }
     }
 
     private void render(TiledWorld tw, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
-        int drawh = (int) (this.tileheight * wrop.zoom);
-        int draww = (int) (this.tilewidth * wrop.zoom);
+        int drawH = (int) (this.tileheight * wrop.getZoom());
+        int drawW = (int) (this.tilewidth * wrop.getZoom());
 
-        int max_x = (int) tw.getWorldSize().getX();
-        int max_y = (int) tw.getWorldSize().getY();
+        int maxX = (int) tw.getWorldSize().getX();
+        int maxY = (int) tw.getWorldSize().getY();
         
-        float xscale = this.tileheight/drawh;
-        float yscale = this.tileheight/drawh;
+        float xscale = (float) this.tileheight/drawH;
+        float yscale = (float) this.tileheight/drawH;
 
-        int xoff = (int) (wrop.cameraPosition.getX() * draww + wrop.cameraOffset.getX() + (surface.getWidth() - max_x * this.tilewidth) / 2);
-        int yoff = (int) (wrop.cameraPosition.getY() * drawh + wrop.cameraOffset.getY() + (surface.getHeight() - max_y * this.tileheight) / 2);
+        int xoff = (int) (wrop.getCameraPosition().getX() * drawW + wrop.getCameraOffset().getX() + (surface.getWidth() - maxX * this.tilewidth) / 2);
+        int yoff = (int) (wrop.getCameraPosition().getY() * drawH + wrop.getCameraOffset().getY() + (surface.getHeight() - maxY * this.tileheight) / 2);
 
         Graphics2D g = surface.createGraphics();
 
         surface.setAccelerationPriority(1);
 
         //Tile rendering
-        for (int x = 0; x < max_x; x++) {
-            for (int y = 0; y < max_y; y++) {
+        for (int x = 0; x < maxX; x++) {
+            for (int y = 0; y < maxY; y++) {
                 try {
                     Tile t = tw.getWorldtile(new Coords3D(x, y, 0));
                     Image i = t.render();
@@ -77,10 +78,10 @@ public class SquareGridRenderer implements WorldRenderer {
 
                     g.drawImage(
                             i,
-                            x * draww + xoff,
-                            y * drawh + yoff,
-                            draww,
-                            drawh,
+                            x * drawW + xoff,
+                            y * drawH + yoff,
+                            drawW,
+                            drawH,
                             null);
 
                 } catch (TilesetIndexException ex) {
@@ -88,26 +89,35 @@ public class SquareGridRenderer implements WorldRenderer {
 
                     LOG.log(Level.WARNING, message);
 
-                    if ((wrop.flags & WorldRendererOptions.RenderFlags.DIE_ON_MISSING_TILES.getFlagValue()) != 0) {
+                    if (wrop.hasFlag(Flags.DIE_ON_MISSING_TILES)) {
                         throw new RendererException(message);
                     }
                 }
             }
         }
-
+        
+        
+        ////////////////////////////////////////////////////////////////////////
+        //Entity rendering
+        //
+        //  TODO: This thing is probably totally broken.
+        //  TODO: Rewrite completely.
+        //
+        
         ArrayList<WorldEntity> rentities = new ArrayList<>();
 
         rentities.addAll(Arrays.asList(tw.getEntities()));
 
         //sort entities by X for rendering
-        Collections.sort(rentities, new SquareGridUtils.EntityXComparator());
+        Collections.sort(rentities, new SquareGridUtils.EntityXYZComparator(
+                SquareGridUtils.Direction.X)
+        );
 
-        //Entity rendering
         int rex = 0;    //current array index
 
         //this is probably the ugliest loop on Earth
-        mainfor:
-        for (int x = 0; x < max_x & rentities.size() > 0; x++) {
+        //TODO: redo completely
+        for (int x = 0; x < maxX && !rentities.isEmpty(); x++) {
             //entities are already sorted by X, so I can totally do this
 
             do {
@@ -116,16 +126,18 @@ public class SquareGridRenderer implements WorldRenderer {
                 try {
                     we = rentities.get(rex);
                     if (we == null) {
-                        REthrower("Found a null entity among the entities in this world.");
+                        LOG.log(Level.WARNING, "Found a null entity among the entities in this world.");
                     }
                 } catch (IndexOutOfBoundsException ex) {
-                    REthrower("We're out of bounds somehow. (size:" + rentities.size() + ", rex:" + rex + ")");
+                    LOG.log(Level.SEVERE, "We''re out of bounds somehow. (size:{0}, rex:{1})", new Object[]{rentities.size(), rex});
+                    throw ex;
                 }
 
                 try {
                     pos = (Coords3D) we.getPos();
                 } catch (NullPointerException ex) {
-                    REthrower("Found an entity with undefined position.");
+                    LOG.log(Level.SEVERE, "Found an entity with an undefined position.");
+                    throw ex;
                 }
 
                 if (Math.floor(pos.getCoords()[0]) == x) {
@@ -133,22 +145,15 @@ public class SquareGridRenderer implements WorldRenderer {
 
                     g.drawImage(
                             i,
-                            (int) (pos.getX() * draww + xoff - i.getWidth(null)/2),
-                            (int) (pos.getY() * drawh + yoff - i.getHeight(null)/2),
+                            (int) (pos.getX() * drawW + xoff - i.getWidth(null)/2),
+                            (int) (pos.getY() * drawH + yoff - i.getHeight(null)/2),
                             (int) (i.getWidth(null) * xscale),
                             (int) (i.getHeight(null) * yscale),
                             null);
                 } else {
-                    continue mainfor;
+                    break;
                 }
             } while (rex < rentities.size());
-
-            break;
         }
-    }
-
-    private void REthrower(String msg) throws RendererException {
-        LOG.log(Level.SEVERE, msg);
-        throw new RendererException(msg);
     }
 }

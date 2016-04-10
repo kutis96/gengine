@@ -2,6 +2,7 @@ package gengine.util;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,8 @@ import java.util.logging.Logger;
  */
 public class KeyValueLoader {
 
+    public KeyValueLoader() {}
+
     private static final Logger LOG = Logger.getLogger(KeyValueLoader.class.getName());
 
     /**
@@ -21,12 +24,12 @@ public class KeyValueLoader {
      *
      * @return a new HashMap with the data.
      *
-     * @throws IOException                thrown on InputStream IOException
-     * @throws UnsupportedFormatException thrown when any of the lines is found
-     *                                    not to match the specified pattern.
+     * @throws IOException thrown on InputStream IOException. it is also thrown
+     *                     when any of the lines is found not to match the
+     *                     specified pattern.
      */
-    public static HashMap<String, String> load(InputStream is) throws IOException, UnsupportedFormatException {
-        HashMap<String, String> data = new HashMap<>();
+    public static Map<String, String> load(InputStream is) throws IOException {
+        Map<String, String> data = new HashMap<>();
 
         load(is, data, ":", true);
 
@@ -45,16 +48,15 @@ public class KeyValueLoader {
      *                       something else. When false, a warning would be
      *                       logged anyway.
      *
-     * @throws IOException                thrown on InputStream IOException
-     * @throws UnsupportedFormatException thrown when any of the lines is found
-     *                                    not to match the specified pattern.
-     * @throws NullPointerException       thrown when the InputStream happens to
-     *                                    be null, separator happens to be null,
-     *                                    the hashmap just so happens to be
-     *                                    null. Basically happens when anything
-     *                                    goes a bit nuts. You know the drill.
+     * @throws IOException          thrown on InputStream IOException or when an
+     *                              unsupported format is detected.
+     * @throws NullPointerException thrown when the InputStream happens to be
+     *                              null, separator happens to be null, the
+     *                              hashmap just so happens to be null.
+     *                              Basically happens when anything goes a bit
+     *                              nuts. You know the drill.
      */
-    public static void load(InputStream is, HashMap<String, String> data, String separator, boolean dieOnOverwrite) throws IOException, UnsupportedFormatException {
+    public static void load(InputStream is, Map<String, String> data, String separator, boolean dieOnOverwrite) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -76,7 +78,7 @@ public class KeyValueLoader {
             int seppos = line.indexOf(separator);   //separator position
 
             if (seppos == -1 || seppos != line.lastIndexOf(separator)) {
-                throw new UnsupportedFormatException("Unrecognized format on line " + linenum + "\n" + line);
+                throw new IOException("Unrecognized format on line " + linenum + "\n" + line);
             }
 
             String key, val;
@@ -96,7 +98,7 @@ public class KeyValueLoader {
                 LOG.log(Level.WARNING, message);
 
                 if (dieOnOverwrite) {
-                    throw new UnsupportedFormatException(message);
+                    throw new IOException(message);
                 }
             }
 

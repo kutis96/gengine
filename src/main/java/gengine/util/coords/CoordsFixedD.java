@@ -56,7 +56,7 @@ public class CoordsFixedD implements Coords {
         if (this.coords != null) {
             return Arrays.copyOf(this.coords, this.dim);
         } else {
-            return null;
+            return new float[]{};
         }
     }
 
@@ -68,9 +68,9 @@ public class CoordsFixedD implements Coords {
                 if (i != 0) {
                     ret += ",\t";
                 }
-                ret += this.coords[i];
+                ret += Float.toString(this.coords[i]);
             }
-            return ret + ")[" + this.dim + "]";
+            return ret + ")[" + Integer.toString(this.dim) + "]";
         } else {
             return "(null)[-1]";
         }

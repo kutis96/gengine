@@ -10,15 +10,15 @@ import java.awt.Image;
 public class AnimatedImage {
 
     private final AnimFrame[] frames;
-    private int current_frame;
-    private long sum_dt;
+    private int currentFrame;
+    private long dtSum;
 
     /**
      * @param frames a bunch of frames to animate
      */
     public AnimatedImage(AnimFrame[] frames) {
         this.frames = frames;
-        this.current_frame = 0;
+        this.currentFrame = 0;
     }
 
     /**
@@ -31,7 +31,7 @@ public class AnimatedImage {
             return null;
         }
 
-        return frames[current_frame].img;
+        return frames[currentFrame].img;
     }
 
     /**
@@ -40,13 +40,13 @@ public class AnimatedImage {
      * @param dt time elapsed since the last update in milliseconds
      */
     public void tick(long dt) {
-        sum_dt += dt;
+        dtSum += dt;
 
-        if (sum_dt >= this.frames[current_frame].dt) {
+        if (dtSum >= this.frames[currentFrame].dt) {
 
-            sum_dt = sum_dt - this.frames[current_frame].dt;
+            dtSum = dtSum - this.frames[currentFrame].dt;
 
-            current_frame = (current_frame + 1) % frames.length;
+            currentFrame = (currentFrame + 1) % frames.length;
         }
     }
 

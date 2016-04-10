@@ -1,7 +1,7 @@
 package gengine.util;
 
 /**
- * An Exception thrown when the worldsize happens to be of an illegal value.
+ * An Exception thrown when a file is found to be of an unsupported format.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */

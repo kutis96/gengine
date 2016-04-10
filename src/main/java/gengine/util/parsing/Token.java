@@ -6,13 +6,13 @@ package gengine.util.parsing;
  */
 public class Token {
 
+    private final int tokenID;
+    private final String sequence;
+
     public Token(int tokenID, String seq) {
         this.tokenID = tokenID;
         this.sequence = seq;
     }
-
-    private final int tokenID;
-    private final String sequence;
 
     public int getTokenID() {
         return tokenID;

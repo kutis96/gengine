@@ -17,10 +17,10 @@ public final class Tileset {
 
     private static final Logger LOG = Logger.getLogger(Tileset.class.getName());
 
-    private final ArrayList<Tile> tileset;
+    private final ArrayList<Tile> tiles;
 
     public Tileset() {
-        this.tileset = new ArrayList<>();
+        this.tiles = new ArrayList<>();
         this.addTile(new NullTile());
     }
 
@@ -34,11 +34,11 @@ public final class Tileset {
      * @throws TilesetIndexException when an invalid index is supplied
      */
     public Tile getTileFromId(int id) throws TilesetIndexException {
-        if (id < 0 || id > this.tileset.size()) {
+        if (id < 0 || id > this.tiles.size()) {
             LOG.log(Level.SEVERE, "Trying to get an invalid index {0}", id);
             throw new TilesetIndexException("Trying to get an invalid index " + id);
         } else {
-            return tileset.get(id);
+            return tiles.get(id);
         }
     }
 
@@ -50,7 +50,7 @@ public final class Tileset {
      * @return ID of the given file. Returns -1 if not found.
      */
     public int getTileID(Tile tile) {
-        return this.tileset.indexOf(tile);
+        return this.tiles.indexOf(tile);
     }
 
     /**
@@ -67,20 +67,21 @@ public final class Tileset {
             throw new TilesetIndexException("Trying to set an invalid index " + id);
         } else {
             try {
-                if (tileset.get(id) != null) {
+                if (tiles.get(id) != null) {
                     LOG.log(Level.FINE, "Overwriting a tile with index {0}", id);
                 }
             } catch (Exception e) {
-                //do nothing
+                //This should in theory never happen, but you know how that usually goes...
+                throw (TilesetIndexException) e;
             }
 
-            tileset.set(id, tile);
+            tiles.set(id, tile);
         }
     }
 
     public int addTile(Tile tile) {
-        this.tileset.add(tile);
-        return this.tileset.lastIndexOf(tile);
+        this.tiles.add(tile);
+        return this.tiles.lastIndexOf(tile);
     }
 
     /**
@@ -96,16 +97,16 @@ public final class Tileset {
         //TODO: figure out the actual format >:/
         //TODO: do the actual loading
         //TODO: have fun
-        return false;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-
+    
     /**
      * Updates all updatable (ie. animated) tiles in the tileset.
      *
      * @param dt delta-tee in milliseconds.
      */
     public void updateAll(long dt) {
-        for (Tile tile : this.tileset) {
+        for (Tile tile : this.tiles) {
             tile.tick(dt);
         }
     }

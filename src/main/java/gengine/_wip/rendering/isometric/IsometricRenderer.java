@@ -1,6 +1,7 @@
 package gengine._wip.rendering.isometric;
 
 import gengine.rendering.*;
+import gengine.rendering.WorldRendererOptions.Flags;
 import gengine.util.coords.Coords2D;
 import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
@@ -9,6 +10,7 @@ import gengine.world.World;
 import gengine.world.tile.TilesetIndexException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,8 +19,8 @@ import java.util.logging.Logger;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class IsometricRenderer implements WorldRenderer {
-    
-    private static final Logger LOG = Logger.getLogger(IsometricRenderer.class.getName());  
+
+    private static final Logger LOG = Logger.getLogger(IsometricRenderer.class.getName());
 
     private final int tilewidth;
 
@@ -47,15 +49,18 @@ public class IsometricRenderer implements WorldRenderer {
      * @param bi    BufferedImage to render onto
      * @param ro    WorldRendererOptions for rendering
      *
-     * @throws WorldTypeMismatchException Thrown when the supplied World happens
-     *                                    to be something other than TileWorld
+     * @throws RendererException Thrown when the supplied World happens to be
+     *                           something other than TileWorld, or on any other
+     *                           occassion. I would've thrown something else
+     *                           here as well, but apparently that's a MAJOR
+     *                           PROBLEM, according to CodeQuality.
      */
     @Override
-    public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws WorldTypeMismatchException, RendererException {
+    public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws RendererException {
         if (world instanceof TiledWorld) {
             this.render((TiledWorld) world, bi, ro);
         } else {
-            throw new WorldTypeMismatchException();
+            throw new RendererException("Invalid World Type Detected!");
         }
     }
 
@@ -101,93 +106,102 @@ public class IsometricRenderer implements WorldRenderer {
         g.setBackground(Color.BLACK);   //blanking
 
         //Size of tiles in pixels, scaled by zoom
-        int tilesize = (int) (this.tilewidth * wrop.zoom);
+        int tilesize = (int) (this.tilewidth * wrop.getZoom());
 
         //Gets the current worldsize
         Coords3D wrldsize = world.getWorldSize();
 
-        //Width and height of the rendered area, in tiles
-        //  this shall be changed accordingly later, based on the tile size and rendered area size
-        int drawheight = (int) wrldsize.getY();
-        int drawwidth = (int) wrldsize.getX();
+        WorldIterator it = new WorldIterator(world.getWorldSize());
 
-//        //Loops orignally used for row scanning, which turned out to be a facepalming failure.
-//          I'll keep this snipped commented out in here anyway, it could come in handy at some point.
-//        for (int r = 0; r < (2 * Math.max(drawheight, drawwidth) - Math.abs(drawheight - drawwidth)) - 1; r++){
-//            for (int h = Math.max(0, r - drawwidth + 1); h <= Math.min(r, drawheight - 1); h++) {
-//                
-//                //Actual X and Y positions of the tiles (in tile coords)
-//                //  this shall be offset later, based on the camera position, tile size, and rendered area size
-//                int x = r - h;
-//                int y = h;                
-//                
-        for (int x = 0; x < world.getWorldSize().getX(); x++) {
-            for (int y = 0; y < world.getWorldSize().getY(); y++) {
-                //Z sweep
-                for (int z = 0; z < wrldsize.getZ(); z++) {
+        while (it.hasNext()) {
+            Coords3D coords = it.next();
 
-                    //ACTUAL DRAWING GOES HERE
-                    Coords3D coords = new Coords3D(x, y, z);
+            try {
+                Tile currentTile = world.getWorldtile(coords);
 
-                    try {
-                        Tile current_tile = world.getWorldtile(coords);
+                if (currentTile != null) {
 
-                        if (current_tile != null) {
+                    Image renderedTile = currentTile.render();
 
-                            Image rendered_tile = current_tile.render();
-                            
-                            if (rendered_tile == null){
-                                continue;
-                            }
-
-                            //Scaling ratio of the tiles.
-                            //  calculated on the horizontal axis
-                            double scaling = tilesize / (double) rendered_tile.getWidth(null);
-
-                            //Converts isometric coordinates into graphic coordinates (aka pixel coordinates on the screen
-                            Coords2D conv = IsometricUtils.convIsom2Graph(
-                                    coords,
-                                    wrop.cameraOffset,
-                                    wrop.cameraPosition,
-                                    tilesize,
-                                    3 * tilesize / 4);
-
-                            //draw image on the rendered surface
-                            g.drawImage(
-                                    //Image to draw
-                                    rendered_tile,
-                                    //position gotten from the converter
-                                    (int) conv.getX(),
-                                    (int) (conv.getY() - rendered_tile.getHeight(null) * scaling),
-                                    tilesize, //Width
-                                    (int) (rendered_tile.getHeight(null) * scaling), //Height
-                                    null //Observer
-                            );
-                        }
-                    } catch (TilesetIndexException ex) {
-                        String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
-                        
-                        LOG.log(Level.WARNING, message);
-                        
-                        if((wrop.flags & WorldRendererOptions.RenderFlags.DIE_ON_MISSING_TILES.getFlagValue()) != 0){
-                            throw new RendererException(message);
-                        }
+                    if (renderedTile == null) {
+                        continue;
                     }
 
-                    //ACTUAL DRAWING ENDS HERE
+                    //Scaling ratio of the tiles.
+                    //  calculated on the horizontal axis
+                    double scaling = tilesize / (double) renderedTile.getWidth(null);
+
+                    //Converts isometric coordinates into graphic coordinates (aka pixel coordinates on the screen
+                    Coords2D conv = IsometricUtils.convIsom2Graph(coords, wrop.getCameraOffset(), wrop.getCameraPosition(),
+                            tilesize,
+                            3 * tilesize / 4);
+
+                    //draw image on the rendered surface
+                    g.drawImage(
+                            //Image to draw
+                            renderedTile,
+                            //position gotten from the converter
+                            (int) conv.getX(),
+                            (int) (conv.getY() - renderedTile.getHeight(null) * scaling),
+                            tilesize, //Width
+                            (int) (renderedTile.getHeight(null) * scaling), //Height
+                            null //Observer
+                    );
+                }
+            } catch (TilesetIndexException ex) {
+                String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
+
+                LOG.log(Level.WARNING, message);
+                LOG.log(Level.INFO, ex.getMessage());
+
+                if (wrop.hasFlag(Flags.DIE_ON_MISSING_TILES)) {
+                    throw (RendererException) (Exception) ex;   //<>< -y
                 }
             }
         }
 
-        Coords2D camaimpos = IsometricUtils.convIsom2Graph(
-                new Coords3D(0, 0, 0),
-                wrop.cameraOffset,
-                wrop.cameraPosition,
+        Coords2D camaimpos = IsometricUtils.convIsom2Graph(new Coords3D(0, 0, 0), wrop.getCameraOffset(), wrop.getCameraPosition(),
                 tilesize,
                 3 * tilesize / 4);
 
         g.drawRect((int) camaimpos.getX(), (int) camaimpos.getY(), -tilesize, -tilesize / 2);
 
         g.dispose();
+    }
+
+    private static class WorldIterator implements Iterator {
+
+        private final int[] max;
+        private final int[] counters;
+
+        public WorldIterator(Coords3D worldsize) {
+            this.max = new int[]{(int) worldsize.getX(), (int) worldsize.getY(), (int) worldsize.getZ()};
+            this.counters = new int[]{0, 0, 0};
+        }
+
+        @Override
+        public boolean hasNext() {
+            for (int i = 0; i < 3; i++) {
+                if (this.counters != max) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public Coords3D next() {
+
+            for (int i = 0; i < 3; i++) {
+                if (counters[i] < max[i]) {
+                    counters[i]++;
+                    break;
+                } else {
+                    counters[i] = 0;
+                }
+            }
+
+            return new Coords3D(counters[0], counters[1], counters[2]);
+        }
     }
 }
