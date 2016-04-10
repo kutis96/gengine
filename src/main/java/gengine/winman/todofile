@@ -3,4 +3,4 @@ TODO:
     + usable for various menus and generic windowy stuff
     * add some way to move windows around and catch their events
         + each window could have its own controller
-    - may just as well use AWT's own one instead
+    - may just as well use AWT's own one instead (boring)

@@ -7,6 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * A set of tiles used within the TiledWorld. Stores all displayed tiles and
+ * provides a nice way of updating all of them. This has been done mostly for
+ * performance reasons.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */

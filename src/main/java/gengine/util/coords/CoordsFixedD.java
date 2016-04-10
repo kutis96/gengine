@@ -31,14 +31,6 @@ public class CoordsFixedD implements Coords {
         }
     }
 
-    /**
-     * @return 
-     * @deprecated 
-     */
-    public float[] getRaw() {
-        return coords;
-    }
-
     public void sanityCheck() throws DimMismatchException {
         if (this.coords == null) {
             throw new DimMismatchException("Can't live with a null coordinate array. Life is hard.");

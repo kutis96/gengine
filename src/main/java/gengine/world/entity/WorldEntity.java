@@ -1,7 +1,7 @@
 package gengine.world.entity;
 
-import gengine.ctrls.Controller;
-import gengine.ctrls.events.Event;
+import gengine.events.EventListener;
+import gengine.events.Event;
 import gengine.iwishjavahadtraits.*;
 import gengine.util.coords.*;
 import gengine.world.World;
@@ -11,11 +11,11 @@ import java.util.ArrayList;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldEntity implements Positionable, Renderable, Controllable {
+public abstract class WorldEntity implements Positionable, Renderable, HasListeners {
 
     private Coords3D pos;
 
-    private ArrayList<Controller> controllers;
+    private ArrayList<EventListener> listeners;
 
     /**
      * Gets the WorldEntity's position
@@ -50,18 +50,18 @@ public abstract class WorldEntity implements Positionable, Renderable, Controlla
     public abstract void tick(World w, long dt);
 
     @Override
-    public void attachController(Controller c) {
-        this.controllers.add(c);
+    public void attachListener(EventListener c) {
+        this.listeners.add(c);
     }
 
     @Override
-    public void clearControllers() {
-        this.controllers.clear();
+    public void clearListeners() {
+        this.listeners.clear();
     }
 
     @Override
     public void dispatchEvent(Event e) {
-        for(Controller c : this.controllers){
+        for(EventListener c : this.listeners){
             c.dispatchEvent(e);
         }
     }

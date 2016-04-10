@@ -1,4 +1,4 @@
-package gengine.rendering.isometric;
+package gengine._wip.rendering.isometric;
 
 import gengine.rendering.*;
 import gengine.util.coords.Coords2D;

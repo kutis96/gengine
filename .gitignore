@@ -9,7 +9,5 @@
 
 # used by NetBeans to store stuff like the Main class to run and stuff. Could be re-added at some point in time.
 nbactions.xml
-/src/main/java/gengine/ctrls/
-/src/main/java/gengine/winman/
 /src/main/java/gengine/util/AdvancedKeyValueLoader.java
 /src/main/java/gengine/world/tile/TilesetLoader.java

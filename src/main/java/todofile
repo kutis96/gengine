@@ -9,3 +9,4 @@ TODO:
     - Add some menus etc.
 
 Done:
+    - Add entity handling and rendering [only in square grid so far]

@@ -1,8 +1,6 @@
 package gengine.world.tile;
 
 import gengine.iwishjavahadtraits.Renderable;
-import gengine.util.coords.Coords3D;
-import gengine.world.TiledWorld;
 
 /**
  * Tile, used in TileWorlds to create the static environment out of.
@@ -14,7 +12,8 @@ public abstract class Tile implements Renderable {
     private boolean isWall;
 
     /**
-     * Checks whether this tile is a wall or not.
+     * Checks whether this tile is a wall or not. To be used with various
+     * pathfinding algorithms.
      *
      * @return true when it is a wall, false if not.
      */
@@ -35,7 +34,7 @@ public abstract class Tile implements Renderable {
     /**
      * Tick, used for various animations
      *
-     * @param dt      Delta-tee in milliseconds
+     * @param dt Delta-tee in milliseconds
      */
     public abstract void tick(long dt);
 }
