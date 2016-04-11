@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * A class for rendering of square/rectangular grid worlds.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -34,9 +35,9 @@ public class SquareGridRenderer implements WorldRenderer {
         this(tilesize, tilesize);
     }
 
-    public SquareGridRenderer(int tw, int th) {
-        this.tileheight = th;
-        this.tilewidth = tw;
+    public SquareGridRenderer(int tilewidth, int tileheight) {
+        this.tileheight = tileheight;
+        this.tilewidth = tilewidth;
     }
 
     @Override
@@ -49,111 +50,115 @@ public class SquareGridRenderer implements WorldRenderer {
     }
 
     private void render(TiledWorld tw, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
-        int drawH = (int) (this.tileheight * wrop.getZoom());
-        int drawW = (int) (this.tilewidth * wrop.getZoom());
-
-        int maxX = (int) tw.getWorldSize().getX();
-        int maxY = (int) tw.getWorldSize().getY();
+        //  TODO: Further code cleanup
+        //      - probably for this thing off to a completely different class
+        //        and parametrize everything, also use some functions for coordinate conversion
+        //        and aaaaah!        
         
-        float xscale = (float) this.tileheight/drawH;
-        float yscale = (float) this.tileheight/drawH;
+        //scaled pixel Height and Width of the tiles
+        int scaledHeight = (int) (this.tileheight * wrop.getZoom());
+        int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
 
-        int xoff = (int) (wrop.getCameraPosition().getX() * drawW + wrop.getCameraOffset().getX() + (surface.getWidth() - maxX * this.tilewidth) / 2);
-        int yoff = (int) (wrop.getCameraPosition().getY() * drawH + wrop.getCameraOffset().getY() + (surface.getHeight() - maxY * this.tileheight) / 2);
+        //pixel offsets of the visible area
+        int xoff = (int) (wrop.getCameraPosition().getX() * scaledWidth
+                + wrop.getCameraOffset().getX());
+        int yoff = (int) (wrop.getCameraPosition().getY() * scaledHeight
+                + wrop.getCameraOffset().getY());
 
-        Graphics2D g = surface.createGraphics();
+        //WORLD (tile) coordinates specifying the drawn boundaries
+        Coords3D upperVisibleBound;
+        Coords3D lowerVisibleBound;
 
+        //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES 
+        {
+            lowerVisibleBound = new Coords3D(
+                    xoff / scaledWidth,
+                    0,
+                    yoff / scaledHeight
+            );
+
+            upperVisibleBound = new Coords3D(
+                    (surface.getWidth() + xoff) / scaledWidth,
+                    0,
+                    (surface.getHeight() + yoff) / scaledHeight
+            );
+
+        }   //END OF PIXEL TO WORLD BOUNDARY CONVERSION
+
+        Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
 
-        //Tile rendering
-        for (int x = 0; x < maxX; x++) {
-            for (int y = 0; y < maxY; y++) {
-                try {
-                    Tile t = tw.getWorldtile(new Coords3D(x, y, 0));
-                    Image i = t.render();
+        {   //TILE RENDERING
+            for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
+                for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
+                    try {
+                        Tile t = tw.getWorldtile(new Coords3D(x, y, 0));
+                        Image i = t.render();
 
-                    if (i == null) {
-                        continue;
-                    }
+                        if (i == null) {
+                            //tiles that don't render should be simply skipped
+                            //  - this is possibly asking for a major clusterfudge sooner or later
 
-                    g.drawImage(
-                            i,
-                            x * drawW + xoff,
-                            y * drawH + yoff,
-                            drawW,
-                            drawH,
-                            null);
+                            continue;
+                        }
 
-                } catch (TilesetIndexException ex) {
-                    String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
+                        g2d.drawImage(
+                                i,
+                                x * scaledWidth + xoff, //xpos
+                                y * scaledHeight + yoff, //ypos
+                                scaledWidth, //width
+                                scaledHeight, //height
+                                null);
 
-                    LOG.log(Level.WARNING, message);
+                    } catch (TilesetIndexException ex) {
+                        String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
 
-                    if (wrop.hasFlag(Flags.DIE_ON_MISSING_TILES)) {
-                        throw new RendererException(message);
+                        LOG.log(Level.WARNING, message);
+
+                        if (wrop.hasFlag(Flags.DIE_ON_MISSING_TILES)) {
+                            throw (RendererException) (Exception) ex;
+                        }
                     }
                 }
             }
-        }
-        
-        
-        ////////////////////////////////////////////////////////////////////////
-        //Entity rendering
-        //
-        //  TODO: This thing is probably totally broken.
-        //  TODO: Rewrite completely.
-        //
-        
-        ArrayList<WorldEntity> rentities = new ArrayList<>();
+        }   //END OF TILE RENDERING
 
-        rentities.addAll(Arrays.asList(tw.getEntities()));
+        { //ENTITY RENDERING
+            
+            List<WorldEntity> renderedEntities = new ArrayList<>();
 
-        //sort entities by X for rendering
-        Collections.sort(rentities, new SquareGridUtils.EntityXYZComparator(
-                SquareGridUtils.Direction.X)
-        );
-
-        int rex = 0;    //current array index
-
-        //this is probably the ugliest loop on Earth
-        //TODO: redo completely
-        for (int x = 0; x < maxX && !rentities.isEmpty(); x++) {
-            //entities are already sorted by X, so I can totally do this
-
-            do {
-                WorldEntity we = null;
-                Coords3D pos = null;
-                try {
-                    we = rentities.get(rex);
-                    if (we == null) {
-                        LOG.log(Level.WARNING, "Found a null entity among the entities in this world.");
-                    }
-                } catch (IndexOutOfBoundsException ex) {
-                    LOG.log(Level.SEVERE, "We''re out of bounds somehow. (size:{0}, rex:{1})", new Object[]{rentities.size(), rex});
-                    throw ex;
+            //Fill the renderedEntities list with entities that are visible
+            for (WorldEntity we : tw.getEntities()) {
+                if (SquareGridUtils.isWithinIgnoringZ(
+                        (Coords3D) we.getPos(),
+                        lowerVisibleBound,
+                        upperVisibleBound)) {
+                    renderedEntities.add(we);
                 }
+            }
 
-                try {
-                    pos = (Coords3D) we.getPos();
-                } catch (NullPointerException ex) {
-                    LOG.log(Level.SEVERE, "Found an entity with an undefined position.");
-                    throw ex;
-                }
+            //sort entities by Z (depth) and then by Y (vertical axis) for rendering
+            Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
 
-                if (Math.floor(pos.getCoords()[0]) == x) {
-                    Image i = rentities.get(rex++).render();
+            for (WorldEntity we : renderedEntities) {
 
-                    g.drawImage(
-                            i,
-                            (int) (pos.getX() * drawW + xoff - i.getWidth(null)/2),
-                            (int) (pos.getY() * drawH + yoff - i.getHeight(null)/2),
-                            (int) (i.getWidth(null) * xscale),
-                            (int) (i.getHeight(null) * yscale),
-                            null);
-                } else {
-                    break;
-                }
-            } while (rex < rentities.size());
-        }
+                we.render();
+
+                Image i = we.render();
+
+                Coords3D pos = (Coords3D) we.getPos();
+
+                //draw the entity as it's already sorted and thus positioned correctly
+                // assuming the for loop is indeed sequential, which it better should be
+                g2d.drawImage(
+                        i,
+                        (int) (pos.getX() * scaledWidth + xoff - i.getWidth(null) / 2),
+                        (int) (pos.getY() * scaledHeight + yoff - i.getHeight(null) / 2),
+                        (int) (i.getWidth(null) * wrop.getZoom()),
+                        (int) (i.getHeight(null) * wrop.getZoom()),
+                        null);
+            }
+            
+        }   // END OF ENTITY RENDERING
     }
 }

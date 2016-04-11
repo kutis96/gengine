@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  */
 public class TokenInfo {
 
-    private final Pattern pattern;
+    private final Pattern pattern;                  
     private final int tokenID;
 
     public TokenInfo(Pattern regex, int tokenID) {

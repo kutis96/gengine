@@ -13,7 +13,8 @@ import java.util.logging.Logger;
  */
 public class KeyValueLoader {
 
-    public KeyValueLoader() {}
+    public KeyValueLoader() {
+    }
 
     private static final Logger LOG = Logger.getLogger(KeyValueLoader.class.getName());
 
@@ -24,11 +25,11 @@ public class KeyValueLoader {
      *
      * @return a new HashMap with the data.
      *
-     * @throws IOException thrown on InputStream IOException. it is also thrown
-     *                     when any of the lines is found not to match the
-     *                     specified pattern.
+     * @throws IOException                thrown on InputStream IOException.
+     * @throws UnsupportedFormatException thrown when any of the lines is found
+     *                                    not to match the specified pattern.
      */
-    public static Map<String, String> load(InputStream is) throws IOException {
+    public static Map<String, String> load(InputStream is) throws IOException, UnsupportedFormatException {
         Map<String, String> data = new HashMap<>();
 
         load(is, data, ":", true);
@@ -48,15 +49,16 @@ public class KeyValueLoader {
      *                       something else. When false, a warning would be
      *                       logged anyway.
      *
-     * @throws IOException          thrown on InputStream IOException or when an
-     *                              unsupported format is detected.
-     * @throws NullPointerException thrown when the InputStream happens to be
-     *                              null, separator happens to be null, the
-     *                              hashmap just so happens to be null.
-     *                              Basically happens when anything goes a bit
-     *                              nuts. You know the drill.
+     * @throws IOException                thrown on InputStream IOException
+     * @throws UnsupportedFormatException thrown when an unsupported format is
+     *                                    detected.
+     * @throws NullPointerException       thrown when the InputStream happens to
+     *                                    be null, separator happens to be null,
+     *                                    the hashmap just so happens to be
+     *                                    null. Basically happens when anything
+     *                                    goes a bit nuts. You know the drill.
      */
-    public static void load(InputStream is, Map<String, String> data, String separator, boolean dieOnOverwrite) throws IOException {
+    public static void load(InputStream is, Map<String, String> data, String separator, boolean dieOnOverwrite) throws IOException, UnsupportedFormatException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
