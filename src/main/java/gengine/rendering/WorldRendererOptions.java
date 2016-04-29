@@ -13,7 +13,7 @@ public class WorldRendererOptions {
 
     private Coords3D cameraPosition = new Coords3D();
 
-    private double zoom = 1;
+    private double zoom = 0.5;
 
     private long fl = Flags.DIE_ON_MISSING_TILES.getFlagValue();
     

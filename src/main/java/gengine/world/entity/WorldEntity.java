@@ -1,21 +1,20 @@
 package gengine.world.entity;
 
-import gengine.events.EventListener;
-import gengine.events.Event;
-import gengine.iwishjavahadtraits.*;
+import gengine.util.interfaces.Renderable;
+import gengine.util.interfaces.Positionable;
 import gengine.util.coords.*;
 import gengine.world.World;
-import java.util.ArrayList;
 
 /**
+ * WorldEntity is meant to be a generic container for any moving or otherwise
+ * interesting parts of a World. Basically, anything in a World that isn't a
+ * Tile should be WorldEntity. And Tiles are meant to be the static things!
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldEntity implements Positionable, Renderable, HasListeners {
+public abstract class WorldEntity implements Positionable, Renderable {
 
     private Coords3D pos;
-
-    private ArrayList<EventListener> listeners;
 
     /**
      * Gets the WorldEntity's position
@@ -28,10 +27,25 @@ public abstract class WorldEntity implements Positionable, Renderable, HasListen
     }
 
     /**
-     * Sets the WorldEntity's new position
+     * Returns the current WorldEntity's state it happens to be in. Example
+     * states: EN_ROUTE, IDLE, ATTACKING, etc.
      *
-     * @param pos
-     * @throws gengine.util.coords.DimMismatchException
+     * @return
+     */
+    public abstract int getState();
+
+    /**
+     * Should reset the entity's state to something reasonable.
+     */
+    public abstract void resetState();
+
+    /**
+     * Sets the WorldEntity's new position.
+     *
+     * @param pos new position
+     *
+     * @throws DimMismatchException thrown when the dimensions don't mach the
+     *                              required dimensions (3).
      */
     @Override
     public void setPos(Coords pos) throws DimMismatchException {
@@ -42,27 +56,28 @@ public abstract class WorldEntity implements Positionable, Renderable, HasListen
     }
 
     /**
+     * Advance the WorldEntity's position by a given offset. This could be handy
+     * for animations or incremental stuff without a need to get and set the
+     * position at the same time elsewhere in the code to do the same thing.
+     *
+     *
+     * @param pos
+     *
+     * @throws DimMismatchException
+     */
+    public void advancePos(Coords pos) throws DimMismatchException {
+        if (pos == null || pos.getDimensions() != 3) {
+            throw new DimMismatchException();
+        }
+        this.pos.add((CoordsFixedD) pos);
+    }
+
+    /**
      * Ticks (updates) the entity.
      *
      * @param w  The world this entity resides in.
      * @param dt Delta-tee in milliseconds (time since the last update).
      */
     public abstract void tick(World w, long dt);
-
-    @Override
-    public void attachListener(EventListener c) {
-        this.listeners.add(c);
-    }
-
-    @Override
-    public void clearListeners() {
-        this.listeners.clear();
-    }
-
-    @Override
-    public void dispatchEvent(Event e) {
-        for(EventListener c : this.listeners){
-            c.dispatchEvent(e);
-        }
-    }
+    
 }

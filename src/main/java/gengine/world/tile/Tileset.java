@@ -3,6 +3,7 @@ package gengine.world.tile;
 import gengine.world.tile.tiles.NullTile;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,13 +67,23 @@ public final class Tileset {
             LOG.log(Level.SEVERE, "Trying to set an invalid index {0}", id);
             throw new TilesetIndexException("Trying to set an invalid index " + id);
         } else {
+
+            //A bodge added here to ensure "any" positive ID can be used
+            if (id >= tiles.size()) {
+                //tiles.ensureCapacity(id + 1);
+                //^that actually didn't work! >:C
+
+                tiles.addAll(Arrays.asList(new NullTile[id - tiles.size() + 1]));
+            }
+
             try {
                 if (tiles.get(id) != null) {
                     LOG.log(Level.FINE, "Overwriting a tile with index {0}", id);
                 }
+
             } catch (Exception e) {
                 //This should in theory never happen, but you know how that usually goes...
-                throw (TilesetIndexException) e;
+                throw e;
             }
 
             tiles.set(id, tile);
@@ -92,6 +103,8 @@ public final class Tileset {
      * @param f FileInputStream to load a Tileset from.
      *
      * @return true on success, false on failure
+     *
+     * @deprecated
      */
     public boolean loadTileSet(FileInputStream f) {
         //TODO: figure out the actual format >:/
@@ -99,7 +112,7 @@ public final class Tileset {
         //TODO: have fun
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
     /**
      * Updates all updatable (ie. animated) tiles in the tileset.
      *
@@ -107,7 +120,18 @@ public final class Tileset {
      */
     public void updateAll(long dt) {
         for (Tile tile : this.tiles) {
-            tile.tick(dt);
+            if (tile != null) {
+                tile.tick(dt);
+            }
         }
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for (int id = 0; id < this.tiles.size(); id++) {
+            s += id + "\t" + this.tiles.get(id) + "\n";
+        }
+        return s;
     }
 }

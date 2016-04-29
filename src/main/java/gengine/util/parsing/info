@@ -1,0 +1,29 @@
+-.util.parsing
+
+Actually just a comment on a whole bunch of stuff.
+--------------------------------------------------------------------------------
+                                                                    29. 4. 2016
+This package isn't used by anything at all so far.
+It was originally intended to aid some more sophisticated
+    file loading and so on, but I've decided I'm somewhat running out of time,
+    so I just left it there for anyone else to pick up.
+
+--- more talky stuff beyond this line ---
+
+I've actually forked this from my previous project where I used this for random
+    tokenization for this one Forth-like language interpreter.
+
+I have also originally intended to add some scripting engine to this game engine
+    as well, to somewhat surpass the original requirements and make it possible
+    to write games without coding any Java in there. Sure, one could just as
+    well create a whole sh*tload of generic rogue classes and stuff like that,
+    but that just doesn't seem as elegant. OR USE A FACTORY FOR THAT, YAY.
+
+I could have used my F-Like scripting engine already and modified it for
+    the use of this, but the thing is, nobody knows any Forth these days
+    and seeing any RPN makes most go 'what the f... is this sh..?!' it seems.
+    Besides, doing any objecty stuff in F-Like would be rather nuts.
+
+Another possibility would also be adding in some random JavaScript engine;
+    there's one already built into most JRE installations. It seems to be rather
+    nice, actually. But what's the fun in just using that, eh?

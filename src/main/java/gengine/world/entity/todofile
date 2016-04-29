@@ -5,7 +5,7 @@ TODO:
    etc.
 
 
-Expected events:
+Events that I thought would be somewhat nice to have:
 - onMouseClick(mpos)
 - onMouseHover(mpos)
 - onMouseDrag(mpos-offset, mpos-newpos)
@@ -16,3 +16,10 @@ Expected events:
 extended for NPCentity:
 - onTradeRequest(perpetrator)
 - onWorldChange(tileschanged[]) --possibly silly, could be useful for follower bots, so they know some doors have opened/closed without needing to update their paths 24/7
+
+^those should be actually in their own event receivers the WorldEntities should implement themselves
+
+REAL TODO:
+ - add some common fields, such as health and stuff. More of those for the player and NPCs and rogues, of course.
+ - maybe also add some random 'message boxes' for some entities, so that they could generate events too, which would be collected
+   and distributed by something else

@@ -54,7 +54,7 @@ public class SquareGridRenderer implements WorldRenderer {
         //      - probably for this thing off to a completely different class
         //        and parametrize everything, also use some functions for coordinate conversion
         //        and aaaaah!        
-        
+
         //scaled pixel Height and Width of the tiles
         int scaledHeight = (int) (this.tileheight * wrop.getZoom());
         int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
@@ -72,15 +72,15 @@ public class SquareGridRenderer implements WorldRenderer {
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES 
         {
             lowerVisibleBound = new Coords3D(
-                    xoff / scaledWidth,
-                    0,
-                    yoff / scaledHeight
+                    Math.max(0, xoff / scaledWidth),
+                    Math.max(0, yoff / scaledHeight),
+                    0
             );
 
             upperVisibleBound = new Coords3D(
-                    (surface.getWidth() + xoff) / scaledWidth,
-                    0,
-                    (surface.getHeight() + yoff) / scaledHeight
+                    Math.min(tw.getWorldSize().getX() - 1, (surface.getWidth() + xoff) / scaledWidth),
+                    Math.min(tw.getWorldSize().getY() - 1, (surface.getHeight() + yoff) / scaledHeight),
+                    0
             );
 
         }   //END OF PIXEL TO WORLD BOUNDARY CONVERSION
@@ -88,7 +88,8 @@ public class SquareGridRenderer implements WorldRenderer {
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
 
-        {   //TILE RENDERING
+        synchronized (tw) {   //TILE RENDERING
+
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
                     try {
@@ -98,14 +99,13 @@ public class SquareGridRenderer implements WorldRenderer {
                         if (i == null) {
                             //tiles that don't render should be simply skipped
                             //  - this is possibly asking for a major clusterfudge sooner or later
-
                             continue;
                         }
 
                         g2d.drawImage(
                                 i,
-                                x * scaledWidth + xoff, //xpos
-                                y * scaledHeight + yoff, //ypos
+                                (x * scaledWidth) + xoff, //xpos
+                                (y * scaledHeight) + yoff, //ypos
                                 scaledWidth, //width
                                 scaledHeight, //height
                                 null);
@@ -124,17 +124,20 @@ public class SquareGridRenderer implements WorldRenderer {
         }   //END OF TILE RENDERING
 
         { //ENTITY RENDERING
-            
             List<WorldEntity> renderedEntities = new ArrayList<>();
 
-            //Fill the renderedEntities list with entities that are visible
-            for (WorldEntity we : tw.getEntities()) {
-                if (SquareGridUtils.isWithinIgnoringZ(
-                        (Coords3D) we.getPos(),
-                        lowerVisibleBound,
-                        upperVisibleBound)) {
-                    renderedEntities.add(we);
+            synchronized (tw) {
+
+                //Fill the renderedEntities list with entities that are visible
+                for (WorldEntity we : tw.getEntities()) {
+                    if (SquareGridUtils.isWithinIgnoringZ(
+                            (Coords3D) we.getPos(),
+                            lowerVisibleBound,
+                            upperVisibleBound)) {
+                        renderedEntities.add(we);
+                    }
                 }
+
             }
 
             //sort entities by Z (depth) and then by Y (vertical axis) for rendering
@@ -158,7 +161,7 @@ public class SquareGridRenderer implements WorldRenderer {
                         (int) (i.getHeight(null) * wrop.getZoom()),
                         null);
             }
-            
+
         }   // END OF ENTITY RENDERING
     }
 }

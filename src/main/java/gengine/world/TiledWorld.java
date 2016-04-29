@@ -4,6 +4,7 @@ import gengine.util.coords.Coords3D;
 import gengine.world.entity.WorldEntity;
 import gengine.world.tile.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public class TiledWorld implements World {
     //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
     private final int[][][] tileIDmap;
     private final Tileset tileset;
-    private ArrayList<WorldEntity> entities;
+    private final List<WorldEntity> entities;
 
     /**
      * Maximum allowed amount of tiles. Mostly pointless.
@@ -59,6 +60,7 @@ public class TiledWorld implements World {
      * @param pos
      *
      * @return tile on the given position
+     * @throws TilesetIndexException This exception can be thrown when
      */
     public Tile getWorldtile(Coords3D pos) throws TilesetIndexException {
         return this.tileset.getTileFromId(
@@ -132,12 +134,16 @@ public class TiledWorld implements World {
 
     @Override
     public void addEntity(WorldEntity entity) {
-        this.entities.add(entity);
+        synchronized(this.entities){
+            this.entities.add(entity);
+        }
     }
 
     @Override
     public WorldEntity[] getEntities() {
-        return this.entities.toArray(new WorldEntity[this.entities.size()]);
+        synchronized(this.entities){
+            return this.entities.toArray(new WorldEntity[this.entities.size()]);
+        }
     }
     
     public Tileset getTileSet(){

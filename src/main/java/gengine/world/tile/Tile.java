@@ -1,6 +1,6 @@
 package gengine.world.tile;
 
-import gengine.iwishjavahadtraits.Renderable;
+import gengine.util.interfaces.Renderable;
 
 /**
  * Tile, used in TileWorlds to create the static environment out of.
