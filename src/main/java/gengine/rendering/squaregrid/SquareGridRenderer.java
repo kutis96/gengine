@@ -3,6 +3,7 @@ package gengine.rendering.squaregrid;
 import gengine.rendering.*;
 import gengine.rendering.WorldRendererOptions.Flags;
 import gengine.util.coords.Coords3D;
+import gengine.util.coords.ValueException;
 import gengine.world.TiledWorld;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
@@ -16,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A class for rendering of square/rectangular grid worlds.
+ * A renderer for square/rectangular grid worlds. This was the easiest one to
+ * implement.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -27,14 +29,31 @@ public class SquareGridRenderer implements WorldRenderer {
     private final int tilewidth;
     private final int tileheight;
 
+    /**
+     * Constructs this SquareGridRenderer to use some generic tile size.
+     * Defaults to 64x64px square tiles.
+     */
     public SquareGridRenderer() {
-        this(60, 60);
+        this(64, 64);
     }
 
+    /**
+     * Construct the SquareGridRenderer to use square tiles of the specified
+     * dimensions in pixels.
+     *
+     * @param tilesize
+     */
     public SquareGridRenderer(int tilesize) {
         this(tilesize, tilesize);
     }
 
+    /**
+     * Construct the SquareGridRenderer to use the specified tile dimensions in
+     * pixels as the base.
+     *
+     * @param tilewidth
+     * @param tileheight
+     */
     public SquareGridRenderer(int tilewidth, int tileheight) {
         this.tileheight = tileheight;
         this.tilewidth = tilewidth;
@@ -43,13 +62,20 @@ public class SquareGridRenderer implements WorldRenderer {
     @Override
     public void render(World world, BufferedImage surface, WorldRendererOptions wropt) throws RendererException {
         if (world instanceof TiledWorld) {
-            this.render((TiledWorld) world, surface, wropt);
+            try {
+                this.render((TiledWorld) world, surface, wropt);
+            } catch (ValueException ex) {
+                String msg = "Found a ValueException inside the renderer somewhere.";
+                LOG.log(Level.SEVERE, msg, ex);
+                throw new RendererException(msg);
+            }
         } else {
-            throw new RendererException("Invalid World Type Detected");
+            LOG.severe("Invalid World Type detected!");
+            throw new RendererException("Invalid World Type detected");
         }
     }
 
-    private void render(TiledWorld tw, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
+    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException, ValueException {
         //  TODO: Further code cleanup
         //      - probably for this thing off to a completely different class
         //        and parametrize everything, also use some functions for coordinate conversion
@@ -78,8 +104,8 @@ public class SquareGridRenderer implements WorldRenderer {
             );
 
             upperVisibleBound = new Coords3D(
-                    Math.min(tw.getWorldSize().getX() - 1, (surface.getWidth() + xoff) / scaledWidth),
-                    Math.min(tw.getWorldSize().getY() - 1, (surface.getHeight() + yoff) / scaledHeight),
+                    Math.min(world.getWorldSize().getX() - 1, (surface.getWidth() + xoff) / scaledWidth),
+                    Math.min(world.getWorldSize().getY() - 1, (surface.getHeight() + yoff) / scaledHeight),
                     0
             );
 
@@ -88,12 +114,12 @@ public class SquareGridRenderer implements WorldRenderer {
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
 
-        synchronized (tw) {   //TILE RENDERING
+        synchronized (world) {   //TILE RENDERING
 
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
                     try {
-                        Tile t = tw.getWorldtile(new Coords3D(x, y, 0));
+                        Tile t = world.getWorldtile(new Coords3D(x, y, 0));
                         Image i = t.render();
 
                         if (i == null) {
@@ -126,12 +152,12 @@ public class SquareGridRenderer implements WorldRenderer {
         { //ENTITY RENDERING
             List<WorldEntity> renderedEntities = new ArrayList<>();
 
-            synchronized (tw) {
+            synchronized (world) {
 
                 //Fill the renderedEntities list with entities that are visible
-                for (WorldEntity we : tw.getEntities()) {
+                for (WorldEntity we : world.getEntities()) {
                     if (SquareGridUtils.isWithinIgnoringZ(
-                            (Coords3D) we.getPos(),
+                            we.getPos(),
                             lowerVisibleBound,
                             upperVisibleBound)) {
                         renderedEntities.add(we);
@@ -141,17 +167,22 @@ public class SquareGridRenderer implements WorldRenderer {
             }
 
             //sort entities by Z (depth) and then by Y (vertical axis) for rendering
-            Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
-
+            //Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
             for (WorldEntity we : renderedEntities) {
 
                 we.render();
 
                 Image i = we.render();
 
-                Coords3D pos = (Coords3D) we.getPos();
+                if (i == null) {
+                    LOG.log(Level.WARNING, "Missing entity rendering ({0})", we.toString());
+                    continue;
+                }
 
-                //draw the entity as it's already sorted and thus positioned correctly
+                Coords3D pos = we.getPos();
+
+                //draw the entities as the renderedEntities list is already sorted
+                // and thus everything is positioned correctly
                 // assuming the for loop is indeed sequential, which it better should be
                 g2d.drawImage(
                         i,

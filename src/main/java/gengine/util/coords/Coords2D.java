@@ -15,12 +15,15 @@ public class Coords2D extends CoordsFixedD {
      */
     public Coords2D() {
         super(2);
-        
+
         try {
             this.setCoords(new float[]{0, 0});
         } catch (DimMismatchException ex) {
             //This should actually never happen
             Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ValueException ex) {
+            //This should actually never happen
+            Logger.getLogger(Coords2D.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -29,10 +32,12 @@ public class Coords2D extends CoordsFixedD {
      *
      * @param x default x-coordinate
      * @param y default y-coordinate
+     *
+     * @throws ValueException
      */
-    public Coords2D(float x, float y) {
+    public Coords2D(float x, float y) throws ValueException {
         super(2);
-        
+
         try {
             this.setCoords(new float[]{x, y});
         } catch (DimMismatchException ex) {

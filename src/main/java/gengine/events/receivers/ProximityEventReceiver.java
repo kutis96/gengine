@@ -13,8 +13,9 @@ public interface ProximityEventReceiver {
      * radius specified by the getProxDistance call.
      *
      * @param closeEntity An entity that seems to be close.
+     * @param distance Distance of the entity that's close
      */
-    public void onProxEvent(WorldEntity closeEntity);
+    public void onProxEvent(WorldEntity closeEntity, float distance);
 
     /**
      * Called by the event generator to figure out what on earth is meant to be

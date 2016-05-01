@@ -6,8 +6,9 @@ package gengine.util.coords;
  */
 public class CoordUtils {
 
-    public CoordUtils(){}
-    
+    public CoordUtils() {
+    }
+
     /**
      * Checks whether a coordinate is inside a bounding box given by the other
      * two coordinates. This assumes box edges being parallel with the base
@@ -27,19 +28,34 @@ public class CoordUtils {
         if (ct.getDimensions() != c1.getDimensions() && c1.getDimensions() != c2.getDimensions()) {
             throw new DimMismatchException();   //TODO: add an appropriate message at some point in time
         }
-        
-        for(int i = 0; i < ct.getDimensions(); i++){
+
+        for (int i = 0; i < ct.getDimensions(); i++) {
             float t = ct.getCoords()[i];
             float t1 = c1.getCoords()[i];
             float t2 = c2.getCoords()[i];
-            
-            if(t > t1 && t < t2){
+
+            if (t > t1 && t < t2) {
                 continue;
-            }else{
+            } else {
                 return false;
             }
         }
-        
+
         return true;
+    }
+
+    public static void validityCheck(float[] values) throws ValueException {
+        if(values == null){
+            throw new ValueException("Null array");
+        }
+        
+        for(float f : values){
+            if(f == Float.NaN){
+                throw new ValueException("NaNs not allowed.");
+            }
+            if(f == Float.NEGATIVE_INFINITY || f == Float.POSITIVE_INFINITY){
+                throw new ValueException("Infinities are bad for your health.");
+            }
+        }
     }
 }

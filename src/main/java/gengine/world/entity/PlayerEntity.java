@@ -1,7 +1,6 @@
 package gengine.world.entity;
 
 import gengine.util.coords.Coords3D;
-import gengine.world.World;
 import java.awt.Image;
 
 /**
@@ -10,10 +9,12 @@ import java.awt.Image;
  */
 public abstract class PlayerEntity extends NPCEntity {
     
+    //TODO: EVERYTHING
+    
     public abstract void move(Coords3D pos);
     
     @Override
-    public abstract void tick(World w, long dt);
+    public abstract void tick(long dt);
 
     @Override
     public abstract Image render();

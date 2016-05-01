@@ -1,6 +1,7 @@
 package gengine.world;
 
 import gengine.util.coords.Coords3D;
+import gengine.util.coords.ValueException;
 import gengine.world.entity.WorldEntity;
 import gengine.world.tile.*;
 import java.util.ArrayList;
@@ -105,15 +106,20 @@ public class TiledWorld implements World {
      */
     @Override
     public Coords3D getWorldSize() {
-        if (this.tileIDmap == null) {
+        try {
+            if (this.tileIDmap == null) {
+                return null;
+            }
+            
+            return new Coords3D(
+                    this.tileIDmap.length, //X
+                    this.tileIDmap[0].length, //Y
+                    this.tileIDmap[0][0].length //Z
+            );
+        } catch (ValueException ex) {
+            LOG.log(Level.SEVERE, null, ex);
             return null;
         }
-
-        return new Coords3D(
-                this.tileIDmap.length, //X
-                this.tileIDmap[0].length, //Y
-                this.tileIDmap[0][0].length //Z
-        );
     }
 
     /**
@@ -127,7 +133,7 @@ public class TiledWorld implements World {
 
         for (WorldEntity e : this.entities) {
             if (e != null) {
-                e.tick(this, dt);
+                e.tick(dt);
             }
         }
     }

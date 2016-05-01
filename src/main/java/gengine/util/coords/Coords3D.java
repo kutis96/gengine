@@ -15,9 +15,27 @@ public class Coords3D extends CoordsFixedD {
      */
     public Coords3D() {
         super(3);
-        
+
         try {
             this.setCoords(new float[]{0, 0, 0});
+        } catch (DimMismatchException | ValueException ex) {
+            //This should actually never happen
+            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Clones the given Coords3D values into a new Coord3D object.
+     *
+     * @param thingtoclone Coords3D to clone.
+     *
+     * @throws ValueException thrown in the rare case of the cloned object
+     *                        containing invalid values.
+     */
+    public Coords3D(Coords3D thingtoclone) throws ValueException {
+        super(3);
+        try {
+            this.setCoords(thingtoclone.getCoords());
         } catch (DimMismatchException ex) {
             //This should actually never happen
             Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
@@ -30,10 +48,12 @@ public class Coords3D extends CoordsFixedD {
      * @param x default x-coordinate
      * @param y default y-coordinate
      * @param z default z-coordinate
+     *
+     * @throws ValueException
      */
-    public Coords3D(float x, float y, float z) {
+    public Coords3D(float x, float y, float z) throws ValueException {
         super(3);
-        
+
         try {
             this.setCoords(new float[]{x, y, z});
         } catch (DimMismatchException ex) {

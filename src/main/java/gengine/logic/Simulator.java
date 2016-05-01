@@ -1,6 +1,6 @@
 package gengine.logic;
 
-import gengine.util.LoopyRunnable;
+import gengine.events.generators.AbstWorldEventGenerator;
 import gengine.world.World;
 import java.util.logging.Logger;
 
@@ -10,14 +10,14 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Simulator extends LoopyRunnable {
+public class Simulator extends AbstWorldEventGenerator {
 
     private static final Logger LOG = Logger.getLogger(Simulator.class.getName());
 
     private final World world;
 
     public Simulator(World world, int period) {
-        super(period);
+        super(world, period);
         this.world = world;
     }
 

@@ -2,8 +2,7 @@ package gengine._wip.rendering.isometric;
 
 import gengine.rendering.*;
 import gengine.rendering.WorldRendererOptions.Flags;
-import gengine.util.coords.Coords2D;
-import gengine.util.coords.Coords3D;
+import gengine.util.coords.*;
 import gengine.world.tile.Tile;
 import gengine.world.TiledWorld;
 import gengine.world.World;
@@ -19,6 +18,10 @@ import java.util.logging.Logger;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class IsometricRenderer implements WorldRenderer {
+    
+    //TODO: unbodge the bodges
+    //TODO: fix unfixable
+    //TODO: finish this thing
 
     private static final Logger LOG = Logger.getLogger(IsometricRenderer.class.getName());
 
@@ -58,7 +61,11 @@ public class IsometricRenderer implements WorldRenderer {
     @Override
     public void render(World world, BufferedImage bi, WorldRendererOptions ro) throws RendererException {
         if (world instanceof TiledWorld) {
-            this.render((TiledWorld) world, bi, ro);
+            try {
+                this.render((TiledWorld) world, bi, ro);
+            } catch (ValueException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+            }
         } else {
             throw new RendererException("Invalid World Type Detected!");
         }
@@ -72,7 +79,7 @@ public class IsometricRenderer implements WorldRenderer {
      * @param surface BufferedImage object to render onto.
      * @param wrop    WorldRendererOptions supplying all the renderer options!
      */
-    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
+    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException, ValueException {
 
         //TODO:
         //----------------------------------------------------------------------
@@ -201,7 +208,12 @@ public class IsometricRenderer implements WorldRenderer {
                 }
             }
 
-            return new Coords3D(counters[0], counters[1], counters[2]);
+            try {
+                return new Coords3D(counters[0], counters[1], counters[2]);
+            } catch (ValueException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+                return null;
+            }
         }
     }
 }

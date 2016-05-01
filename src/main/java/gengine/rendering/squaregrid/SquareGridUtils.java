@@ -78,9 +78,9 @@ public class SquareGridUtils {
      *         rectangle, false otherwise.
      */
     public static boolean isWithinIgnoringZ(Coords3D point, Coords3D lower, Coords3D higher) {
-        //I figured this would be a fair bit faster than looping through the actual coordinates with a silly loop
-        return (lower.getX() > point.getX() && point.getX() < higher.getX())
-                && (lower.getY() > point.getY() && point.getY() < higher.getY());
+        //I figured this would be a fair bit faster than looping through the actual coordinates with a silly loop 
+        return (lower.getX() <= point.getX() && point.getX() <= higher.getX())
+                && (lower.getY() <= point.getY() && point.getY() <= higher.getY());
     }
 
     /**

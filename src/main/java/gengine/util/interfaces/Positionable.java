@@ -1,6 +1,6 @@
 package gengine.util.interfaces;
 
-import gengine.util.coords.Coords;
+import gengine.util.coords.Coords3D;
 import gengine.util.coords.DimMismatchException;
 
 /**
@@ -16,7 +16,7 @@ public interface Positionable {
      *
      * @return the object's coordinates
      */
-    public Coords getPos();
+    public Coords3D getPos();
 
     /**
      * Sets the object's position. Should return false on failure - i.e. when
@@ -26,5 +26,5 @@ public interface Positionable {
      *
      * @throws DimMismatchException thrown on dimension mismatch
      */
-    public void setPos(Coords pos) throws DimMismatchException;
+    public void setPos(Coords3D pos) throws DimMismatchException;
 }

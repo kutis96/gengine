@@ -31,7 +31,7 @@ public class IsometricUtils {
             Coords3D campos,
             int tilewidth,
             int zmult
-    ) {
+    ) throws ValueException {
         int th = tilewidth / 2;
         int tq = tilewidth / 4;
 
@@ -48,7 +48,7 @@ public class IsometricUtils {
         return new Coords2D(cx, cy);
     }
 
-    public static Coords2D convIsom2Graph(Coords3D isomcoords, int tilewidth, int zmult) {
+    public static Coords2D convIsom2Graph(Coords3D isomcoords, int tilewidth, int zmult) throws ValueException {
         return convIsom2Graph(isomcoords, new Coords3D(0, 0, 0), new Coords3D(0, 0, 0), tilewidth, zmult);
     }
 

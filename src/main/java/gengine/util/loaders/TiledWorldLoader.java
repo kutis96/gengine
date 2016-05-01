@@ -2,6 +2,7 @@ package gengine.util.loaders;
 
 import gengine.util.UnsupportedFormatException;
 import gengine.util.coords.Coords3D;
+import gengine.util.coords.ValueException;
 import gengine.world.TiledWorld;
 import gengine.world.WorldSizeException;
 import gengine.world.tile.Tileset;
@@ -19,29 +20,29 @@ public class TiledWorldLoader {
 
     private static final Logger LOG = Logger.getLogger(TiledWorldLoader.class.getName());
 
+    //TODO: change this loader to load directly into an existing world, rather than having to supply it the tileset.
     /**
      * Loads a new TiledWorld from the file specified.
      *
-     * @param f
-     * @param tileset
+     * @param file    File to load the world from
+     * @param tileset Tileset to use
      *
-     * @return
+     * @return new TiledWorld
      *
      * @throws FileNotFoundException
      * @throws IOException
      * @throws UnsupportedFormatException
      */
-    public static TiledWorld load(File f, Tileset tileset) throws FileNotFoundException, IOException, UnsupportedFormatException {
+    public static TiledWorld load(File file, Tileset tileset) throws FileNotFoundException, IOException, UnsupportedFormatException {
 
-        BufferedReader br = new BufferedReader(new FileReader(f));
+        BufferedReader br = new BufferedReader(new FileReader(file));
 
-        String line;
+        LOG.log(Level.FINE, "Loading a new TiledWorld from a file {0}", file.getAbsolutePath());
 
-        int linecounter = 0;
+        LinkedList<Integer[][]> map = new LinkedList<>();   //a 'map' to eventually contain all the tile IDs
 
-        LinkedList<Integer[][]> map = new LinkedList<>();
-
-        LOG.log(Level.FINE, "Loading a new TiledWorld from a file {0}", f.getAbsolutePath());
+        String line;    //line buffer
+        int linecounter = 0;    //line counter, useful for readable exception throwing
 
         while ((line = br.readLine()) != null) {
             linecounter++;
@@ -56,8 +57,8 @@ public class TiledWorldLoader {
             int nextSep;    //next separator (,) index
             int nextCollumnSep; //next collumn separator (;) index
 
-            LinkedList<Integer[]> row = new LinkedList<>();
-            LinkedList<Integer> vcollumn = new LinkedList<>();
+            LinkedList<Integer[]> row = new LinkedList<>();     //row of tileIDs (X axis) containing all the vcollumns
+            LinkedList<Integer> vcollumn = new LinkedList<>();  //a 'vertical' collumn. (Z axis)
 
             while (!"".equals(line)) {
 
@@ -84,7 +85,7 @@ public class TiledWorldLoader {
                         bit = Integer.parseInt(nextbit);
                     } catch (Exception e) {
                         System.out.println("ix: " + ix + "\tnc: " + nextCollumnSep + "\tns: " + nextSep);
-                        throw new UnsupportedFormatException("Integers are required, found '" + nextbit + "' on line " + linecounter + " in " + f.getAbsolutePath() + "\n" + line);
+                        throw new UnsupportedFormatException("Integers are required, found '" + nextbit + "' on line " + linecounter + " in " + file.getAbsolutePath() + "\n" + line);
                     }
 
                     vcollumn.add(bit);
@@ -129,7 +130,13 @@ public class TiledWorldLoader {
             }
         }
 
-        Coords3D worldDimensions = new Coords3D(max_x + 1, max_y + 1, max_z + 1);
+        Coords3D worldDimensions;
+        try {
+            worldDimensions = new Coords3D(max_x + 1, max_y + 1, max_z + 1);
+        } catch (ValueException ex) {
+            LOG.severe("Found a ValueException where it definitely shoudln't have occured!");
+            return null;
+        }
 
         LOG.log(Level.FINE, "World dimensions assesed: {0}", worldDimensions.toString());
 
@@ -143,7 +150,11 @@ public class TiledWorldLoader {
         for (int x = 0; x < m.length; x++) {
             for (int y = 0; y < m[x].length; y++) {
                 for (int z = 0; z < m[x][y].length; z++) {
-                    world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
+                    try {
+                        world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
+                    } catch (ValueException ex) {
+                        LOG.severe("Found a ValueException where it definitely shoudln't have occured!");
+                    }
                 }
             }
         }
