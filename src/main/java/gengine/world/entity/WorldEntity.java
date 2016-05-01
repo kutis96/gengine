@@ -3,6 +3,7 @@ package gengine.world.entity;
 import gengine.util.interfaces.Renderable;
 import gengine.util.interfaces.Positionable;
 import gengine.util.coords.*;
+import java.awt.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,7 +17,7 @@ import java.util.logging.Logger;
 public abstract class WorldEntity implements Positionable, Renderable {
 
     private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
-    
+
     private Coords3D pos;
 
     /**
@@ -77,5 +78,26 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * @param dt Delta-tee in milliseconds (time since the last update).
      */
     public abstract void tick(long dt);
-    
+
+    /**
+     * Checks whether a specified point mouseHit this object. Used for mouse
+     * stuff detection. Doing it like this allows various WorldEntities to have
+     * various means of clickbox detection, which may be quite specific to each
+     * of them... Or, it could make some unclickable at all.
+     *
+     * This method should only be used for clickbound checking, not for taking
+     * any actions (unless you're doing something insanely cool and you know you
+     * need to use this for reals.)
+     *
+     * @param point A point, referenced to the CENTER of the rendered image (in
+     *              case of the SquareGridRenderer, but there isn't much else
+     *              implemented at this point.)The IsometricWorldRenderer
+     *              references its images to the BOTTOM CENTER of the image.
+     *              [citation needed]
+     *
+     * @return true when a given point actually mouseHit the thing, false when
+     *         not.
+     */
+    public abstract boolean mouseHit(Point point);
+
 }

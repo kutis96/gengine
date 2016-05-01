@@ -9,16 +9,21 @@ import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import gengine.world.tile.Tile;
 import gengine.world.tile.TilesetIndexException;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * A renderer for square/rectangular grid worlds. This was the easiest one to
  * implement.
+ *
+ * This class also checks for mouse hits and is responsible for returning the
+ * world's entities found under one's mouse pointer or something like that. It
+ * seemed like a good idea, since only the renderer really knows where on screen
+ * those actually happen to be.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -28,6 +33,11 @@ public class SquareGridRenderer implements WorldRenderer {
 
     private final int tilewidth;
     private final int tileheight;
+
+    private final List<WorldEntity> lastRenderedEntities;
+    private final Point lastPixelOffset;
+    private final float[] lastScale = {1, 1};
+    private final Long lock;
 
     /**
      * Constructs this SquareGridRenderer to use some generic tile size.
@@ -57,6 +67,9 @@ public class SquareGridRenderer implements WorldRenderer {
     public SquareGridRenderer(int tilewidth, int tileheight) {
         this.tileheight = tileheight;
         this.tilewidth = tilewidth;
+        this.lastRenderedEntities = new ArrayList<>();
+        this.lastPixelOffset = new Point();
+        this.lock = 42L;
     }
 
     @Override
@@ -150,7 +163,8 @@ public class SquareGridRenderer implements WorldRenderer {
         }   //END OF TILE RENDERING
 
         { //ENTITY RENDERING
-            List<WorldEntity> renderedEntities = new ArrayList<>();
+
+            ArrayList<WorldEntity> renderedEntities = new ArrayList<>();
 
             synchronized (world) {
 
@@ -184,6 +198,7 @@ public class SquareGridRenderer implements WorldRenderer {
                 //draw the entities as the renderedEntities list is already sorted
                 // and thus everything is positioned correctly
                 // assuming the for loop is indeed sequential, which it better should be
+                //TODO: check whether the scaling is actually correct, it seems somewhat fishy
                 g2d.drawImage(
                         i,
                         (int) (pos.getX() * scaledWidth + xoff - i.getWidth(null) / 2),
@@ -193,6 +208,45 @@ public class SquareGridRenderer implements WorldRenderer {
                         null);
             }
 
+            synchronized (lock) {
+                lastRenderedEntities.clear();
+                lastRenderedEntities.addAll(renderedEntities);
+
+                lastPixelOffset.setLocation(xoff, yoff);
+
+                lastScale[0] = (float) wrop.getZoom();
+                lastScale[1] = (float) wrop.getZoom();
+            }
+
         }   // END OF ENTITY RENDERING
+    }
+
+    @Override
+    public WorldEntity[] getEntitiesOnPosition(Point mousepos) {
+
+        List<WorldEntity> ents;
+        ents = new LinkedList<>();
+
+        synchronized (lock) {
+
+            for (WorldEntity we : lastRenderedEntities) {
+
+                Point p = entityPxCoords(lastPixelOffset, lastScale, we.getPos());
+                p.translate(-mousepos.x, -mousepos.y);
+
+                if(we.mouseHit(p)){
+                    ents.add(we);
+                }
+            }
+        }
+
+        return ents.toArray(new WorldEntity[ents.size()]);
+    }
+
+    private Point entityPxCoords(Point pixelOffset, float[] scale, Coords3D entityCoordinates) {
+        int x = -1 * (int) (tilewidth * pixelOffset.x * scale[0] + pixelOffset.x);
+        int y = -1 * (int) (tileheight * pixelOffset.y * scale[1] + pixelOffset.y);
+
+        return new Point(x, y);
     }
 }

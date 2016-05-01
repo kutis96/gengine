@@ -4,6 +4,7 @@ import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.util.coords.*;
 import gengine.world.entity.WorldEntity;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -83,6 +84,11 @@ public class MovableBall extends WorldEntity implements KeyboardEventReceiver {
     @Override
     public void keyTyped(KeyEvent e) {
         
+    }
+
+    @Override
+    public boolean mouseHit(Point point) {
+        return false;
     }
     
 }

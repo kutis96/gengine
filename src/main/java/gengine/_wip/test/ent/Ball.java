@@ -2,6 +2,7 @@ package gengine._wip.test.ent;
 
 import gengine.world.entity.WorldEntity;
 import java.awt.Image;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -37,6 +38,11 @@ public class Ball extends WorldEntity {
     @Override
     public Image render() {
         return this.img;
+    }
+
+    @Override
+    public boolean mouseHit(Point point) {
+        return false;
     }
 
 }

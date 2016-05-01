@@ -5,9 +5,9 @@ import gengine.util.coords.Coords3D;
 import gengine.util.coords.ValueException;
 import gengine.world.entity.WorldEntity;
 import java.awt.Image;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
@@ -60,6 +60,11 @@ public class BallThing extends WorldEntity implements ProximityEventReceiver {
     @Override
     public float getProxDistance() {
         return 3;
+    }
+
+    @Override
+    public boolean mouseHit(Point point) {
+        return false;
     }
 
 }

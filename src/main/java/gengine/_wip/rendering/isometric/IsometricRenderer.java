@@ -6,6 +6,7 @@ import gengine.util.coords.*;
 import gengine.world.tile.Tile;
 import gengine.world.TiledWorld;
 import gengine.world.World;
+import gengine.world.entity.WorldEntity;
 import gengine.world.tile.TilesetIndexException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -174,6 +175,13 @@ public class IsometricRenderer implements WorldRenderer {
         g.drawRect((int) camaimpos.getX(), (int) camaimpos.getY(), -tilesize, -tilesize / 2);
 
         g.dispose();
+    }
+
+    @Override
+    public WorldEntity[] getEntitiesOnPosition(Point mousepos) {
+        //TODO: implement this one day
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private static class WorldIterator implements Iterator {
