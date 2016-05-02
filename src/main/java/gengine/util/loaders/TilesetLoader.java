@@ -1,6 +1,6 @@
 package gengine.util.loaders;
 
-import gengine.util.KeyValueLoader;
+import gengine.util.KeyValLoader;
 import gengine.util.UnsupportedFormatException;
 import gengine.world.tile.*;
 import gengine.world.tile.tiles.AnimatedTile;
@@ -37,7 +37,7 @@ public class TilesetLoader {
     public static Tileset load(File f) throws IOException, UnsupportedFormatException {
 
         //load Key:Value values from the given file
-        Map<String, String> kv = KeyValueLoader.load(new FileInputStream(f));
+        Map<String, String> kv = KeyValLoader.load(new FileInputStream(f));
 
         Tileset tileset = new Tileset();
 

@@ -18,9 +18,9 @@ public abstract class LoopyRunnable implements Runnable {
 
     private static final Logger LOG = Logger.getLogger(LoopyRunnable.class.getName());
 
-    private boolean isRunning = false;
-    private boolean isStopped = false;
-    private int period;
+    private volatile boolean isRunning = false;
+    private volatile boolean isStopped = false;
+    private volatile int period;
 
     /**
      * Constructs this Runnable with a set repeating period.

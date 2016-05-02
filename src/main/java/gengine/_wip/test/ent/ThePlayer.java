@@ -2,7 +2,8 @@ package gengine._wip.test.ent;
 
 import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.util.coords.*;
-import gengine.world.entity.WorldEntity;
+import gengine.world.WorldFacade;
+import gengine.world.entity.TiledWorldEntity;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -16,13 +17,14 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class MovableBall extends WorldEntity implements KeyboardEventReceiver {
+public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver {
     
-    private static final Logger LOG = Logger.getLogger(MovableBall.class.getName());
+    private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
     
     private final Image img;
     
-    public MovableBall() throws IOException {
+    public ThePlayer(WorldFacade facade) throws IOException {
+        super(facade);
         this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
     }
     

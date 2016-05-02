@@ -96,13 +96,13 @@ public class SquareGridRenderer implements WorldRenderer {
 
         //scaled pixel Height and Width of the tiles
         int scaledHeight = (int) (this.tileheight * wrop.getZoom());
-        int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
+        int scaledWidth = (int) (this.tilewidth * wrop.getZoom());  
 
         //pixel offsets of the visible area
         int xoff = (int) (wrop.getCameraPosition().getX() * scaledWidth
-                + wrop.getCameraOffset().getX());
+                + wrop.getCameraOffset().getX() + this.tilewidth / 2);
         int yoff = (int) (wrop.getCameraPosition().getY() * scaledHeight
-                + wrop.getCameraOffset().getY());
+                + wrop.getCameraOffset().getY() + this.tileheight / 2);
 
         //WORLD (tile) coordinates specifying the drawn boundaries
         Coords3D upperVisibleBound;
@@ -110,15 +110,16 @@ public class SquareGridRenderer implements WorldRenderer {
 
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES 
         {
+            //this one seems to be completely wrong.
             lowerVisibleBound = new Coords3D(
-                    Math.max(0, xoff / scaledWidth),
-                    Math.max(0, yoff / scaledHeight),
+                    Math.max(0, (float) Math.floor(xoff / scaledWidth) - 1),
+                    Math.max(0, (float) Math.floor(yoff / scaledHeight) - 1),
                     0
             );
 
             upperVisibleBound = new Coords3D(
-                    Math.min(world.getWorldSize().getX() - 1, (surface.getWidth() + xoff) / scaledWidth),
-                    Math.min(world.getWorldSize().getY() - 1, (surface.getHeight() + yoff) / scaledHeight),
+                    Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
+                    Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
                     0
             );
 
@@ -234,7 +235,7 @@ public class SquareGridRenderer implements WorldRenderer {
                 Point p = entityPxCoords(lastPixelOffset, lastScale, we.getPos());
                 p.translate(-mousepos.x, -mousepos.y);
 
-                if(we.mouseHit(p)){
+                if (we.mouseHit(p)) {
                     ents.add(we);
                 }
             }
@@ -244,8 +245,8 @@ public class SquareGridRenderer implements WorldRenderer {
     }
 
     private Point entityPxCoords(Point pixelOffset, float[] scale, Coords3D entityCoordinates) {
-        int x = -1 * (int) (tilewidth * pixelOffset.x * scale[0] + pixelOffset.x);
-        int y = -1 * (int) (tileheight * pixelOffset.y * scale[1] + pixelOffset.y);
+        int x = (int) (tilewidth * entityCoordinates.getX() * scale[0] + pixelOffset.x);
+        int y = (int) (tileheight * entityCoordinates.getY() * scale[1] + pixelOffset.y);
 
         return new Point(x, y);
     }

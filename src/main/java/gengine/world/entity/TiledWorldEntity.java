@@ -3,7 +3,10 @@ package gengine.world.entity;
 import gengine.util.interfaces.Renderable;
 import gengine.util.interfaces.Positionable;
 import gengine.util.coords.*;
+import gengine.world.TiledWorldFacade;
 import gengine.world.WorldFacade;
+import gengine.world.entity.WorldEntity;
+import gengine.world.tile.TilesetIndexException;
 import java.awt.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,17 +22,16 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldEntity implements Positionable, Renderable {
+public abstract class TiledWorldEntity extends WorldEntity implements Positionable, Renderable {
 
-    public final int STATUS_DEAD = -1;
-    
-    private final WorldFacade facade;
+    private final TiledWorldFacade facade;
 
-    public WorldEntity(WorldFacade facade) {
-        this.facade = facade;
+    public TiledWorldEntity(WorldFacade facade) {
+        super(facade);
+        this.facade = (TiledWorldFacade) facade;
     }
 
-    private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
+    private static final Logger LOG = Logger.getLogger(TiledWorldEntity.class.getName());
 
     private Coords3D pos;
 
@@ -49,11 +51,13 @@ public abstract class WorldEntity implements Positionable, Renderable {
      *
      * @return
      */
+    @Override
     public abstract int getState();
 
     /**
      * Should reset the entity's state to something reasonable.
      */
+    @Override
     public abstract void resetState();
 
     /**
@@ -73,15 +77,28 @@ public abstract class WorldEntity implements Positionable, Renderable {
      *
      * @param pos
      */
+    @Override
     public void advancePos(Coords3D pos) {
         try {
             this.pos.increment(pos);
-        } catch (DimMismatchException ex) {
-            LOG.warning("Dim Mismatch found here. The fok.");
-            LOG.warning(ex.getMessage());
-        } catch (ValueException ex) {
+        } catch (DimMismatchException | ValueException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
+    }
+
+    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {        
+        try {
+            Coords3D npos = new Coords3D(this.pos.add(pos));
+            
+            if (checkForMissingTiles && null == this.facade.getTile(npos)) {
+                //the tile I'm trying to move on is a null, so screw this
+                return false;
+            }
+            this.advancePos(pos);
+        } catch (DimMismatchException | ValueException | TilesetIndexException ex) {
+            Logger.getLogger(TiledWorldEntity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return true;
     }
 
     /**
@@ -89,6 +106,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
      *
      * @param dt Delta-tee in milliseconds (time since the last update).
      */
+    @Override
     public abstract void tick(long dt);
 
     /**
@@ -110,6 +128,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * @return true when a given point actually mouseHit the thing, false when
      *         not.
      */
+    @Override
     public abstract boolean mouseHit(Point point);
 
 }

@@ -42,6 +42,16 @@ public class Coords3D extends CoordsFixedD {
         }
     }
 
+    public Coords3D(CoordsFixedD thingtoclone) throws ValueException {
+        super(3);
+        try {
+            this.setCoords(thingtoclone.getCoords());
+        } catch (DimMismatchException ex) {
+            //This should actually never happen
+            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * Constructs the Coords2D with a given default value
      *

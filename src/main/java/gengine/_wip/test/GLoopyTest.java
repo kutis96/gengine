@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gengine._wip.test;
 
 import gengine.util.LoopyRunnable;
@@ -50,9 +45,16 @@ public class GLoopyTest {
         
         Thread.sleep(1000);
         
+        LOG.log(Level.INFO, "STOPPING");
+        
         gl.stop();
         
-        while(!gl.isStopped()){}
+        while(!gl.isStopped()){
+            LOG.log(Level.INFO, "waiting");
+            Thread.sleep(10);
+        }
+        
+        LOG.log(Level.INFO, "STOPPED");
         
         System.exit(0);
     }

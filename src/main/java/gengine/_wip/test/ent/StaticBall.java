@@ -1,6 +1,7 @@
 package gengine._wip.test.ent;
 
-import gengine.world.entity.WorldEntity;
+import gengine.world.WorldFacade;
+import gengine.world.entity.TiledWorldEntity;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
@@ -12,11 +13,12 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Ball extends WorldEntity {
+public class StaticBall extends TiledWorldEntity {
 
     private final Image img;
 
-    public Ball() throws IOException {
+    public StaticBall(WorldFacade facade) throws IOException {
+        super(facade);
         this.img = ImageIO.read(new File("/home/rkutina/testimages/blueball.png"));
     }
 

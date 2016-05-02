@@ -1,8 +1,10 @@
 package gengine.world;
 
+import gengine.rendering.squaregrid.SquareGridUtils;
 import gengine.util.coords.Coords3D;
 import gengine.util.coords.ValueException;
 import gengine.world.entity.WorldEntity;
+import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +17,13 @@ import java.util.logging.Logger;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class TiledWorld implements World {
-    
+
     private static final Logger LOG = Logger.getLogger(TiledWorld.class.getName());
 
     //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
     private final int[][][] tileIDmap;
     private final Tileset tileset;
-    private final List<WorldEntity> entities;
+    private final List<TiledWorldEntity> entities;
 
     /**
      * Maximum allowed amount of tiles. Mostly pointless.
@@ -61,12 +63,23 @@ public class TiledWorld implements World {
      * @param pos
      *
      * @return tile on the given position
-     * @throws TilesetIndexException This exception can be thrown when
+     * @throws TilesetIndexException
      */
     public Tile getWorldtile(Coords3D pos) throws TilesetIndexException {
-        return this.tileset.getTileFromId(
-                this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
-        );
+
+        if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSize())) {
+            try {
+                return this.tileset.getTileFromId(
+                    this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
+                );
+            } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
+                LOG.log(Level.SEVERE, "NPE caught!", ex);
+                return null;
+            }
+        } else {
+            //out of bounds
+            return null;
+        }
     }
 
     /**
@@ -83,13 +96,13 @@ public class TiledWorld implements World {
      * Sets a given tile in this World to a specified Tile.
      *
      * @param tile
-     * @param pos    the position to place the tile on
+     * @param pos  the position to place the tile on
      */
     public void setWorldtile(Tile tile, Coords3D pos) {
 
         int id = this.tileset.getTileID(tile);
-        
-        if(id == -1){
+
+        if (id == -1) {
             LOG.log(Level.FINE, "Adding new tile to the world's tileset through setWorldTile");
             id = this.tileset.addTile(tile);
         }
@@ -110,7 +123,7 @@ public class TiledWorld implements World {
             if (this.tileIDmap == null) {
                 return null;
             }
-            
+
             return new Coords3D(
                     this.tileIDmap.length, //X
                     this.tileIDmap[0].length, //Y
@@ -131,7 +144,7 @@ public class TiledWorld implements World {
     public void tick(long dt) {
         this.tileset.updateAll(dt);
 
-        for (WorldEntity e : this.entities) {
+        for (TiledWorldEntity e : this.entities) {
             if (e != null) {
                 e.tick(dt);
             }
@@ -140,19 +153,28 @@ public class TiledWorld implements World {
 
     @Override
     public void addEntity(WorldEntity entity) {
-        synchronized(this.entities){
-            this.entities.add(entity);
+        if (entity instanceof TiledWorldEntity) {
+            synchronized (this.entities) {
+                this.entities.add((TiledWorldEntity) entity);
+            }
+        }else{
+            LOG.severe("Tried to add invalid entity type! " + entity.toString() + " " + entity.getClass().getName());
         }
     }
 
     @Override
     public WorldEntity[] getEntities() {
-        synchronized(this.entities){
+        synchronized (this.entities) {
             return this.entities.toArray(new WorldEntity[this.entities.size()]);
         }
     }
-    
-    public Tileset getTileSet(){
+
+    public Tileset getTileSet() {
         return this.tileset;
+    }
+
+    @Override
+    public WorldFacade getFacade() {
+        return new TiledWorldFacade(this);
     }
 }

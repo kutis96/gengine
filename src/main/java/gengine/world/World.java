@@ -25,6 +25,7 @@ public interface World {
 
     /**
      * Adds an WorldEntity to this World.
+     *
      * @param entity WorldEntity to add to this world.
      *
      */
@@ -36,4 +37,11 @@ public interface World {
      * @return an array of all world entities.
      */
     public WorldEntity[] getEntities();
+
+    /**
+     * Gets a new WorldFacade for this world.
+     *
+     * @return new WorldFacade referencing to this world.
+     */
+    public WorldFacade getFacade();
 }

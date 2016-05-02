@@ -2,6 +2,7 @@ package gengine.logic;
 
 import gengine.events.generators.AbstEventGenerator;
 import gengine.rendering.WorldRenderer;
+import gengine.rendering.WorldRendererOptions;
 import gengine.world.World;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +56,9 @@ public class Controller {
         renWor = new RenderingWorker(jf, 20);
         renWor.setWorld(world);
         renWor.setWorldRenderer(wren);
+        WorldRendererOptions wrop = new WorldRendererOptions();
+        wrop.setZoom(2);
+        renWor.setRendererOptions(wrop);
 
         this.tRenderer = new Thread(renWor);
     }
@@ -63,6 +67,7 @@ public class Controller {
      * Starts all the threads created during init.
      */
     public void start() {
+        
         if (!this.tSim.isAlive()) {
             this.tSim.start();
         }
@@ -76,6 +81,8 @@ public class Controller {
                 teg.start();
             }
         }
+        
+        LOG.info("Started");
     }
 
     public void stop() {

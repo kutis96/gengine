@@ -11,12 +11,12 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class KeyValueLoader {
+public class KeyValLoader {
 
-    public KeyValueLoader() {
+    public KeyValLoader() {
     }
 
-    private static final Logger LOG = Logger.getLogger(KeyValueLoader.class.getName());
+    private static final Logger LOG = Logger.getLogger(KeyValLoader.class.getName());
 
     /**
      * Simplified loader for directly getting a HashMap out of a K:V file.

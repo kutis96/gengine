@@ -1,6 +1,6 @@
 package gengine.world.entity;
 
-import gengine.util.coords.Coords3D;
+import gengine.world.WorldFacade;
 import java.awt.Image;
 
 /**
@@ -8,10 +8,12 @@ import java.awt.Image;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public abstract class PlayerEntity extends NPCEntity {
+
+    public PlayerEntity(WorldFacade facade, int invsize) {
+        super(facade, invsize);
+    }
     
     //TODO: EVERYTHING
-    
-    public abstract void move(Coords3D pos);
     
     @Override
     public abstract void tick(long dt);

@@ -1,6 +1,7 @@
 package gengine.events.generators;
 
 import gengine.events.receivers.MouseEventReceiver;
+import gengine.rendering.WorldRenderer;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import java.awt.event.*;
@@ -22,6 +23,7 @@ public class MouseEventGenerator extends AbstWindowEventGenerator {
     //
     private final World world;
     private final JFrame jf;
+    private final WorldRenderer wr;
 
     private final MouseListener ml = new MouseListener() {
         @Override
@@ -50,10 +52,11 @@ public class MouseEventGenerator extends AbstWindowEventGenerator {
         }
     };
 
-    public MouseEventGenerator(World world, JFrame jframe, int period) {
+    public MouseEventGenerator(World world, JFrame jframe, WorldRenderer wr, int period) {
         super(world, jframe, period);
         this.world = world;
         this.jf = jframe;
+        this.wr = wr;
     }
 
     @Override
@@ -82,7 +85,8 @@ public class MouseEventGenerator extends AbstWindowEventGenerator {
         //TODO: clean this up a bunch, so I don't need to bother with this massive case
 
         synchronized (this.world) {
-            WorldEntity[] worldEntities = this.world.getEntities();
+            WorldEntity[] worldEntities
+                    = this.wr.getEntitiesOnPosition(e.getPoint());
 
             for (WorldEntity we : worldEntities) {
                 if (we instanceof MouseEventReceiver) {

@@ -10,7 +10,8 @@ import gengine.rendering.WorldRenderer;
 import gengine.rendering.squaregrid.SquareGridRenderer;
 import gengine.util.UnsupportedFormatException;
 import gengine.util.coords.*;
-import gengine.world.*;
+import gengine.world.TiledWorld;
+import gengine.world.WorldSizeException;
 import gengine.world.tile.Tileset;
 import java.io.File;
 import java.io.IOException;
@@ -33,25 +34,40 @@ public class EventyThingTest {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Tileset ts = TilesetLoader.load(new File("/home/rkutina/testing/gengine/world.tset"));
-        World w = TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"), ts);
+        TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"), ts);
 
         WorldRenderer wren = new SquareGridRenderer(64);
 
         Simulator sim = new Simulator(w, 50);
+        StaticBall b1 = new StaticBall(w.getFacade());
 
-        Ball b1 = new Ball();
-        //BallThing b2 = new BallThing();
-        MovableBall b3 = new MovableBall();
+        for (int i = 0; i < 5; i++) {
+            ScaredBall sb1 = new ScaredBall(w.getFacade());
 
-        b1.setPos(new Coords3D(4, 4, 0));
-        //b2.setPos(new Coords3D(5,5,0));
-        b3.setPos(new Coords3D(3, 3, 0));
+            Coords3D c = new Coords3D(
+                    (float) Math.random() * w.getWorldSize().getX(),
+                    (float) Math.random() * w.getWorldSize().getY(),
+                    (float) Math.random() * w.getWorldSize().getZ()
+            );
+            
+            sb1.setPos(c);
 
-        w.addEntity(b1);
-        //w.addEntity(b2);
+            w.addEntity(sb1);
+        }
+
+        ThePlayer b3 = new ThePlayer(w.getFacade());
+
+        //b1.setPos(new Coords3D(4, 4, 0));
+        b3.setPos(new Coords3D(5, 5, 0));
+
+        //w.addEntity(b1);
         w.addEntity(b3);
 
-        AbstEventGenerator[] evgens = {new ProximityEventGenerator(w, 10), new KeyboardEventGenerator(w, window, 50)};
+        AbstEventGenerator[] evgens = {
+            new ProximityEventGenerator(w, 10),
+            new KeyboardEventGenerator(w, window, 50),
+            new MouseEventGenerator(w, window, wren, 50)
+        };
 
         Controller c = new Controller(sim, w, window, wren, evgens);
 
