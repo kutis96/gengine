@@ -24,12 +24,18 @@ public interface World {
     public void tick(long dt);
 
     /**
-     * Adds an WorldEntity to this World.
+     * Adds a WorldEntity to this World.
      *
      * @param entity WorldEntity to add to this world.
-     *
      */
     public void addEntity(WorldEntity entity);
+
+    /**
+     * Removes a WorldEntity from this World.
+     *
+     * @param entity WorldEntity to remove from this world.
+     */
+    public void removeEntity(WorldEntity entity);
 
     /**
      * Gets an array of all the entities in this World.

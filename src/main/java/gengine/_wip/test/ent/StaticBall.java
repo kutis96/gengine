@@ -24,17 +24,17 @@ public class StaticBall extends TiledWorldEntity {
 
     @Override
     public int getState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return TiledWorldEntity.STATE_UNDEFINED;
     }
 
     @Override
     public void resetState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //do nothing
     }
 
     @Override
     public void tick(long dt) {
-        //Do nothing
+        //Do nothing, just sit there
     }
 
     @Override

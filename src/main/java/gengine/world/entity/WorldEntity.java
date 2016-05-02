@@ -21,10 +21,20 @@ import java.util.logging.Logger;
  */
 public abstract class WorldEntity implements Positionable, Renderable {
 
-    public final int STATUS_DEAD = -1;
-    
+    public static final int STATE_DEAD = 0xDEAD;
+    public static final int STATE_UNDEFINED = 0;
+
     private final WorldFacade facade;
 
+    /**
+     * Constructs this WorldEntity supplying it a WorldFacade it may use to get
+     * some information off of the World it resides in.
+     *
+     * Or, it could get some other World's facade. An application of that could
+     * quite possibly result in something interesting.
+     *
+     * @param facade
+     */
     public WorldEntity(WorldFacade facade) {
         this.facade = facade;
     }
@@ -47,7 +57,10 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * Returns the current WorldEntity's state it happens to be in. Example
      * states: EN_ROUTE, IDLE, ATTACKING, etc.
      *
-     * @return
+     * STATE_DEAD would get this entity removed off of the world, by the means
+     * of the GrimReaper's work.
+     *
+     * @return current WorldEntity state.
      */
     public abstract int getState();
 

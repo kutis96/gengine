@@ -63,6 +63,7 @@ public class TiledWorld implements World {
      * @param pos
      *
      * @return tile on the given position
+     *
      * @throws TilesetIndexException
      */
     public Tile getWorldtile(Coords3D pos) throws TilesetIndexException {
@@ -70,7 +71,7 @@ public class TiledWorld implements World {
         if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSize())) {
             try {
                 return this.tileset.getTileFromId(
-                    this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
+                        this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
                 );
             } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
                 LOG.log(Level.SEVERE, "NPE caught!", ex);
@@ -157,8 +158,23 @@ public class TiledWorld implements World {
             synchronized (this.entities) {
                 this.entities.add((TiledWorldEntity) entity);
             }
-        }else{
-            LOG.severe("Tried to add invalid entity type! " + entity.toString() + " " + entity.getClass().getName());
+        } else {
+            LOG.log(Level.SEVERE, "Tried to add invalid entity type! {0} {1}", new Object[]{entity.toString(), entity.getClass().getName()});
+        }
+    }
+
+    @Override
+    public void removeEntity(WorldEntity entity) {
+        if (entity instanceof TiledWorldEntity) {
+            synchronized (this.entities) {
+                if (this.entities.contains((TiledWorldEntity) entity)) {
+                    this.entities.remove((TiledWorldEntity) entity);
+                } else {
+                    LOG.log(Level.INFO, "Tried to remove a WorldEntity that wasn't actually present in the World. Strange.");
+                }
+            }
+        } else {
+            LOG.log(Level.SEVERE, "Tried to remove an invalid entity type! {0} {1}", new Object[]{entity.toString(), entity.getClass().getName()});
         }
     }
 

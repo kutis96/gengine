@@ -18,36 +18,36 @@ import javax.imageio.ImageIO;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver {
-    
+
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
-    
+
     private final Image img;
-    
+
     public ThePlayer(WorldFacade facade) throws IOException {
         super(facade);
         this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
     }
-    
+
     @Override
     public int getState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return TiledWorldEntity.STATE_UNDEFINED;
     }
-    
+
     @Override
     public void resetState() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //Do nothing whatsoever
     }
-    
+
     @Override
     public void tick(long dt) {
         //Do nothing
     }
-    
+
     @Override
     public Image render() {
         return this.img;
     }
-    
+
     @Override
     public void keyPressed(KeyEvent e) {
         try {
@@ -77,20 +77,20 @@ public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver
             LOG.severe("Found a ValueException where there definitely shouldn't be one.");
         }
     }
-    
+
     @Override
     public void keyReleased(KeyEvent e) {
-        
+
     }
-    
+
     @Override
     public void keyTyped(KeyEvent e) {
-        
+
     }
 
     @Override
     public boolean mouseHit(Point point) {
         return false;
     }
-    
+
 }
