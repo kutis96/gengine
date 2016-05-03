@@ -11,12 +11,12 @@ import org.junit.rules.ExpectedException;
  */
 public class CoordsFixedDTest {
 
-    public CoordsFixedDTest() {
-        
-    }
-
     @Rule
     public final ExpectedException exception = ExpectedException.none();
+
+    public CoordsFixedDTest() {
+
+    }
 
     @Test
     public void constructorTest() throws ValueException {
@@ -45,9 +45,9 @@ public class CoordsFixedDTest {
         float[] bs = new float[]{0, 1, -1, Float.NaN, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY};
 
         exception.expect(ValueException.class);
-        CoordsFixedD a = new CoordsFixedD(new float[]{0, 1, -1, Float.NaN, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY});
+        CoordsFixedD b = new CoordsFixedD(new float[]{0, 1, -1, Float.NaN, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY});
 
-        CoordsFixedD b = new CoordsFixedD(bs.length);
+        b = new CoordsFixedD(bs.length);
 
         exception.expect(ValueException.class);
         b.setCoords(bs);
@@ -93,47 +93,47 @@ public class CoordsFixedDTest {
         CoordsFixedD a = new CoordsFixedD(fa);
         CoordsFixedD b = new CoordsFixedD(fb);
 
-        {   //Assignments
-            assertArrayEquals("Assignment failed", fa, a.getCoords(), (float) 0.00001);
-            assertArrayEquals("Assignment failed", fb, b.getCoords(), (float) 0.00001);
-        }
-        {   //Sum
-            CoordsFixedD sum = a.add(b);
-            assertArrayEquals("Addition failed", fsum, sum.getCoords(), (float) 0.00001);
-        }
-        {   //Difference
-            CoordsFixedD dif = a.subtract(b);
-            assertArrayEquals("Subtraction failed", fdif, dif.getCoords(), (float) 0.00001);
-        }
-        {   //Multiplication of two coordinates
-            CoordsFixedD mul = a.multiply(b);
-            assertArrayEquals("Multiplication failed", fmul, mul.getCoords(), (float) 0.00001);
-        }
-        {   //Division of two coordinates
-            CoordsFixedD div = a.divide(b);
-            assertArrayEquals("Division failed", fdiv, div.getCoords(), (float) 0.00001);
-        }
-        {   //Multiplication by constant
-            CoordsFixedD muli = new CoordsFixedD(a);
-            muli.multiply(-5);
-            assertArrayEquals("Multiplication by constant failed", fmuli, muli.getCoords(), (float) 0.00001);
-        }
-        {   //Incrementation
-            CoordsFixedD inc = new CoordsFixedD(a);
-            inc.increment(new CoordsFixedD(uniop));
-            assertArrayEquals("Incrementation failed", finc, inc.getCoords(), (float) 0.00001);
-        }
-        {   //Decrementation
-            CoordsFixedD dec = new CoordsFixedD(a);
-            dec.decrement(new CoordsFixedD(uniop));
-            assertArrayEquals("Multiplication by constant failed", fdec, dec.getCoords(), (float) 0.00001);
-        }
-        {   //Division by zero
-            CoordsFixedD xa = new CoordsFixedD(a);
-            CoordsFixedD xb = new CoordsFixedD(xa.getDimensions());
+        //Assignments
+        assertArrayEquals("Assignment failed", fa, a.getCoords(), (float) 0.00001);
+        assertArrayEquals("Assignment failed", fb, b.getCoords(), (float) 0.00001);
 
-            exception.expect(ValueException.class);
-            CoordsFixedD div = xa.divide(xb);
-        }
+        //Sum
+        CoordsFixedD sum = a.add(b);
+        assertArrayEquals("Addition failed", fsum, sum.getCoords(), (float) 0.00001);
+
+        //Difference
+        CoordsFixedD dif = a.subtract(b);
+        assertArrayEquals("Subtraction failed", fdif, dif.getCoords(), (float) 0.00001);
+
+        //Multiplication of two coordinates
+        CoordsFixedD mul = a.multiply(b);
+        assertArrayEquals("Multiplication failed", fmul, mul.getCoords(), (float) 0.00001);
+
+        //Division of two coordinates
+        CoordsFixedD div = a.divide(b);
+        assertArrayEquals("Division failed", fdiv, div.getCoords(), (float) 0.00001);
+
+        //Multiplication by constant
+        CoordsFixedD muli = new CoordsFixedD(a);
+        muli.multiply(-5);
+        assertArrayEquals("Multiplication by constant failed", fmuli, muli.getCoords(), (float) 0.00001);
+
+        //Incrementation
+        CoordsFixedD inc = new CoordsFixedD(a);
+        inc.increment(new CoordsFixedD(uniop));
+        assertArrayEquals("Incrementation failed", finc, inc.getCoords(), (float) 0.00001);
+
+        //Decrementation
+        CoordsFixedD dec = new CoordsFixedD(a);
+        dec.decrement(new CoordsFixedD(uniop));
+        assertArrayEquals("Multiplication by constant failed", fdec, dec.getCoords(), (float) 0.00001);
+
+        //Division by zero
+        CoordsFixedD xa = new CoordsFixedD(a);
+        CoordsFixedD xb = new CoordsFixedD(xa.getDimensions());
+
+        exception.expect(ValueException.class);
+        xa.divide(xb);
+
     }
 }

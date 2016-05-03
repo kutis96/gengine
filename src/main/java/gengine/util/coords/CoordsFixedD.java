@@ -1,6 +1,7 @@
 package gengine.util.coords;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,10 +20,8 @@ public class CoordsFixedD implements Coords {
             this.dim = dim;
             try {
                 this.setCoords(new float[dim]);
-            } catch (DimMismatchException ex) {
-                LOG.severe("DimMismatch in constructor. If you see this, something's really flocked up.");
             } catch (ValueException ex) {
-                LOG.severe("ValueException in constructor. If you see this, something's really flocked up.");
+                LOG.log(Level.SEVERE, "Exception in constructor. If you see this, something's really flocked up.", ex);
             }
         } else {
             this.dim = -1;
@@ -33,11 +32,8 @@ public class CoordsFixedD implements Coords {
     public CoordsFixedD(float[] coords) throws ValueException {
         if (coords != null) {
             this.dim = coords.length;
-            try {
-                this.setCoords(coords);
-            } catch (DimMismatchException ex) {
-                LOG.severe("DimMismatch in constructor. If you see this, something's really flocked up.");
-            }
+            this.setCoords(coords);
+
         } else {
             this.dim = -1;
             this.coords = null;
@@ -46,11 +42,7 @@ public class CoordsFixedD implements Coords {
 
     public CoordsFixedD(CoordsFixedD thingtoclone) throws ValueException {
         this.dim = thingtoclone.getDimensions();
-        try {
-            this.setCoords(thingtoclone.getCoords());
-        } catch (DimMismatchException ex) {
-            LOG.severe("DimMismatch in constructor. If you see this, something's really flocked up.");
-        }
+        this.setCoords(thingtoclone.getCoords());
     }
 
     @Override
@@ -59,8 +51,11 @@ public class CoordsFixedD implements Coords {
     }
 
     @Override
-    public final void setCoords(float[] coords) throws DimMismatchException, ValueException {
+    public final void setCoords(float[] coords) throws ValueException {
         CoordUtils.validityCheck(coords);
+        if(coords.length < this.dim){
+            throw new ValueException("Invalid dimensions, expected at least " + this.dim + ", got" + coords.length);
+        }
         this.coords = Arrays.copyOf(coords, this.dim);
     }
 
@@ -100,6 +95,7 @@ public class CoordsFixedD implements Coords {
      *         dimensions don't match.
      *
      * @throws DimMismatchException
+     * @throws ValueException
      */
     public CoordsFixedD add(CoordsFixedD c) throws DimMismatchException, ValueException {
         if (this.dim == c.getDimensions()) {

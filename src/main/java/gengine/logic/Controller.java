@@ -26,6 +26,12 @@ public class Controller {
     private final WorldRenderer wren;
     private final AbstEventGenerator[] evgens;
 
+    private Thread tSim;
+    private Thread[] tEvgens;
+    private Thread tRenderer;
+
+    private RenderingWorker renWor;
+
     public Controller(Simulator sim, World world, JFrame jf, WorldRenderer wren, AbstEventGenerator[] evgens) {
         this.sim = sim;
         this.world = world;
@@ -35,12 +41,6 @@ public class Controller {
 
         init();
     }
-
-    private Thread tSim;
-    private Thread[] tEvgens;
-    private Thread tRenderer;
-
-    private RenderingWorker renWor;
 
     /**
      * Sets up the threads to run the Simulator and all the EventGenerators.

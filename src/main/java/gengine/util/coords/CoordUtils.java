@@ -50,10 +50,10 @@ public class CoordUtils {
         }
         
         for(float f : values){
-            if(f == Float.NaN){
+            if(Float.isNaN(f)){
                 throw new ValueException("NaNs not allowed.");
             }
-            if(f == Float.NEGATIVE_INFINITY || f == Float.POSITIVE_INFINITY){
+            if(Float.isInfinite(f)){
                 throw new ValueException("Infinities are bad for your health.");
             }
         }

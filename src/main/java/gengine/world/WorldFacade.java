@@ -8,6 +8,6 @@ package gengine.world;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldFacade {
+public interface WorldFacade {
 
 }

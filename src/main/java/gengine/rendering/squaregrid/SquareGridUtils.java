@@ -10,7 +10,7 @@ import java.util.Comparator;
  */
 public class SquareGridUtils {
 
-    public SquareGridUtils() {
+    private SquareGridUtils() {
     }
 
     /**
@@ -60,15 +60,16 @@ public class SquareGridUtils {
      */
     public static boolean isWithin(Coords3D point, Coords3D lower, Coords3D higher) {
         //I figured this would be a fair bit faster than looping through the actual coordinates with a silly loop
-//        float epsilon = (float) 0.001;
-//        
-//        return (lower.getX()-epsilon < point.getX() && point.getX() < higher.getX()+epsilon)
-//                && (lower.getY()-epsilon < point.getY() && point.getY() < higher.getY()+epsilon)
-//                && (lower.getZ()-epsilon < point.getZ() && point.getZ() < higher.getZ()+epsilon);
-        
-        return (lower.getX() <= point.getX() && point.getX() <= higher.getX())
-                && (lower.getY() <= point.getY() && point.getY() <= higher.getY())
-                && (lower.getZ() <= point.getZ() && point.getZ() <= higher.getZ());
+        //but CodeQuality happened. grumble grumble.
+
+        for (int i = 0; i < 3; i++) {
+            if (!(lower.getCoords()[i] <= point.getCoords()[i]
+                    && point.getCoords()[i] <= higher.getCoords()[i])) {
+
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

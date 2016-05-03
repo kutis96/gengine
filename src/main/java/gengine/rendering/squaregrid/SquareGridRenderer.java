@@ -34,10 +34,10 @@ public class SquareGridRenderer implements WorldRenderer {
     private final int tilewidth;
     private final int tileheight;
 
-    private final List<WorldEntity> lastRenderedEntities;
-    private final Point lastPixelOffset;
+    private final Object lock = new Object();
+    private List<WorldEntity> lastRenderedEntities;
+    private Point lastPixelOffset;
     private final float[] lastScale = {1, 1};
-    private final Long lock;
 
     /**
      * Constructs this SquareGridRenderer to use some generic tile size.
@@ -69,7 +69,6 @@ public class SquareGridRenderer implements WorldRenderer {
         this.tilewidth = tilewidth;
         this.lastRenderedEntities = new ArrayList<>();
         this.lastPixelOffset = new Point();
-        this.lock = 42L;
     }
 
     @Override
@@ -96,7 +95,7 @@ public class SquareGridRenderer implements WorldRenderer {
 
         //scaled pixel Height and Width of the tiles
         int scaledHeight = (int) (this.tileheight * wrop.getZoom());
-        int scaledWidth = (int) (this.tilewidth * wrop.getZoom());  
+        int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
 
         //pixel offsets of the visible area
         int xoff = (int) (wrop.getCameraPosition().getX() * scaledWidth
@@ -108,27 +107,24 @@ public class SquareGridRenderer implements WorldRenderer {
         Coords3D upperVisibleBound;
         Coords3D lowerVisibleBound;
 
-        //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES 
-        {
-            //this one seems to be completely wrong.
-            lowerVisibleBound = new Coords3D(
-                    Math.max(0, (float) Math.floor(xoff / scaledWidth) - 1),
-                    Math.max(0, (float) Math.floor(yoff / scaledHeight) - 1),
-                    0
-            );
+        //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES
+        lowerVisibleBound = new Coords3D(
+                Math.max(0, (float) Math.floor((double) xoff / scaledWidth) - 1),
+                Math.max(0, (float) Math.floor((double) yoff / scaledHeight) - 1),
+                0
+        );
 
-            upperVisibleBound = new Coords3D(
-                    Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
-                    Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
-                    0
-            );
-
-        }   //END OF PIXEL TO WORLD BOUNDARY CONVERSION
+        upperVisibleBound = new Coords3D(
+                Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
+                Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
+                0
+        );
+        //END OF PIXEL TO WORLD BOUNDARY CONVERSION
 
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
 
-        synchronized (world) {   //TILE RENDERING
+        synchronized (lock) {   //TILE RENDERING
 
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
@@ -163,63 +159,61 @@ public class SquareGridRenderer implements WorldRenderer {
             }
         }   //END OF TILE RENDERING
 
-        { //ENTITY RENDERING
+        //ENTITY RENDERING
+        ArrayList<WorldEntity> renderedEntities = new ArrayList<>();
 
-            ArrayList<WorldEntity> renderedEntities = new ArrayList<>();
+        synchronized (lock) {
 
-            synchronized (world) {
-
-                //Fill the renderedEntities list with entities that are visible
-                for (WorldEntity we : world.getEntities()) {
-                    if (SquareGridUtils.isWithinIgnoringZ(
-                            we.getPos(),
-                            lowerVisibleBound,
-                            upperVisibleBound)) {
-                        renderedEntities.add(we);
-                    }
+            //Fill the renderedEntities list with entities that are visible
+            for (WorldEntity we : world.getEntities()) {
+                if (SquareGridUtils.isWithinIgnoringZ(
+                        we.getPos(),
+                        lowerVisibleBound,
+                        upperVisibleBound)) {
+                    renderedEntities.add(we);
                 }
-
             }
 
-            //sort entities by Z (depth) and then by Y (vertical axis) for rendering
-            //Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
-            for (WorldEntity we : renderedEntities) {
+        }
 
-                we.render();
+        //sort entities by Z (depth) and then by Y (vertical axis) for rendering
+        //Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
+        for (WorldEntity we : renderedEntities) {
 
-                Image i = we.render();
+            we.render();
 
-                if (i == null) {
-                    LOG.log(Level.WARNING, "Missing entity rendering ({0})", we.toString());
-                    continue;
-                }
+            Image i = we.render();
 
-                Coords3D pos = we.getPos();
-
-                //draw the entities as the renderedEntities list is already sorted
-                // and thus everything is positioned correctly
-                // assuming the for loop is indeed sequential, which it better should be
-                //TODO: check whether the scaling is actually correct, it seems somewhat fishy
-                g2d.drawImage(
-                        i,
-                        (int) (pos.getX() * scaledWidth + xoff - i.getWidth(null) / 2),
-                        (int) (pos.getY() * scaledHeight + yoff - i.getHeight(null) / 2),
-                        (int) (i.getWidth(null) * wrop.getZoom()),
-                        (int) (i.getHeight(null) * wrop.getZoom()),
-                        null);
+            if (i == null) {
+                LOG.log(Level.WARNING, "Missing entity rendering ({0})", we.toString());
+                continue;
             }
 
-            synchronized (lock) {
-                lastRenderedEntities.clear();
-                lastRenderedEntities.addAll(renderedEntities);
+            Coords3D pos = we.getPos();
 
-                lastPixelOffset.setLocation(xoff, yoff);
+            //draw the entities as the renderedEntities list is already sorted
+            // and thus everything is positioned correctly
+            // assuming the for loop is indeed sequential, which it better should be
+            //TODO: check whether the scaling is actually correct, it seems somewhat fishy
+            g2d.drawImage(
+                    i,
+                    (int) (pos.getX() * scaledWidth + xoff - i.getWidth(null) / 2),
+                    (int) (pos.getY() * scaledHeight + yoff - i.getHeight(null) / 2),
+                    (int) (i.getWidth(null) * wrop.getZoom()),
+                    (int) (i.getHeight(null) * wrop.getZoom()),
+                    null);
+        }
 
-                lastScale[0] = (float) wrop.getZoom();
-                lastScale[1] = (float) wrop.getZoom();
-            }
+        synchronized (lock) {
+            lastRenderedEntities.clear();
+            lastRenderedEntities.addAll(renderedEntities);
 
-        }   // END OF ENTITY RENDERING
+            lastPixelOffset.setLocation(xoff, yoff);
+
+            lastScale[0] = (float) wrop.getZoom();
+            lastScale[1] = (float) wrop.getZoom();
+        }
+        // END OF ENTITY RENDERING
     }
 
     @Override

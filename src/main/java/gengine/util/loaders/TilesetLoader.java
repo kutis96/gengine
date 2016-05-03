@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
@@ -17,6 +19,8 @@ import javax.imageio.ImageIO;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class TilesetLoader {
+    
+    private static final Logger LOG = Logger.getLogger(TilesetLoader.class.getName());
 
     public TilesetLoader() {
 
@@ -75,6 +79,7 @@ public class TilesetLoader {
             try {
                 tileset.setTileWithId(index, tile);
             } catch (TilesetIndexException ex) {
+                LOG.log(Level.SEVERE, null, ex);
                 throw new UnsupportedFormatException("Tileset index fudgeup.\n" + ex.getMessage());
             }
 
@@ -104,7 +109,7 @@ public class TilesetLoader {
         // figure out the delays for each frame
         // and create an animated thing out of them all.
         // if the config file isn't there, use some mildly reasonable default delay thing.
-        throw new UnsupportedOperationException("I'll have to finish this one later :|");
+        throw new UnsupportedOperationException("Trying to load an AnimatedTile " + f.getAbsolutePath());
 
     }
 

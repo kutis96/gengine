@@ -13,10 +13,10 @@ import java.util.logging.Logger;
  */
 public class KeyValLoader {
 
+    private static final Logger LOG = Logger.getLogger(KeyValLoader.class.getName());
+
     public KeyValLoader() {
     }
-
-    private static final Logger LOG = Logger.getLogger(KeyValLoader.class.getName());
 
     /**
      * Simplified loader for directly getting a HashMap out of a K:V file.

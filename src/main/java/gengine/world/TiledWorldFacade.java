@@ -10,7 +10,7 @@ import gengine.world.tile.TilesetIndexException;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class TiledWorldFacade extends WorldFacade {
+public class TiledWorldFacade implements WorldFacade {
 
     private final TiledWorld world;
 

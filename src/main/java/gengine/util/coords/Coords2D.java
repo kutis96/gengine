@@ -10,20 +10,18 @@ import java.util.logging.Logger;
  */
 public class Coords2D extends CoordsFixedD {
 
+    private static final Logger LOG = Logger.getLogger(Coords2D.class.getName());
+
     /**
      * Constructs the Coords2D with default value of (0, 0).
      */
     public Coords2D() {
         super(2);
-
         try {
             this.setCoords(new float[]{0, 0});
-        } catch (DimMismatchException ex) {
-            //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ValueException ex) {
             //This should actually never happen
-            Logger.getLogger(Coords2D.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -37,13 +35,7 @@ public class Coords2D extends CoordsFixedD {
      */
     public Coords2D(float x, float y) throws ValueException {
         super(2);
-
-        try {
-            this.setCoords(new float[]{x, y});
-        } catch (DimMismatchException ex) {
-            //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.setCoords(new float[]{x, y});
     }
 
     /**

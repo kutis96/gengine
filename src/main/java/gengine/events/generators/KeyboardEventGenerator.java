@@ -76,28 +76,31 @@ public class KeyboardEventGenerator extends AbstWindowEventGenerator {
             for (WorldEntity we : worldEntities) {
                 if (we instanceof KeyboardEventReceiver) {
                     KeyboardEventReceiver receiver = (KeyboardEventReceiver) we;
-
-                    switch (e.getID()) {
-                        case KeyEvent.KEY_PRESSED: {
-                            receiver.keyPressed(e);
-                            break;
-                        }
-                        case KeyEvent.KEY_RELEASED: {
-                            receiver.keyReleased(e);
-                            break;
-                        }
-                        case KeyEvent.KEY_TYPED: {
-                            receiver.keyTyped(e);
-                            break;
-                        }
-                        default: {
-                            LOG.severe("Unexpected KeyEvent ID! This is seriously fishy.");
-                        }
-                    }
+                    sendToReceiver(e, receiver);
                 }
             }
         }
 
+    }
+
+    private void sendToReceiver(KeyEvent e, KeyboardEventReceiver receiver) {
+        switch (e.getID()) {
+            case KeyEvent.KEY_PRESSED: {
+                receiver.keyPressed(e);
+                break;
+            }
+            case KeyEvent.KEY_RELEASED: {
+                receiver.keyReleased(e);
+                break;
+            }
+            case KeyEvent.KEY_TYPED: {
+                receiver.keyTyped(e);
+                break;
+            }
+            default: {
+                LOG.severe("Unexpected KeyEvent ID! This is seriously fishy.");
+            }
+        }
     }
 
 }

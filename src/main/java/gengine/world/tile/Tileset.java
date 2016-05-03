@@ -70,9 +70,6 @@ public final class Tileset {
 
             //A bodge added here to ensure "any" positive ID can be used
             if (id >= tiles.size()) {
-                //tiles.ensureCapacity(id + 1);
-                //^that actually didn't work! >:C
-
                 tiles.addAll(Arrays.asList(new NullTile[id - tiles.size() + 1]));
             }
 
@@ -93,24 +90,6 @@ public final class Tileset {
     public int addTile(Tile tile) {
         this.tiles.add(tile);
         return this.tiles.lastIndexOf(tile);
-    }
-
-    /**
-     * Loads a Tileset from a FileInputStream. I'm using a FileInputStream here,
-     * so it's possible to load from resources within JAR files as well, etc.
-     * Could be handy for single-file games etc.
-     *
-     * @param f FileInputStream to load a Tileset from.
-     *
-     * @return true on success, false on failure
-     *
-     * @deprecated
-     */
-    public boolean loadTileSet(FileInputStream f) {
-        //TODO: figure out the actual format >:/
-        //TODO: do the actual loading
-        //TODO: have fun
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     /**

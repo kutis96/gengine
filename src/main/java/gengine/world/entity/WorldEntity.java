@@ -21,10 +21,12 @@ import java.util.logging.Logger;
  */
 public abstract class WorldEntity implements Positionable, Renderable {
 
+    private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
+
     public static final int STATE_DEAD = 0xDEAD;
     public static final int STATE_UNDEFINED = 0;
+    private Coords3D pos;
 
-    private final WorldFacade facade;
 
     /**
      * Constructs this WorldEntity supplying it a WorldFacade it may use to get
@@ -36,12 +38,8 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * @param facade
      */
     public WorldEntity(WorldFacade facade) {
-        this.facade = facade;
+        //facade is to be used by extending classes
     }
-
-    private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
-
-    private Coords3D pos;
 
     /**
      * Gets the WorldEntity's position
@@ -89,10 +87,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
     public void advancePos(Coords3D pos) {
         try {
             this.pos.increment(pos);
-        } catch (DimMismatchException ex) {
-            LOG.warning("Dim Mismatch found here. The fok.");
-            LOG.warning(ex.getMessage());
-        } catch (ValueException ex) {
+        } catch (DimMismatchException | ValueException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }

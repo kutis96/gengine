@@ -10,6 +10,8 @@ import java.util.logging.Logger;
  */
 public class Coords3D extends CoordsFixedD {
 
+    private static final Logger LOG = Logger.getLogger(Coords3D.class.getName());
+
     /**
      * Constructs the Coords2D with a default value of (0, 0, 0).
      */
@@ -18,9 +20,9 @@ public class Coords3D extends CoordsFixedD {
 
         try {
             this.setCoords(new float[]{0, 0, 0});
-        } catch (DimMismatchException | ValueException ex) {
+        } catch (ValueException ex) {
             //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -34,22 +36,12 @@ public class Coords3D extends CoordsFixedD {
      */
     public Coords3D(Coords3D thingtoclone) throws ValueException {
         super(3);
-        try {
-            this.setCoords(thingtoclone.getCoords());
-        } catch (DimMismatchException ex) {
-            //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.setCoords(thingtoclone.getCoords());
     }
 
     public Coords3D(CoordsFixedD thingtoclone) throws ValueException {
         super(3);
-        try {
-            this.setCoords(thingtoclone.getCoords());
-        } catch (DimMismatchException ex) {
-            //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.setCoords(thingtoclone.getCoords());
     }
 
     /**
@@ -63,13 +55,7 @@ public class Coords3D extends CoordsFixedD {
      */
     public Coords3D(float x, float y, float z) throws ValueException {
         super(3);
-
-        try {
-            this.setCoords(new float[]{x, y, z});
-        } catch (DimMismatchException ex) {
-            //This should actually never happen
-            Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.setCoords(new float[]{x, y, z});
     }
 
     /**

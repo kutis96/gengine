@@ -34,7 +34,9 @@ public class EventyThingTest {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Tileset ts = TilesetLoader.load(new File("/home/rkutina/testing/gengine/world.tset"));
-        TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"), ts);
+        
+        TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"));
+        w.setTileset(ts);
 
         WorldRenderer wren = new SquareGridRenderer(64);
 
@@ -57,10 +59,8 @@ public class EventyThingTest {
 
         ThePlayer b3 = new ThePlayer(w.getFacade());
 
-        //b1.setPos(new Coords3D(4, 4, 0));
         b3.setPos(new Coords3D(5, 5, 0));
 
-        //w.addEntity(b1);
         w.addEntity(b3);
 
         AbstEventGenerator[] evgens = {

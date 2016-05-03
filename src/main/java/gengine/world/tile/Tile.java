@@ -9,6 +9,14 @@ import gengine.util.interfaces.Renderable;
  */
 public abstract class Tile implements Renderable {
 
+    public Tile(){
+        
+    }
+    
+    public Tile(boolean isWall){
+        this.isWall = isWall;
+    }
+    
     private boolean isWall;
 
     /**

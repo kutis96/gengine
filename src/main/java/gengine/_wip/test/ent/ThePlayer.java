@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
@@ -72,20 +73,22 @@ public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver
                     this.advancePos(new Coords3D(1, 0, 0));
                     break;
                 }
+                default:
+                    break;  //do nothing
             }
         } catch (ValueException ve) {
-            LOG.severe("Found a ValueException where there definitely shouldn't be one.");
+            LOG.log(Level.SEVERE, "Found a ValueException where there definitely shouldn't be one.", ve);
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        //Not required
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
-
+        //Not required
     }
 
     @Override

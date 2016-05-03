@@ -28,6 +28,11 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     private final Image img_scared;
     private final Image img_normal;
 
+    private static final int STATE_SCARED = 1;
+    private static final int STATE_NORMAL = 2;
+    private volatile int state;
+    private volatile long lastScared = 0;
+
     public ScaredBall(WorldFacade facade) throws IOException {
         super(facade);
 
@@ -35,11 +40,6 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         this.img_normal = ImageIO.read(new File("/home/rkutina/testimages/blueball.png"));
 
     }
-
-    private final int STATE_SCARED = 1;
-    private final int STATE_NORMAL = 2;
-    private volatile int state;
-    private volatile long lastScared = 0;
 
     @Override
     public int getState() {
@@ -74,11 +74,11 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     @Override
     public Image render() {
         switch (state) {
+            case STATE_SCARED:
+                return img_scared;
             default:
             case STATE_NORMAL:
                 return img_normal;
-            case STATE_SCARED:
-                return img_scared;
         }
     }
 
@@ -96,8 +96,8 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public boolean mouseHit(Point point) {
-        if (Point.distance(point.x, point.y, 0, 0) <= this.img_normal.getHeight(null)/2) {
-            LOG.info(""+point);
+        if (Point.distance(point.x, point.y, 0, 0) <= this.img_normal.getHeight(null) / 2) {
+            LOG.info("" + point);
             return true;
         }
         return false;
@@ -111,27 +111,27 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        //Not really required
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        //Not used
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        //Not used
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        //Not used
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        //Not used
     }
 
 }

@@ -5,7 +5,6 @@ import gengine.util.coords.Coords3D;
 import gengine.util.coords.ValueException;
 import gengine.world.TiledWorld;
 import gengine.world.WorldSizeException;
-import gengine.world.tile.Tileset;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -20,12 +19,10 @@ public class TiledWorldLoader {
 
     private static final Logger LOG = Logger.getLogger(TiledWorldLoader.class.getName());
 
-    //TODO: change this loader to load directly into an existing world, rather than having to supply it the tileset.
     /**
      * Loads a new TiledWorld from the file specified.
      *
      * @param file    File to load the world from
-     * @param tileset Tileset to use
      *
      * @return new TiledWorld
      *
@@ -33,7 +30,7 @@ public class TiledWorldLoader {
      * @throws IOException
      * @throws UnsupportedFormatException
      */
-    public static TiledWorld load(File file, Tileset tileset) throws FileNotFoundException, IOException, UnsupportedFormatException {
+    public static TiledWorld load(File file) throws FileNotFoundException, IOException, UnsupportedFormatException {
 
         BufferedReader br = new BufferedReader(new FileReader(file));
 
@@ -83,8 +80,8 @@ public class TiledWorldLoader {
 
                     try {
                         bit = Integer.parseInt(nextbit);
-                    } catch (Exception e) {
-                        System.out.println("ix: " + ix + "\tnc: " + nextCollumnSep + "\tns: " + nextSep);
+                    } catch (Exception ex) {
+                        LOG.log(Level.SEVERE, null, ex);
                         throw new UnsupportedFormatException("Integers are required, found '" + nextbit + "' on line " + linecounter + " in " + file.getAbsolutePath() + "\n" + line);
                     }
 
@@ -93,7 +90,7 @@ public class TiledWorldLoader {
                     if (nextCollumnSep <= nextSep) {
                         //it is the final bit in the current column
                         //push the current collumn onto the current row of columns.
-                        if (vcollumn.size() != 0) {
+                        if (!vcollumn.isEmpty()) {
                             row.add(vcollumn.toArray(new Integer[vcollumn.size()]));
                         }
 
@@ -107,7 +104,7 @@ public class TiledWorldLoader {
             }
 
             //we're done with this line
-            if (row.size() != 0) {
+            if (!row.isEmpty()) {
                 map.add(row.toArray(new Integer[vcollumn.size()][]));
             }
             row.clear();
@@ -115,26 +112,26 @@ public class TiledWorldLoader {
 
         LOG.log(Level.FINE, "Conversion complete.");
 
-        int max_x = 0;
-        int max_y = 0;
-        int max_z = 0;
+        int maxX = 0;
+        int maxY = 0;
+        int maxZ = 0;
 
         Integer[][][] m = map.toArray(new Integer[map.size()][][]);
         for (int x = 0; x < m.length; x++) {
             for (int y = 0; y < m[x].length; y++) {
                 for (int z = 0; z < m[x][y].length; z++) {
-                    max_x = (x > max_x) ? x : max_x;
-                    max_y = (y > max_y) ? y : max_y;
-                    max_z = (z > max_z) ? z : max_z;
+                    maxX = (x > maxX) ? x : maxX;
+                    maxY = (y > maxY) ? y : maxY;
+                    maxZ = (z > maxZ) ? z : maxZ;
                 }
             }
         }
 
         Coords3D worldDimensions;
         try {
-            worldDimensions = new Coords3D(max_x + 1, max_y + 1, max_z + 1);
+            worldDimensions = new Coords3D(maxX + 1, maxY + 1, maxZ + 1);
         } catch (ValueException ex) {
-            LOG.severe("Found a ValueException where it definitely shoudln't have occured!");
+            LOG.log(Level.SEVERE, "Found a ValueException where it definitely shoudln't have occured!", ex);
             return null;
         }
 
@@ -142,8 +139,9 @@ public class TiledWorldLoader {
 
         TiledWorld world;
         try {
-            world = new TiledWorld(worldDimensions, tileset);
+            world = new TiledWorld(worldDimensions);
         } catch (WorldSizeException ex) {
+            LOG.log(Level.SEVERE, "Unsupported world size: " + worldDimensions.toString(), ex);
             throw new UnsupportedFormatException("Unsupported world size: " + worldDimensions.toString() + "\n" + ex.getMessage());
         }
 
@@ -153,7 +151,7 @@ public class TiledWorldLoader {
                     try {
                         world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
                     } catch (ValueException ex) {
-                        LOG.severe("Found a ValueException where it definitely shoudln't have occured!");
+                        LOG.log(Level.SEVERE, "Found a ValueException where it definitely shoudln't have occured!", ex);
                     }
                 }
             }
@@ -162,9 +160,5 @@ public class TiledWorldLoader {
         LOG.fine("And we're done here. World loaded.");
 
         return world;
-    }
-
-    public static void main(String[] args) throws IOException, FileNotFoundException, UnsupportedFormatException, WorldSizeException {
-        TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"), new Tileset());
     }
 }

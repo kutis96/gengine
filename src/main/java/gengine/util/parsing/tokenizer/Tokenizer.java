@@ -1,8 +1,9 @@
-package gengine.util.parsing;
+package gengine.util.parsing.tokenizer;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import gengine.util.parsing.ParserException;
 
 /**
  * A handy 'universal' tokenizer!
@@ -31,7 +32,7 @@ public class Tokenizer {
         tokenInfos.add(new TokenInfo(Pattern.compile("^(" + regex + ")"), tokenID));
     }
 
-    public void tokenize(String str) throws TokenizerException {
+    public void tokenize(String str) throws ParserException {
         String s = str.trim() + " ";
         
         while (!" ".equals(s)) {
@@ -47,7 +48,7 @@ public class Tokenizer {
                 }
             }
             if (!match) {
-                throw new TokenizerException("Unexpected character in input: " + s);
+                throw new ParserException("Unexpected character in input: " + s);
             }
         }
     }

@@ -1,4 +1,4 @@
-package gengine.util.parsing;
+package gengine.util.parsing.tokenizer;
 
 import java.util.regex.Pattern;
 

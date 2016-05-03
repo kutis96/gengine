@@ -91,40 +91,42 @@ public class MouseEventGenerator extends AbstWindowEventGenerator {
             for (WorldEntity we : worldEntities) {
                 if (we instanceof MouseEventReceiver) {
                     MouseEventReceiver receiver = (MouseEventReceiver) we;
-
-                    switch (e.getID()) {
-                        case MouseEvent.MOUSE_CLICKED: {
-                            receiver.mouseClicked(e);
-                            break;
-                        }
-                        case MouseEvent.MOUSE_ENTERED: {
-                            receiver.mouseEntered(e);
-                            break;
-                        }
-                        case MouseEvent.MOUSE_EXITED: {
-                            receiver.mouseExited(e);
-                            break;
-                        }
-                        case MouseEvent.MOUSE_PRESSED: {
-                            receiver.mousePressed(e);
-                            break;
-                        }
-                        case MouseEvent.MOUSE_RELEASED: {
-                            receiver.mouseReleased(e);
-                            break;
-                        }
-                        case MouseEvent.MOUSE_DRAGGED: {
-                            receiver.mouseDragged(e);
-                            break;
-                        }
-                        default: {
-                            LOG.severe("Unexpected MouseEvent ID! This is somewhat fishy.");
-                        }
-                    }
+                    dispatchToReceiver(e, receiver);
                 }
             }
         }
 
     }
 
+    private void dispatchToReceiver(MouseEvent event, MouseEventReceiver receiver) {
+        switch (event.getID()) {
+            case MouseEvent.MOUSE_CLICKED: {
+                receiver.mouseClicked(event);
+                break;
+            }
+            case MouseEvent.MOUSE_ENTERED: {
+                receiver.mouseEntered(event);
+                break;
+            }
+            case MouseEvent.MOUSE_EXITED: {
+                receiver.mouseExited(event);
+                break;
+            }
+            case MouseEvent.MOUSE_PRESSED: {
+                receiver.mousePressed(event);
+                break;
+            }
+            case MouseEvent.MOUSE_RELEASED: {
+                receiver.mouseReleased(event);
+                break;
+            }
+            case MouseEvent.MOUSE_DRAGGED: {
+                receiver.mouseDragged(event);
+                break;
+            }
+            default: {
+                LOG.severe("Unexpected MouseEvent ID! This is somewhat fishy.");
+            }
+        }
+    }
 }

@@ -1,5 +1,0 @@
-TODO: create some specificish evets
-    - slap there some functions to get where the event comes from
-    - etc.
-    - this could be actually just parsed in by the event generators straight into the eventy handlers
-    - but that kind of sucks d*cks, so yeah.

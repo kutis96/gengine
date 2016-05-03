@@ -22,7 +22,7 @@ public class TiledWorld implements World {
 
     //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
     private final int[][][] tileIDmap;
-    private final Tileset tileset;
+    private Tileset tileset;
     private final List<TiledWorldEntity> entities;
 
     /**
@@ -34,11 +34,11 @@ public class TiledWorld implements World {
      * Constructs a TiledWorldWithTileSet of a specified size.
      *
      * @param size    Size of the given world.
-     * @param tileset Tileset to use.
      *
      * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
-    public TiledWorld(Coords3D size, Tileset tileset) throws WorldSizeException {
+    public TiledWorld(Coords3D size
+    ) throws WorldSizeException {
 
         if (size == null) {
             throw new WorldSizeException("Invalid world size: null supplied");
@@ -51,9 +51,7 @@ public class TiledWorld implements World {
         }
 
         this.tileIDmap = new int[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
-
-        this.tileset = tileset;
-
+        
         this.entities = new ArrayList<>();
     }
 
@@ -192,5 +190,13 @@ public class TiledWorld implements World {
     @Override
     public WorldFacade getFacade() {
         return new TiledWorldFacade(this);
+    }
+
+    public Tileset getTileset() {
+        return tileset;
+    }
+
+    public void setTileset(Tileset tileset) {
+        this.tileset = tileset;
     }
 }
