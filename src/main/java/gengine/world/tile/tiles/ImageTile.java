@@ -1,5 +1,6 @@
 package gengine.world.tile.tiles;
 
+import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
 import java.awt.Image;
 
@@ -20,7 +21,7 @@ public class ImageTile extends Tile {
     public ImageTile(Image img) {
         this.img = img;
     }
-    
+
     /**
      * Does nothing, ImageTile is completely static (as in it doesn't animate or
      * react to anything).
@@ -42,4 +43,8 @@ public class ImageTile extends Tile {
         return img;
     }
 
+    @Override
+    public boolean canSeeThrough(Coords3D direction, Coords3D offset) {
+        return this.isWall();
+    }
 }

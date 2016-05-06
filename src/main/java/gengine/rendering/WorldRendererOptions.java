@@ -63,6 +63,7 @@ public class WorldRendererOptions {
     
     public static enum Flags {
 
+        DEBUGMODE,
         WARN_ON_MISSING_TILES,
         DIE_ON_MISSING_TILES,
         NO_ENTITIES,

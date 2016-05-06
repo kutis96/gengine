@@ -2,26 +2,23 @@ package gengine._wip.test;
 
 import gengine._wip.test.ent.*;
 import gengine.events.generators.*;
+import gengine.logic.*;
 import gengine.util.loaders.TiledWorldLoader;
 import gengine.util.loaders.TilesetLoader;
-import gengine.logic.Controller;
-import gengine.logic.Simulator;
 import gengine.rendering.WorldRenderer;
 import gengine.rendering.squaregrid.SquareGridRenderer;
 import gengine.util.UnsupportedFormatException;
 import gengine.util.coords.*;
-import gengine.world.TiledWorld;
-import gengine.world.WorldSizeException;
+import gengine.world.*;
 import gengine.world.tile.Tileset;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import javax.swing.JFrame;
 
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class EventyThingTest {
+public class EventyThingTest2 {
 
     public static void main(String[] args) throws WorldSizeException, IOException, UnsupportedFormatException, InterruptedException, DimMismatchException, ValueException {
 
@@ -29,39 +26,19 @@ public class EventyThingTest {
 
         window.setTitle("Random Gamish Thing");
         window.setSize(1024, 768);
+
         window.setVisible(true);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Tileset ts = TilesetLoader.load(new File("/home/rkutina/testing/gengine/world.tset"));
-        
-        TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testing/gengine/world.wrld"));
+        Tileset ts = TilesetLoader.load(new File("/home/rkutina/testimages/world/imglist.txt"));
+
+        TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testimages/world/mapa.csv"));
         w.setTileset(ts);
 
-        WorldRenderer wren = new SquareGridRenderer(64);
-
         Simulator sim = new Simulator(w, 50);
-        StaticBall b1 = new StaticBall(w.getFacade());
 
-        for (int i = 0; i < 5; i++) {
-            ScaredBall sb1 = new ScaredBall(w.getFacade());
-
-            Coords3D c = new Coords3D(
-                    (float) Math.random() * w.getWorldSize().getX(),
-                    (float) Math.random() * w.getWorldSize().getY(),
-                    (float) Math.random() * w.getWorldSize().getZ()
-            );
-            
-            sb1.setPos(c);
-
-            w.addEntity(sb1);
-        }
-
-        ThePlayer b3 = new ThePlayer(w.getFacade());
-
-        b3.setPos(new Coords3D(5, 5, 0));
-
-        w.addEntity(b3);
+        WorldRenderer wren = new SquareGridRenderer(64);
 
         AbstEventGenerator[] evgens = {
             new ProximityEventGenerator(w, 10),
@@ -69,13 +46,36 @@ public class EventyThingTest {
             new MouseEventGenerator(w, window, wren, 50)
         };
 
-        Controller c = new Controller(sim, w, window, wren, evgens);
+        Controller ctrl = new Controller(sim, w, window, wren, evgens);
+        ControllerFacade cf = ctrl;
 
-        c.start();
+        StaticBall b1 = new StaticBall(cf);
 
-        Thread.sleep(30000);
+        for (int i = 0; i < 5; i++) {
+            ScaredBall sb1 = new ScaredBall(cf);
 
-        c.stop();
+            Coords3D c = new Coords3D(
+                    (float) Math.random() * w.getWorldSize().getX(),
+                    (float) Math.random() * w.getWorldSize().getY(),
+                    (float) Math.random() * w.getWorldSize().getZ()
+            );
+
+            sb1.setPos(c);
+
+            w.addEntity(sb1);
+        }
+
+        ThePlayer ply = new ThePlayer(cf);
+
+        ply.setPos(new Coords3D(0, 0, 0));
+        
+        w.addEntity(ply);
+
+        ctrl.start();
+
+        Thread.sleep(60000);
+
+        ctrl.stop();
 
         Thread.sleep(100);
         System.exit(0);

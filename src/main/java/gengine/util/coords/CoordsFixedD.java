@@ -53,7 +53,7 @@ public class CoordsFixedD implements Coords {
     @Override
     public final void setCoords(float[] coords) throws ValueException {
         CoordUtils.validityCheck(coords);
-        if(coords.length < this.dim){
+        if (coords.length < this.dim) {
             throw new ValueException("Invalid dimensions, expected at least " + this.dim + ", got" + coords.length);
         }
         this.coords = Arrays.copyOf(coords, this.dim);
@@ -165,7 +165,7 @@ public class CoordsFixedD implements Coords {
         }
     }
 
-    public void increment(CoordsFixedD c) throws DimMismatchException, ValueException {
+    public CoordsFixedD increment(CoordsFixedD c) throws DimMismatchException, ValueException {
         if (this.dim == c.getDimensions()) {
             float[] newvals = new float[dim];
 
@@ -177,9 +177,11 @@ public class CoordsFixedD implements Coords {
         } else {
             throw new DimMismatchException();
         }
+        
+        return this;
     }
 
-    public void decrement(CoordsFixedD c) throws DimMismatchException, ValueException {
+    public CoordsFixedD decrement(CoordsFixedD c) throws DimMismatchException, ValueException {
         if (this.dim == c.getDimensions()) {
             float[] newvals = new float[dim];
 
@@ -191,12 +193,16 @@ public class CoordsFixedD implements Coords {
         } else {
             throw new DimMismatchException();
         }
+        
+        return this;
     }
 
-    public void multiply(float f) throws DimMismatchException {
+    public CoordsFixedD multiply(float f) throws DimMismatchException {
         for (int i = 0; i < this.dim; i++) {
             this.coords[i] *= f;
         }
+        
+        return this;
     }
 
     /**
@@ -221,5 +227,11 @@ public class CoordsFixedD implements Coords {
             sum += dif * dif;
         }
         return (float) Math.sqrt(sum);
+    }
+
+    public void roundAll() {
+        for (int i = 0; i < this.dim; i++) {
+            this.coords[i] = Math.round(this.coords[i]);
+        }
     }
 }

@@ -1,11 +1,11 @@
 package gengine.world.entity;
 
+import gengine.logic.ControllerFacade;
 import gengine.util.interfaces.Renderable;
 import gengine.util.interfaces.Positionable;
 import gengine.util.coords.*;
-import gengine.world.TiledWorldFacade;
-import gengine.world.WorldFacade;
-import gengine.world.entity.WorldEntity;
+import gengine.util.facade.TiledWorldFacade;
+import gengine.util.facade.WorldFacade;
 import gengine.world.tile.TilesetIndexException;
 import java.awt.Point;
 import java.util.logging.Level;
@@ -24,11 +24,11 @@ import java.util.logging.Logger;
  */
 public abstract class TiledWorldEntity extends WorldEntity implements Positionable, Renderable {
 
-    private final TiledWorldFacade facade;
+    private final ControllerFacade facade;
 
-    public TiledWorldEntity(WorldFacade facade) {
+    public TiledWorldEntity(ControllerFacade facade) {
         super(facade);
-        this.facade = (TiledWorldFacade) facade;
+        this.facade = facade;
     }
 
     private static final Logger LOG = Logger.getLogger(TiledWorldEntity.class.getName());
@@ -82,23 +82,43 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
         try {
             this.pos.increment(pos);
         } catch (DimMismatchException | ValueException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, "", ex);
         }
     }
 
-    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {        
-        try {
-            Coords3D npos = new Coords3D(this.pos.add(pos));
-            
-            if (checkForMissingTiles && null == this.facade.getTile(npos)) {
-                //the tile I'm trying to move on is a null, so screw this
+    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {
+        return this.advancePos(pos, checkForMissingTiles, true);
+    }
+
+    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
+
+        synchronized (this.facade) {
+
+            TiledWorldFacade twfacade = (TiledWorldFacade) this.facade.getWorldFacade();
+
+            try {
+                Coords3D npos = new Coords3D(this.pos.add(pos));
+
+                if (null == twfacade.getTile(npos)) {
+                    //the tile I'm trying to move on is a null, so screw this
+                    if (checkForMissingTiles) {
+                        return false;
+                    }
+                }
+
+                if (checkForWalls && twfacade.getTile(npos).isWall()) {
+                    LOG.info("IT IS A WALL!");
+                    return false;
+                }
+
+                this.advancePos(pos);
+            } catch (DimMismatchException | ValueException ex) {
+                LOG.log(Level.SEVERE, null, ex);
                 return false;
             }
-            this.advancePos(pos);
-        } catch (DimMismatchException | ValueException | TilesetIndexException ex) {
-            Logger.getLogger(TiledWorldEntity.class.getName()).log(Level.SEVERE, null, ex);
+            return true;
+            
         }
-        return true;
     }
 
     /**

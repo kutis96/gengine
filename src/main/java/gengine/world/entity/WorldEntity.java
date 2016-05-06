@@ -1,9 +1,9 @@
 package gengine.world.entity;
 
+import gengine.logic.ControllerFacade;
 import gengine.util.interfaces.Renderable;
 import gengine.util.interfaces.Positionable;
 import gengine.util.coords.*;
-import gengine.world.WorldFacade;
 import java.awt.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +37,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
      *
      * @param facade
      */
-    public WorldEntity(WorldFacade facade) {
+    public WorldEntity(ControllerFacade facade) {
         //facade is to be used by extending classes
     }
 

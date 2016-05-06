@@ -1,4 +1,4 @@
-package gengine.world;
+package gengine.util.facade;
 
 /**
  * A façade masking a World's methods for guaranteed safe access by the

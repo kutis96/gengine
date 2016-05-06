@@ -98,27 +98,29 @@ public class SquareGridRenderer implements WorldRenderer {
         int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
 
         //pixel offsets of the visible area
-        int xoff = (int) (wrop.getCameraPosition().getX() * scaledWidth
-                + wrop.getCameraOffset().getX() + this.tilewidth / 2);
-        int yoff = (int) (wrop.getCameraPosition().getY() * scaledHeight
-                + wrop.getCameraOffset().getY() + this.tileheight / 2);
+        int xoff = (int) (-wrop.getCameraPosition().getX() * scaledWidth
+                + wrop.getCameraOffset().getX() + this.tilewidth / 2 + surface.getWidth()/2);
+        int yoff = (int) (-wrop.getCameraPosition().getY() * scaledHeight
+                + wrop.getCameraOffset().getY() + this.tileheight / 2 + surface.getHeight()/2);
 
         //WORLD (tile) coordinates specifying the drawn boundaries
         Coords3D upperVisibleBound;
         Coords3D lowerVisibleBound;
 
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES
-        lowerVisibleBound = new Coords3D(
-                Math.max(0, (float) Math.floor((double) xoff / scaledWidth) - 1),
-                Math.max(0, (float) Math.floor((double) yoff / scaledHeight) - 1),
-                0
-        );
-
-        upperVisibleBound = new Coords3D(
-                Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
-                Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
-                0
-        );
+//        lowerVisibleBound = new Coords3D(
+//                Math.max(0, (float) Math.floor((double) xoff / scaledWidth) - 1),
+//                Math.max(0, (float) Math.floor((double) yoff / scaledHeight) - 1),
+//                0
+//        );
+//
+//        upperVisibleBound = new Coords3D(
+//                Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
+//                Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
+//                0
+//        );
+        lowerVisibleBound = new Coords3D();
+        upperVisibleBound = world.getWorldSize();
         //END OF PIXEL TO WORLD BOUNDARY CONVERSION
 
         Graphics2D g2d = surface.createGraphics();
@@ -128,33 +130,20 @@ public class SquareGridRenderer implements WorldRenderer {
 
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
-                    try {
-                        Tile t = world.getWorldtile(new Coords3D(x, y, 0));
-                        Image i = t.render();
-
-                        if (i == null) {
-                            //tiles that don't render should be simply skipped
-                            //  - this is possibly asking for a major clusterfudge sooner or later
-                            continue;
-                        }
-
-                        g2d.drawImage(
-                                i,
-                                (x * scaledWidth) + xoff, //xpos
-                                (y * scaledHeight) + yoff, //ypos
-                                scaledWidth, //width
-                                scaledHeight, //height
-                                null);
-
-                    } catch (TilesetIndexException ex) {
-                        String message = "Found a tile with an invalid index while rendering!\n\t" + ex.getMessage();
-
-                        LOG.log(Level.WARNING, message);
-
-                        if (wrop.hasFlag(Flags.DIE_ON_MISSING_TILES)) {
-                            throw (RendererException) (Exception) ex;
-                        }
+                    Tile t = world.getWorldtile(new Coords3D(x, y, 0));
+                    Image i = t.render();
+                    if (i == null) {
+                        //tiles that don't render should be simply skipped
+                        //  - this is possibly asking for a major clusterfudge sooner or later
+                        continue;
                     }
+                    g2d.drawImage(
+                            i,
+                            (x * scaledWidth) + xoff - tilewidth/2, //xpos
+                            (y * scaledHeight) + yoff - tileheight/2, //ypos
+                            scaledWidth, //width
+                            scaledHeight, //height
+                            null);
                 }
             }
         }   //END OF TILE RENDERING
@@ -202,6 +191,10 @@ public class SquareGridRenderer implements WorldRenderer {
                     (int) (i.getWidth(null) * wrop.getZoom()),
                     (int) (i.getHeight(null) * wrop.getZoom()),
                     null);
+            
+            if(wrop.hasFlag(Flags.DEBUGMODE)){
+                //draw lines between entities or something here
+            }
         }
 
         synchronized (lock) {

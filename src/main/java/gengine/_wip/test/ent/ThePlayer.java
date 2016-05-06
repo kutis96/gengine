@@ -1,9 +1,10 @@
 package gengine._wip.test.ent;
 
 import gengine.events.receivers.KeyboardEventReceiver;
+import gengine.logic.ControllerFacade;
 import gengine.util.coords.*;
-import gengine.world.WorldFacade;
-import gengine.world.entity.TiledWorldEntity;
+import gengine.world.entity.*;
+import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -18,14 +19,16 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver {
+public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver {
 
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
 
     private final Image img;
+    private final ControllerFacade cf;
 
-    public ThePlayer(WorldFacade facade) throws IOException {
-        super(facade);
+    public ThePlayer(ControllerFacade facade) throws IOException {
+        super(facade, 20);
+        this.cf = facade;
         this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
     }
 
@@ -41,7 +44,7 @@ public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver
 
     @Override
     public void tick(long dt) {
-        //Do nothing
+        this.advancePos(new Coords3D());
     }
 
     @Override
@@ -51,26 +54,27 @@ public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver
 
     @Override
     public void keyPressed(KeyEvent e) {
+        LOG.info("HELLO");
         try {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP: {
                     LOG.info("UP!");
-                    this.advancePos(new Coords3D(0, -1, 0));
+                    move(new Coords3D(0, -1, 0));
                     break;
                 }
                 case KeyEvent.VK_DOWN: {
                     LOG.info("DOWN!");
-                    this.advancePos(new Coords3D(0, 1, 0));
+                    move(new Coords3D(0, 1, 0));
                     break;
                 }
                 case KeyEvent.VK_LEFT: {
                     LOG.info("LEFT!");
-                    this.advancePos(new Coords3D(-1, 0, 0));
+                    move(new Coords3D(-1, 0, 0));
                     break;
                 }
                 case KeyEvent.VK_RIGHT: {
                     LOG.info("RIGHT!");
-                    this.advancePos(new Coords3D(1, 0, 0));
+                    move(new Coords3D(1, 0, 0));
                     break;
                 }
                 default:
@@ -95,5 +99,14 @@ public class ThePlayer extends TiledWorldEntity implements KeyboardEventReceiver
     public boolean mouseHit(Point point) {
         return false;
     }
+    
+    private void move(Coords3D direction){
+        this.advancePos(direction, true, true);
+        cf.changeCamPosition(this.getPos());
+    }
 
+    @Override
+    public void receiveAttack(Weapon w, NPCEntity perpetrator) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

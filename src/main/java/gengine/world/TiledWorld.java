@@ -1,5 +1,7 @@
 package gengine.world;
 
+import gengine.util.facade.WorldFacade;
+import gengine.util.facade.TiledWorldFacade;
 import gengine.rendering.squaregrid.SquareGridUtils;
 import gengine.util.coords.Coords3D;
 import gengine.util.coords.ValueException;
@@ -37,8 +39,7 @@ public class TiledWorld implements World {
      *
      * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
-    public TiledWorld(Coords3D size
-    ) throws WorldSizeException {
+    public TiledWorld(Coords3D size) throws WorldSizeException {
 
         if (size == null) {
             throw new WorldSizeException("Invalid world size: null supplied");
@@ -54,25 +55,23 @@ public class TiledWorld implements World {
         
         this.entities = new ArrayList<>();
     }
-
+    
     /**
      * Returns a tile with given coordinates.
      *
      * @param pos
      *
      * @return tile on the given position
-     *
-     * @throws TilesetIndexException
      */
-    public Tile getWorldtile(Coords3D pos) throws TilesetIndexException {
+    public Tile getWorldtile(Coords3D pos) {
 
         if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSize())) {
             try {
                 return this.tileset.getTileFromId(
                         this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
                 );
-            } catch (NullPointerException | ArrayIndexOutOfBoundsException ex) {
-                LOG.log(Level.SEVERE, "NPE caught!", ex);
+            } catch (NullPointerException | ArrayIndexOutOfBoundsException | TilesetIndexException ex) {
+                LOG.log(Level.SEVERE, null, ex);
                 return null;
             }
         } else {

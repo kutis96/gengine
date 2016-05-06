@@ -1,6 +1,7 @@
 package gengine.world.tile.tiles;
 
 import gengine.anim.AnimatedImage;
+import gengine.util.coords.Coords3D;
 import gengine.world.tile.Tile;
 import java.awt.Image;
 
@@ -41,5 +42,10 @@ public class AnimatedTile extends Tile {
     @Override
     public Image render() {
         return ai.getCurrentImage();
+    }
+
+    @Override
+    public boolean canSeeThrough(Coords3D direction, Coords3D offset) {
+        return this.isWall();
     }
 }

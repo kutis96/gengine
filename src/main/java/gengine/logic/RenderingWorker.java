@@ -1,7 +1,7 @@
 package gengine.logic;
 
 import gengine.rendering.*;
-import gengine.util.LoopyRunnable;
+import gengine.util.Worker;
 import gengine.world.World;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -15,7 +15,7 @@ import javax.swing.JFrame;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class RenderingWorker extends LoopyRunnable {
+public class RenderingWorker extends Worker {
 
     private static final Logger LOG = Logger.getLogger(RenderingWorker.class.getName());
 

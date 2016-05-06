@@ -23,3 +23,24 @@ REAL TODO:
  - add some common fields, such as health and stuff. More of those for the player and NPCs and rogues, of course.
  - maybe also add some random 'message boxes' for some entities, so that they could generate events too, which would be collected
    and distributed by something else
+
+When your deadline comes
+--------------------------------------------------------------------------------
+                                                                     6. 5. 2016
+                                                                          20:06
+
+    It's a strange feeling when the deadline approaches you and demands your
+full attention. At this stage, I'm feeling quite... desperate. There's MONTHS
+of work to do, and only one day left. I'm contemplating pulling an all-nighter
+on this one, commiting a true, 24+ hour codestreak. Should be doable, given
+enough caffeine, I think.
+    I've also ended up talking to one of my friends again. He's now working on
+a tileset for the demo I sorta need to make. Oh well. We'll see how that turns
+out.
+    Now. Why am I writing this in here?
+    Oh. Entity/event stuff.
+Actually, this part is mostly done. I've finally figured out how to handle the
+stuff, which was holding me back for several weeks before. I'd quite use some
+of those weeks now.
+    Anyway. I seriously need to finish the VisibilityEventGenerator and stuff
+like that. I'll add some other devnote elsewhere.

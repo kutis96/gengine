@@ -1,0 +1,32 @@
+Tired.
+--------------------------------------------------------------------------------
+                                                                     7. 5. 2016
+                                                                          01:07
+    It turns out I've absolutely fudged up the whole rendering stuff.
+I still may want to draw some stuff on some other levels, not just the ground
+level, such as random overlays and whatnot. And of course, I wrote it so
+the entities get drawn on the top. Always. No matter what. Oh well.
+Time to rewrite that.
+    I've also finally managed to make this super silly and potentially buggy
+ExtendedKeyValLoader. It can load Key:Val pairs, but with an array of values!
+Typically comma-separated. Which is actually fairly nice, I guess.
+    I may just modify that one for a new TiledWorld loader, but that stuff
+sorta works now, so yeah. Fudge it.
+    And I've also finished the TileSet loader. It can load animated tiles
+as well. In fact, it only loads those. ImageTiles are emulated using
+AnimatedTiles with just a single frame.
+
+    Anyway. I REALLY want to fix the renderer, unless I want to call this
+problem a feature. Also, that means checking for tiles possibly obstructing
+the view, and gah. Kill me.
+    Also, I haven't fixed the VisibilityEventGenerator yet. At all.
+
+    Man, I'm tired. Coffee doesn't seem to help, yet it's not all that late
+so far.
+    Another thing I sort of plan to make is this sentry turret thing as a test,
+once I get the VEG done. It could be just sweeping around, and once it sees
+something in the vicinity, it'd turn and shoot projectiles at it. So that'd
+be a nice excercise, I guess.
+
+    Ah well. I've also got my friend L. Zounek to draw me some tilesets
+and a test map and stuff. Which I do super appreciate.

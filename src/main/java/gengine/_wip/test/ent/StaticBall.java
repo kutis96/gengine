@@ -1,6 +1,7 @@
 package gengine._wip.test.ent;
 
-import gengine.world.WorldFacade;
+import gengine.logic.ControllerFacade;
+import gengine.util.facade.TiledWorldFacade;
 import gengine.world.entity.TiledWorldEntity;
 import java.awt.Image;
 import java.awt.Point;
@@ -17,7 +18,7 @@ public class StaticBall extends TiledWorldEntity {
 
     private final Image img;
 
-    public StaticBall(WorldFacade facade) throws IOException {
+    public StaticBall(ControllerFacade facade) throws IOException {
         super(facade);
         this.img = ImageIO.read(new File("/home/rkutina/testimages/blueball.png"));
     }

@@ -45,11 +45,11 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
                     ProximityEventReceiver receiver = (ProximityEventReceiver) we;
 
                     float maxDistance = receiver.getProxDistance();
-                    Coords3D pos = (Coords3D) we.getPos();
+                    Coords3D pos = we.getPos();
 
                     for (WorldEntity wx : worldEntities) {
                         if (!wx.equals(we)) {
-                            float distance = getAbsDistance(pos, (Coords3D) wx.getPos());
+                            float distance = getAbsDistance(pos, wx.getPos());
                             if (distance <= maxDistance) {
                                 //TODO: maybe add some dispatcher there,
                                 // so the whole generator doesn't freeze just because of 

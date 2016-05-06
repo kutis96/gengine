@@ -2,9 +2,9 @@ package gengine._wip.test.ent;
 
 import gengine.events.receivers.MouseEventReceiver;
 import gengine.events.receivers.ProximityEventReceiver;
+import gengine.logic.ControllerFacade;
 import gengine.util.coords.Coords3D;
 import gengine.util.coords.ValueException;
-import gengine.world.WorldFacade;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import java.awt.Image;
@@ -33,10 +33,10 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     private volatile int state;
     private volatile long lastScared = 0;
 
-    public ScaredBall(WorldFacade facade) throws IOException {
+    public ScaredBall(ControllerFacade facade) throws IOException {
         super(facade);
 
-        this.img_scared = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
+        this.img_scared = ImageIO.read(new File("/home/rkutina/testimages/greenball.png"));
         this.img_normal = ImageIO.read(new File("/home/rkutina/testimages/blueball.png"));
 
     }

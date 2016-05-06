@@ -1,13 +1,15 @@
 package gengine.util.loaders;
 
-import gengine.util.KeyValLoader;
-import gengine.util.UnsupportedFormatException;
+import gengine.anim.AnimFrame;
+import gengine.anim.AnimatedImage;
+import gengine.util.*;
+import gengine.util.parsing.ParserException;
+import gengine.util.parsing.switcher.*;
 import gengine.world.tile.*;
 import gengine.world.tile.tiles.AnimatedTile;
-import gengine.world.tile.tiles.ImageTile;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +21,7 @@ import javax.imageio.ImageIO;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class TilesetLoader {
-    
+
     private static final Logger LOG = Logger.getLogger(TilesetLoader.class.getName());
 
     public TilesetLoader() {
@@ -41,13 +43,13 @@ public class TilesetLoader {
     public static Tileset load(File f) throws IOException, UnsupportedFormatException {
 
         //load Key:Value values from the given file
-        Map<String, String> kv = KeyValLoader.load(new FileInputStream(f));
+        Map<String, String[]> kv = ExtendedKeyValLoader.load(new FileInputStream(f));
 
         Tileset tileset = new Tileset();
 
-        for (Entry<String, String> e : kv.entrySet()) {
+        for (Entry<String, String[]> e : kv.entrySet()) {
             String kStr = e.getKey();
-            String vStr = e.getValue();
+            String[] vStrA = e.getValue();
 
             //Tileset keys are only supposed to be integers for some reason
             //  (mostly because I'm apparently one heck of a lazy bastard)
@@ -57,30 +59,18 @@ public class TilesetLoader {
 
             int index = Integer.parseInt(kStr);
 
-            File tilefile = new File(f.getParent() + "/" + vStr);
-
-            if (!tilefile.exists()) {
-                throw new IOException("File '" + tilefile.getCanonicalPath() + "' was not found. (" + vStr + ")");
-            }
-
             Tile tile;
 
-            if (tilefile.isDirectory()) {
-                //load it as an animated tile
-                tile = loadAnimTile(tilefile);
-            } else if (tilefile.isFile()) {
-                //load it as a regular image tile
-                tile = loadImgTile(tilefile);
-            } else {
-                //what the hell?
-                throw new IOException("I have no idea how on earth did this happen, but if you read this, it has probably happened. Your computer is cursed. Good luck.");
-            }
-
             try {
+                tile = loadAnimTile(f.getParent(), vStrA);
+
                 tileset.setTileWithId(index, tile);
             } catch (TilesetIndexException ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 throw new UnsupportedFormatException("Tileset index fudgeup.\n" + ex.getMessage());
+            } catch (ParserException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+                throw new UnsupportedFormatException("Found a parser issue parsing '" + kStr + "'\n" + ex.getMessage());
             }
 
         }
@@ -88,29 +78,109 @@ public class TilesetLoader {
         return tileset;
     }
 
-    /**
-     * Creates an ImageTile from a specified File, which is indeed a file.
-     *
-     * @param f File containing the image.
-     *
-     * @return ImageTile with the specified Image.
-     *
-     * @throws IOException
-     */
-    private static ImageTile loadImgTile(File f) throws IOException {
-        BufferedImage img = ImageIO.read(f);
+    private static AnimatedTile loadAnimTile(String parent, String[] options) throws IOException, ParserException {
 
-        return new ImageTile(img);
-    }
+        File tilefile;
 
-    private static AnimatedTile loadAnimTile(File f) {
-        //TODO: make an animated tile loader
-        // it should basically open a config file in a directory
-        // figure out the delays for each frame
-        // and create an animated thing out of them all.
-        // if the config file isn't there, use some mildly reasonable default delay thing.
-        throw new UnsupportedOperationException("Trying to load an AnimatedTile " + f.getAbsolutePath());
+        try {
 
+            tilefile = new File(parent + "/" + options[0]);
+
+        } catch (ArrayIndexOutOfBoundsException npe) {
+            LOG.log(Level.SEVERE, null, npe);
+            throw new IOException("Invalid options found in the Tileset loader.");
+        }
+
+        if (!tilefile.exists()) {
+            throw new IOException("File '" + tilefile.getCanonicalPath() + "' was not found.");
+        }
+
+        SwitchTemplate tempWall = new SwitchTemplate("(?i)w(all)?");
+        SwitchTemplate tempNumber = new SwitchTemplate("(-)?[1-9]([0-9]+)?");
+        SwitchTemplate tempAny = new SwitchTemplate(".+");
+
+        SwitchTemplate[] rulebook = {
+            tempWall, tempNumber, tempAny
+        };
+
+        SwitchToken[] aDecTok = SwitchDecoder.decode(options, rulebook);
+
+        boolean isWall = false;
+        int intParams[] = {-1, -1, 100};   //default values for Xsize, Ysize, animPeriod
+        int sx = 0;
+        int ac = 0;
+
+        for (SwitchToken st : aDecTok) {
+            if (tempWall.equals(st.getTemplate())) {
+                if (isWall) {
+                    LOG.warning("Found the same tag twice!");
+                }
+                isWall = true;
+                continue;
+            }
+            if (tempNumber.equals(st.getTemplate())) {
+                int n = Integer.parseInt(st.getString());
+                if (sx < intParams.length) {
+                    intParams[sx] = n;
+                    sx++;
+                } else {
+                    LOG.warning("Found too many integer params in here");
+                }
+                continue;
+            }
+            if (tempAny.equals(st.getTemplate())) {
+                ac++;
+                if (ac > 1) {
+                    LOG.warning("Found too many string params in here");
+                }
+            }
+        }
+
+        int xsize = intParams[0];   //X size
+        int ysize = intParams[1];   //Y size
+        int aperi = intParams[2];   //anim. period
+
+        BufferedImage img = ImageIO.read(tilefile);
+
+        if (xsize == -1 && ysize == -1) {
+            //determine the tilesize from an image, assuming square tiles.
+
+            xsize = Math.min(img.getHeight(), img.getWidth());
+        }
+
+        if (ysize == -1) {
+            //only one parameter was supplied, assume a square
+            ysize = xsize;
+        }
+
+        List<AnimFrame> frames = new LinkedList<>();
+
+        LOG.log(Level.INFO, "Loading new AnimatedTile. ({4})\nAssumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1. / aperi, tilefile.getAbsolutePath(), (isWall) ? "is" : "is not"});
+
+        
+        for (int x = 0; x < img.getWidth(); x += xsize) {
+            
+            for (int y = 0; y < img.getHeight(); y += ysize) {
+
+                BufferedImage i = img.getSubimage(x, y, xsize, ysize);
+
+                AnimFrame af = new AnimFrame(i, aperi);
+
+                frames.add(af);
+            }
+            
+        }
+
+        AnimatedTile ret = new AnimatedTile(new AnimatedImage(frames.toArray(new AnimFrame[frames.size()])));
+
+        ret.setWall(isWall);
+        
+        if(ret.isWall() != isWall){
+            throw new IOException("WTF");
+        }
+        
+        return ret;
+        
     }
 
 }

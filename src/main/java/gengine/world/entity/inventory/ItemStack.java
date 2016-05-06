@@ -1,5 +1,7 @@
 package gengine.world.entity.inventory;
 
+import gengine.world.entity.inventory.items.InventoryItem;
+
 /**
  * An item stack. Useful for storing multiples of something.
  *

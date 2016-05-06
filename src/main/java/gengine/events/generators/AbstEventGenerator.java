@@ -1,6 +1,6 @@
 package gengine.events.generators;
 
-import gengine.util.LoopyRunnable;
+import gengine.util.Worker;
 
 /**
  * AbstEventGenerator. A class so abstract it basically doesn't exist anywhere else
@@ -8,7 +8,7 @@ import gengine.util.LoopyRunnable;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class AbstEventGenerator extends LoopyRunnable {
+public abstract class AbstEventGenerator extends Worker {
     //TODO: figure out some basic stuff for this.
     //  the main issue is that the AbstEventGenerator itself could be generating the events out of basically anything
     //  I think I may create a few specific subsets of this one - say a WorldEventGenerator and a WindowEventGenerator
@@ -16,7 +16,7 @@ public abstract class AbstEventGenerator extends LoopyRunnable {
     //  I still don't think those two have all that much in common
 
     /**
-     * Constructor inherited from the LoopyRunnable
+     * Constructor inherited from the Worker
      *
      * @param period Desired loop period in milliseconds
      */

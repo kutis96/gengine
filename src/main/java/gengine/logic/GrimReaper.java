@@ -1,20 +1,21 @@
 package gengine.logic;
 
-import gengine.util.LoopyRunnable;
+import gengine.util.Worker;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * GrimReaper. Basically just a dead WorldEntity garbage collector. I thought
- * this name is much more fitting.
+ * this name would be much more fitting.
  *
  * I've decided to use this 'passive' method instead of WorldEntities basically
  * killing themselves, and that's mostly for safety reasons let's say.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class GrimReaper extends LoopyRunnable {
+public class GrimReaper extends Worker {
 
     private static final Logger LOG = Logger.getLogger(GrimReaper.class.getName());
 
@@ -27,7 +28,7 @@ public class GrimReaper extends LoopyRunnable {
 
     @Override
     public void init() {
-        LOG.info("Good morning, Mr. Reaper. Why do you look so grim today? D:");
+        LOG.info("Alive. Unlike some of you.");
     }
 
     @Override
@@ -35,7 +36,7 @@ public class GrimReaper extends LoopyRunnable {
         synchronized (this.world) {
             for (WorldEntity we : this.world.getEntities()) {
                 if (we.getState() == WorldEntity.STATE_DEAD) {
-                    LOG.info("And so the Death takes another one...");
+                    LOG.log(Level.INFO, "And so I take another one... ({0})", we);
                     this.world.removeEntity(we);
                 }
             }
@@ -44,7 +45,7 @@ public class GrimReaper extends LoopyRunnable {
 
     @Override
     public void die() {
-        LOG.info("And so the Death decides its work is over.");
+        LOG.info("Dead.");
     }
 
 }

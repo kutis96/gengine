@@ -1,5 +1,6 @@
 package gengine.world;
 
+import gengine.util.facade.WorldFacade;
 import gengine.util.coords.Coords3D;
 import gengine.world.entity.WorldEntity;
 

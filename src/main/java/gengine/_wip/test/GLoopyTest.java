@@ -1,6 +1,6 @@
 package gengine._wip.test;
 
-import gengine.util.LoopyRunnable;
+import gengine.util.Worker;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +14,7 @@ public class GLoopyTest {
     private static final Logger LOG = Logger.getLogger(GLoopyTest.class.getName());
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        LoopyRunnable gl = new LoopyRunnable(5) {
+        Worker gl = new Worker(5) {
 
             @Override
             public void init() {

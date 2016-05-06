@@ -1,9 +1,13 @@
 package gengine.logic;
 
 import gengine.events.generators.AbstEventGenerator;
-import gengine.rendering.WorldRenderer;
-import gengine.rendering.WorldRendererOptions;
+import gengine.rendering.*;
+import gengine.util.coords.Coords3D;
+import gengine.util.facade.WorldFacade;
 import gengine.world.World;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -14,14 +18,13 @@ import javax.swing.JFrame;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Controller {
+public class Controller implements ControllerFacade, WindowListener {
 
     //TODO: window resizing should redraw the world
     //TODO: add event handling
     private static final Logger LOG = Logger.getLogger(Controller.class.getName());
 
     private final Simulator sim;
-    private final World world;
     private final JFrame jf;
     private final WorldRenderer wren;
     private final AbstEventGenerator[] evgens;
@@ -32,12 +35,16 @@ public class Controller {
 
     private RenderingWorker renWor;
 
+    private final Stack<World> worldStack;
+
     public Controller(Simulator sim, World world, JFrame jf, WorldRenderer wren, AbstEventGenerator[] evgens) {
         this.sim = sim;
-        this.world = world;
         this.jf = jf;
         this.wren = wren;
         this.evgens = evgens;
+
+        this.worldStack = new Stack<>();
+        this.worldStack.push(world);
 
         init();
     }
@@ -54,10 +61,11 @@ public class Controller {
         }
 
         renWor = new RenderingWorker(jf, 20);
-        renWor.setWorld(world);
+        renWor.setWorld(this.getCurrentWorld());
         renWor.setWorldRenderer(wren);
         WorldRendererOptions wrop = new WorldRendererOptions();
-        wrop.setZoom(2);
+        wrop.setZoom(1);
+        wrop.addFlag(WorldRendererOptions.Flags.DEBUGMODE);
         renWor.setRendererOptions(wrop);
 
         this.tRenderer = new Thread(renWor);
@@ -67,7 +75,7 @@ public class Controller {
      * Starts all the threads created during init.
      */
     public void start() {
-        
+
         if (!this.tSim.isAlive()) {
             this.tSim.start();
         }
@@ -81,7 +89,7 @@ public class Controller {
                 teg.start();
             }
         }
-        
+
         LOG.info("Started");
     }
 
@@ -105,5 +113,87 @@ public class Controller {
         //TODO: add pause stuffs!
         //should be basically the same as stop, no?
         this.stop();
+    }
+
+    private World getCurrentWorld() {
+        return this.worldStack.peek();
+    }
+
+    @Override
+    public void changeCamPosition(Coords3D pos) {
+
+        WorldRendererOptions wrop = this.renWor.getRendererOptions();
+        wrop.setCameraPosition(pos);
+        this.renWor.setRendererOptions(wrop);
+
+    }
+
+    @Override
+    public WorldFacade getWorldFacade() {
+        return this.getCurrentWorld().getFacade();
+    }
+
+    @Override
+    public boolean switchWorlds(Object requestor, World world, boolean save) throws WorldTypeMismatchException {
+        //TODO: check whether the requestor is actually allowed to do this
+        //TODO: actually save the player itself and their stuff before any world switching occurs
+        //      and set them back into the new/old one again. this could be slightly tricky
+
+        if (world.getClass().equals(this.getCurrentWorld().getClass())) { //check whether both worlds are of the same type
+            if (!save) {
+                this.worldStack.pop();
+            }
+            this.worldStack.push(world);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean returnWorlds(Object requestor) {
+        //TODO: check whether the requestor is actually allowed to do this
+
+        if (this.worldStack.size() > 1) {
+            this.worldStack.pop();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        //Do nothing
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        this.stop();
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+        //Do nothing
+        //maybe pause the thing
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+        //Do nothing
+        //maybe unpause the thing
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+        //maybe unpause the thing
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        //maybe pause the thing
     }
 }

@@ -1,6 +1,7 @@
-package gengine.world;
+package gengine.util.facade;
 
 import gengine.util.coords.Coords3D;
+import gengine.world.TiledWorld;
 import gengine.world.tile.Tile;
 import gengine.world.tile.TilesetIndexException;
 
@@ -25,19 +26,20 @@ public class TiledWorldFacade implements WorldFacade {
      *
      * @return tile if the tile exists, null otherwise.
      */
-    public Tile getTile(Coords3D coordinates) throws TilesetIndexException{
-        synchronized(this.world){
+    public Tile getTile(Coords3D coordinates) {
+        synchronized (this.world) {
             return this.world.getWorldtile(coordinates);
         }
     }
 
     /**
      * Sets a tile on a given coordinate.
+     *
      * @param coordinates
-     * @param tile 
+     * @param tile
      */
-    public void setTile(Coords3D coordinates, Tile tile){
-        synchronized(this.world){
+    public void setTile(Coords3D coordinates, Tile tile) {
+        synchronized (this.world) {
             this.world.setWorldtile(tile, coordinates);
         }
     }
