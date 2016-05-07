@@ -1,7 +1,6 @@
 package gengine._wip.test.ent;
 
 import gengine.logic.ControllerFacade;
-import gengine.util.facade.TiledWorldFacade;
 import gengine.world.entity.TiledWorldEntity;
 import java.awt.Image;
 import java.awt.Point;

@@ -1,8 +1,8 @@
 package gengine.world.entity;
 
 import gengine.logic.ControllerFacade;
-import gengine.util.interfaces.Renderable;
-import gengine.util.interfaces.Positionable;
+import gengine.rendering.Renderable;
+import gengine.util.coords.Positionable;
 import gengine.util.coords.*;
 import java.awt.Point;
 import java.util.logging.Level;

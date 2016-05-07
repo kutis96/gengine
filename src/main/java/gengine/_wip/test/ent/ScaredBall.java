@@ -59,8 +59,8 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
             try {
                 this.advancePos(new Coords3D(
                         (float) (2 * (Math.random() - 0.5)),
-                        (float) (2 * (Math.random() - 0.5)),
-                        (float) (2 * (Math.random() - 0.5))), true);
+                        (float) (2 * (Math.random() - 0.5)), 
+                        0), true);
             } catch (ValueException ex) {
                 LOG.log(Level.SEVERE, "This is bad", ex);
             }

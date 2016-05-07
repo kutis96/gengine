@@ -1,4 +1,4 @@
-package gengine.util.interfaces;
+package gengine.rendering;
 
 import java.awt.Image;
 

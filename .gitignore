@@ -11,3 +11,4 @@
 nbactions.xml
 /src/main/java/gengine/util/AdvancedKeyValueLoader.java
 /src/main/java/gengine/world/tile/TilesetLoader.java
+!/src/main/java/resources/font.png

@@ -70,10 +70,19 @@ public class EventyThingTest2 {
         ply.setPos(new Coords3D(0, 0, 0));
         
         w.addEntity(ply);
-
+//        
+//        Sentry sentry = new Sentry(cf);
+//        sentry.setPos(new Coords3D(15, 15, 0));
+//        w.addEntity(sentry);
+//        
+//        SentryProjectile sp = new SentryProjectile(cf, null, null);
+//        sp.setPos(new Coords3D(1,1,0));
+//        sp.setVelocity(new Coords3D(0.01, 0.01, 0));
+//        w.addEntity(sp);
+        
         ctrl.start();
 
-        Thread.sleep(60000);
+        Thread.sleep(120000);
 
         ctrl.stop();
 

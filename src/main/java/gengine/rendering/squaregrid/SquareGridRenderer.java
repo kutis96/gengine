@@ -93,6 +93,8 @@ public class SquareGridRenderer implements WorldRenderer {
         //        and parametrize everything, also use some functions for coordinate conversion
         //        and aaaaah!        
 
+        //  TODO: render tiles while rendering entities as well, to allow for tile overlays etc.
+        
         //scaled pixel Height and Width of the tiles
         int scaledHeight = (int) (this.tileheight * wrop.getZoom());
         int scaledWidth = (int) (this.tilewidth * wrop.getZoom());

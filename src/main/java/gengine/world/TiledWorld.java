@@ -3,13 +3,12 @@ package gengine.world;
 import gengine.util.facade.WorldFacade;
 import gengine.util.facade.TiledWorldFacade;
 import gengine.rendering.squaregrid.SquareGridUtils;
-import gengine.util.coords.Coords3D;
-import gengine.util.coords.ValueException;
+import gengine.util.coords.*;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,14 +17,16 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class TiledWorld implements World {
+public class TiledWorld implements World, TiledWorldFacade {
 
     private static final Logger LOG = Logger.getLogger(TiledWorld.class.getName());
 
     //TODO: use TileSets and Tile ID's instead - should save a fair bunch of memory
     private final int[][][] tileIDmap;
     private Tileset tileset;
-    private final List<TiledWorldEntity> entities;
+    public final List<TiledWorldEntity> entities;
+
+    private final Object entLock = new Object();
 
     /**
      * Maximum allowed amount of tiles. Mostly pointless.
@@ -35,7 +36,7 @@ public class TiledWorld implements World {
     /**
      * Constructs a TiledWorldWithTileSet of a specified size.
      *
-     * @param size    Size of the given world.
+     * @param size Size of the given world.
      *
      * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
@@ -52,10 +53,10 @@ public class TiledWorld implements World {
         }
 
         this.tileIDmap = new int[(int) size.getX()][(int) size.getY()][(int) size.getZ()];
-        
-        this.entities = new ArrayList<>();
+
+        this.entities = new CopyOnWriteArrayList<>();
     }
-    
+
     /**
      * Returns a tile with given coordinates.
      *
@@ -65,7 +66,9 @@ public class TiledWorld implements World {
      */
     public Tile getWorldtile(Coords3D pos) {
 
-        if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSize())) {
+        pos.roundAll();
+
+        if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSizeMinusOne())) {
             try {
                 return this.tileset.getTileFromId(
                         this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
@@ -117,19 +120,23 @@ public class TiledWorld implements World {
      */
     @Override
     public Coords3D getWorldSize() {
-        try {
-            if (this.tileIDmap == null) {
-                return null;
-            }
-
-            return new Coords3D(
-                    this.tileIDmap.length, //X
-                    this.tileIDmap[0].length, //Y
-                    this.tileIDmap[0][0].length //Z
-            );
-        } catch (ValueException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+        if (this.tileIDmap == null) {
             return null;
+        }
+
+        return new Coords3D(
+                this.tileIDmap.length, //X
+                this.tileIDmap[0].length, //Y
+                this.tileIDmap[0][0].length //Z
+        );
+    }
+
+    private Coords3D getWorldSizeMinusOne() {
+        try {
+            return new Coords3D(getWorldSize().decrement(new Coords3D(1, 1, 1)));
+        } catch (ValueException | DimMismatchException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            return new Coords3D();
         }
     }
 
@@ -142,9 +149,18 @@ public class TiledWorld implements World {
     public void tick(long dt) {
         this.tileset.updateAll(dt);
 
-        for (TiledWorldEntity e : this.entities) {
-            if (e != null) {
-                e.tick(dt);
+        synchronized (this.entLock) {
+            TiledWorldEntity last = null;
+
+            for (TiledWorldEntity e : this.entities) {
+                if (e != null) {
+                    last = e;
+                    try {
+                        e.tick(dt);
+                    } catch (Exception ex) {
+                        LOG.log(Level.SEVERE, "Last: " + last, ex);
+                    }
+                }
             }
         }
     }
@@ -152,7 +168,7 @@ public class TiledWorld implements World {
     @Override
     public void addEntity(WorldEntity entity) {
         if (entity instanceof TiledWorldEntity) {
-            synchronized (this.entities) {
+            synchronized (this.entLock) {
                 this.entities.add((TiledWorldEntity) entity);
             }
         } else {
@@ -163,7 +179,7 @@ public class TiledWorld implements World {
     @Override
     public void removeEntity(WorldEntity entity) {
         if (entity instanceof TiledWorldEntity) {
-            synchronized (this.entities) {
+            synchronized (this.entLock) {
                 if (this.entities.contains((TiledWorldEntity) entity)) {
                     this.entities.remove((TiledWorldEntity) entity);
                 } else {
@@ -177,7 +193,7 @@ public class TiledWorld implements World {
 
     @Override
     public WorldEntity[] getEntities() {
-        synchronized (this.entities) {
+        synchronized (this.entLock) {
             return this.entities.toArray(new WorldEntity[this.entities.size()]);
         }
     }
@@ -188,7 +204,7 @@ public class TiledWorld implements World {
 
     @Override
     public WorldFacade getFacade() {
-        return new TiledWorldFacade(this);
+        return (TiledWorldFacade) this;
     }
 
     public Tileset getTileset() {
@@ -197,5 +213,25 @@ public class TiledWorld implements World {
 
     public void setTileset(Tileset tileset) {
         this.tileset = tileset;
+    }
+
+    @Override
+    public Tile getTile(Coords3D coordinates) {
+        //TODO: synchronize
+        return this.getWorldtile(coordinates);
+    }
+
+    @Override
+    public void setTile(Coords3D coordinates, Tile tile) {
+        //TODO: synchronize
+        this.setWorldtile(tile, coordinates);
+    }
+
+    @Override
+    public boolean spawnEntity(TiledWorldEntity twe) {
+        synchronized (this.entLock) {
+            this.entities.add(twe);
+        }
+        return true;
     }
 }

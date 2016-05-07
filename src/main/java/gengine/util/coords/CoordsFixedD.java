@@ -231,7 +231,18 @@ public class CoordsFixedD implements Coords {
 
     public void roundAll() {
         for (int i = 0; i < this.dim; i++) {
-            this.coords[i] = Math.round(this.coords[i]);
+            this.coords[i] = (float) Math.floor(this.coords[i]);
         }
+    }
+    
+    public CoordsFixedD directionVector(){
+        CoordsFixedD cf = null;
+        try {
+            cf = new CoordsFixedD(this);
+            cf.multiply(1/cf.vecLength());
+        } catch (ValueException | DimMismatchException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+        return cf;
     }
 }

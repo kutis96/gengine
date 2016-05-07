@@ -22,7 +22,7 @@ public class TiledWorldLoader {
     /**
      * Loads a new TiledWorld from the file specified.
      *
-     * @param file    File to load the world from
+     * @param file File to load the world from
      *
      * @return new TiledWorld
      *
@@ -128,12 +128,7 @@ public class TiledWorldLoader {
         }
 
         Coords3D worldDimensions;
-        try {
-            worldDimensions = new Coords3D(maxX + 1, maxY + 1, maxZ + 1);
-        } catch (ValueException ex) {
-            LOG.log(Level.SEVERE, "Found a ValueException where it definitely shoudln't have occured!", ex);
-            return null;
-        }
+        worldDimensions = new Coords3D(maxX + 1, maxY + 1, maxZ + 1);
 
         LOG.log(Level.FINE, "World dimensions assesed: {0}", worldDimensions.toString());
 
@@ -148,11 +143,7 @@ public class TiledWorldLoader {
         for (int x = 0; x < m.length; x++) {
             for (int y = 0; y < m[x].length; y++) {
                 for (int z = 0; z < m[x][y].length; z++) {
-                    try {
-                        world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
-                    } catch (ValueException ex) {
-                        LOG.log(Level.SEVERE, "Found a ValueException where it definitely shoudln't have occured!", ex);
-                    }
+                    world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
                 }
             }
         }

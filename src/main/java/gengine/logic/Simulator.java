@@ -2,6 +2,7 @@ package gengine.logic;
 
 import gengine.events.generators.AbstWorldEventGenerator;
 import gengine.world.World;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -28,8 +29,10 @@ public class Simulator extends AbstWorldEventGenerator {
 
     @Override
     public void work(long dt) {
-        synchronized (this.world) {
+        try {
             this.world.tick(dt);
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Caught an exception while ticking the world!", ex);
         }
     }
 

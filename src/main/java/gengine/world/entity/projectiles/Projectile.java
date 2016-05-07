@@ -23,7 +23,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
     public static final int STATE_FLYING = 101;
     public static final int STATE_CRASHED = 102;
 
-    private final Coords3D velocity;
+    private Coords3D velocity;
     private final Weapon weapon;
     private final NPCEntity perpetrator;
 
@@ -32,14 +32,12 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
     /**
      *
      * @param facade      Facade to interface the world with
-     * @param velocity    Projectile velocity
      * @param weapon      Weapon this Projectile was shot from
      * @param perpetrator NPCEntity shooting said Weapon
      */
-    public Projectile(ControllerFacade facade, Coords3D velocity, Weapon weapon, NPCEntity perpetrator) {
+    public Projectile(ControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
         super(facade);
         this.state = STATE_FLYING;
-        this.velocity = velocity;
         this.weapon = weapon;
         this.perpetrator = perpetrator;
     }
@@ -117,4 +115,13 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
      * @param dt
      */
     public abstract void crash(long dt);
+
+    /**
+     * Sets projectile velocity
+     *
+     * @param velocity
+     */
+    public void setVelocity(Coords3D velocity) {
+        this.velocity = velocity;
+    }
 }

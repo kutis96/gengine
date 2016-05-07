@@ -155,7 +155,7 @@ public class TilesetLoader {
 
         List<AnimFrame> frames = new LinkedList<>();
 
-        LOG.log(Level.INFO, "Loading new AnimatedTile. ({4})\nAssumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1. / aperi, tilefile.getAbsolutePath(), (isWall) ? "is" : "is not"});
+        LOG.log(Level.INFO, "Loading new AnimatedTile. ({4})\nAssumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1000. / aperi, tilefile.getAbsolutePath(), (isWall) ? "is" : "is not"});
 
         
         for (int x = 0; x < img.getWidth(); x += xsize) {

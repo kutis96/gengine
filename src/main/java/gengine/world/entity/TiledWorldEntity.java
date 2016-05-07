@@ -1,11 +1,12 @@
 package gengine.world.entity;
 
 import gengine.logic.ControllerFacade;
-import gengine.util.interfaces.Renderable;
-import gengine.util.interfaces.Positionable;
+import gengine.rendering.Renderable;
+import gengine.util.coords.Positionable;
 import gengine.util.coords.*;
 import gengine.util.facade.TiledWorldFacade;
 import gengine.util.facade.WorldFacade;
+import gengine.world.tile.Tile;
 import gengine.world.tile.TilesetIndexException;
 import java.awt.Point;
 import java.util.logging.Level;
@@ -99,14 +100,15 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
             try {
                 Coords3D npos = new Coords3D(this.pos.add(pos));
 
-                if (null == twfacade.getTile(npos)) {
+                Tile t = twfacade.getTile(npos);
+
+                if (null == t) {
                     //the tile I'm trying to move on is a null, so screw this
                     if (checkForMissingTiles) {
+                        LOG.info("IT IS A NULL! " + npos);
                         return false;
                     }
-                }
-
-                if (checkForWalls && twfacade.getTile(npos).isWall()) {
+                } else if (checkForWalls && t.isWall()) {
                     LOG.info("IT IS A WALL!");
                     return false;
                 }
@@ -117,7 +119,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
                 return false;
             }
             return true;
-            
+
         }
     }
 

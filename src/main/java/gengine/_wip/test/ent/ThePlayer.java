@@ -2,6 +2,7 @@ package gengine._wip.test.ent;
 
 import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.logic.ControllerFacade;
+import gengine.rendering.overlay.*;
 import gengine.util.coords.*;
 import gengine.world.entity.*;
 import gengine.world.entity.inventory.items.Weapon;
@@ -19,7 +20,7 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver {
+public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, HasOverlays {
 
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
 
@@ -54,35 +55,26 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        LOG.info("HELLO");
-        try {
-            switch (e.getKeyCode()) {
-                case KeyEvent.VK_UP: {
-                    LOG.info("UP!");
-                    move(new Coords3D(0, -1, 0));
-                    break;
-                }
-                case KeyEvent.VK_DOWN: {
-                    LOG.info("DOWN!");
-                    move(new Coords3D(0, 1, 0));
-                    break;
-                }
-                case KeyEvent.VK_LEFT: {
-                    LOG.info("LEFT!");
-                    move(new Coords3D(-1, 0, 0));
-                    break;
-                }
-                case KeyEvent.VK_RIGHT: {
-                    LOG.info("RIGHT!");
-                    move(new Coords3D(1, 0, 0));
-                    break;
-                }
-                default:
-                    break;  //do nothing
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_UP: {
+                move(new Coords3D(0, -1, 0));
+                break;
             }
-        } catch (ValueException ve) {
-            LOG.log(Level.SEVERE, "Found a ValueException where there definitely shouldn't be one.", ve);
-        }
+            case KeyEvent.VK_DOWN: {
+                move(new Coords3D(0, 1, 0));
+                break;
+            }
+            case KeyEvent.VK_LEFT: {
+                move(new Coords3D(-1, 0, 0));
+                break;
+            }
+            case KeyEvent.VK_RIGHT: {
+                move(new Coords3D(1, 0, 0));
+                break;
+            }
+            default:
+                break;  //do nothing
+            }
     }
 
     @Override
@@ -99,14 +91,31 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver {
     public boolean mouseHit(Point point) {
         return false;
     }
-    
-    private void move(Coords3D direction){
+
+    private void move(Coords3D direction) {
         this.advancePos(direction, true, true);
         cf.changeCamPosition(this.getPos());
     }
 
     @Override
     public void receiveAttack(Weapon w, NPCEntity perpetrator) {
+        LOG.log(Level.INFO, "OUCH, I GOT HIT BY {0} wielding {1}!", new Object[]{perpetrator, w});
+    }
+
+    @Override
+    public Overlay[] getOverlays() {
+        return new Overlay[]{
+            new TextOverlay("Player", new Coords3D(0, 0, 9000))
+        };
+    }
+
+    @Override
+    public void attachOverlay(Overlay overlay) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void animateOverlays(long dt) {
+        //do nothing
     }
 }

@@ -1,9 +1,8 @@
 package gengine.util.facade;
 
 import gengine.util.coords.Coords3D;
-import gengine.world.TiledWorld;
+import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.Tile;
-import gengine.world.tile.TilesetIndexException;
 
 /**
  * A façade masking a TiledWorld's methods for guaranteed safe access by the
@@ -11,13 +10,7 @@ import gengine.world.tile.TilesetIndexException;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class TiledWorldFacade implements WorldFacade {
-
-    private final TiledWorld world;
-
-    public TiledWorldFacade(TiledWorld world) {
-        this.world = world;
-    }
+public interface TiledWorldFacade extends WorldFacade {
 
     /**
      * Returns a tile on a given coordinate.
@@ -26,11 +19,7 @@ public class TiledWorldFacade implements WorldFacade {
      *
      * @return tile if the tile exists, null otherwise.
      */
-    public Tile getTile(Coords3D coordinates) {
-        synchronized (this.world) {
-            return this.world.getWorldtile(coordinates);
-        }
-    }
+    public Tile getTile(Coords3D coordinates);
 
     /**
      * Sets a tile on a given coordinate.
@@ -38,13 +27,21 @@ public class TiledWorldFacade implements WorldFacade {
      * @param coordinates
      * @param tile
      */
-    public void setTile(Coords3D coordinates, Tile tile) {
-        synchronized (this.world) {
-            this.world.setWorldtile(tile, coordinates);
-        }
-    }
+    public void setTile(Coords3D coordinates, Tile tile);
 
-    public Coords3D getWorldSize() {
-        return this.world.getWorldSize();
-    }
+    /**
+     * Returns the size of the World.
+     *
+     * @return World size
+     */
+    public Coords3D getWorldSize();
+
+    /**
+     * Adds an entity into the world.
+     *
+     * @param twe TiledWorldEntity to spawn.
+     *
+     * @return true on success, false never.
+     */
+    public boolean spawnEntity(TiledWorldEntity twe);
 }
