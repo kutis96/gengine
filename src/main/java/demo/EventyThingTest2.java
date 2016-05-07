@@ -1,6 +1,6 @@
-package gengine._wip.test;
+package demo;
 
-import gengine._wip.test.ent.*;
+import demo.ent.*;
 import gengine.events.generators.*;
 import gengine.logic.*;
 import gengine.util.loaders.TiledWorldLoader;
@@ -49,9 +49,7 @@ public class EventyThingTest2 {
         Controller ctrl = new Controller(sim, w, window, wren, evgens);
         ControllerFacade cf = ctrl;
 
-        StaticBall b1 = new StaticBall(cf);
-
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             ScaredBall sb1 = new ScaredBall(cf);
 
             Coords3D c = new Coords3D(
@@ -81,12 +79,5 @@ public class EventyThingTest2 {
 //        w.addEntity(sp);
         
         ctrl.start();
-
-        Thread.sleep(120000);
-
-        ctrl.stop();
-
-        Thread.sleep(100);
-        System.exit(0);
     }
 }

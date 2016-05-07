@@ -1,4 +1,4 @@
-package gengine._wip.test.ent;
+package demo.ent;
 
 import gengine.logic.ControllerFacade;
 import gengine.world.entity.NPCEntity;

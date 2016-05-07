@@ -1,4 +1,4 @@
-package gengine._wip.test.ent;
+package demo.ent;
 
 import gengine.events.receivers.ProximityEventReceiver;
 import gengine.logic.ControllerFacade;

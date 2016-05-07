@@ -1,4 +1,4 @@
-package gengine._wip.test.ent;
+package demo.ent;
 
 import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.logic.ControllerFacade;
@@ -11,6 +11,7 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -23,6 +24,10 @@ import javax.imageio.ImageIO;
 public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, HasOverlays {
 
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
+
+    private final Overlay[] olays = new Overlay[]{
+        new TextOverlay("Player", new Coords3D(0, 0, 9000))
+    };
 
     private final Image img;
     private final ControllerFacade cf;
@@ -104,9 +109,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     @Override
     public Overlay[] getOverlays() {
-        return new Overlay[]{
-            new TextOverlay("Player", new Coords3D(0, 0, 9000))
-        };
+        return Arrays.copyOf(olays, olays.length);
     }
 
     @Override

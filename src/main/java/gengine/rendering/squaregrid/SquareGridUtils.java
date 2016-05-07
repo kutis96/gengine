@@ -1,5 +1,6 @@
 package gengine.rendering.squaregrid;
 
+import gengine.rendering.RenderableContainer;
 import gengine.util.coords.Coords3D;
 import gengine.world.entity.WorldEntity;
 import java.util.Comparator;
@@ -94,12 +95,12 @@ public class SquareGridUtils {
      * Comparator designed for first sorting by the X axis and then by Z axis.
      * This one is probably only specific to the SquareGridRenderer.
      */
-    public static class EntityZYComparator implements Comparator<WorldEntity> {
+    public static class RContainerZYComparator implements Comparator<RenderableContainer> {
 
         @Override
-        public int compare(final WorldEntity a, final WorldEntity b) {
-            Coords3D ac = (Coords3D) a.getPos();
-            Coords3D bc = (Coords3D) b.getPos();
+        public int compare(final RenderableContainer a, RenderableContainer b) {
+            Coords3D ac = a.pos;
+            Coords3D bc = b.pos;
 
             if ((int) ac.getZ() == (int) bc.getZ()) {
 

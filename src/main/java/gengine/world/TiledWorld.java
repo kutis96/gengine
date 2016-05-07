@@ -121,6 +121,7 @@ public class TiledWorld implements World, TiledWorldFacade {
     @Override
     public Coords3D getWorldSize() {
         if (this.tileIDmap == null) {
+            //TODO: change this to an exception
             return null;
         }
 
@@ -131,6 +132,12 @@ public class TiledWorld implements World, TiledWorldFacade {
         );
     }
 
+    /**
+     * Returns the worldsize minus one on each dimension. Fairly useful for
+     * iterating over the whole thing etc.
+     *
+     * @return Coords3D containing the size of the world array, minus (1,1,1)
+     */
     private Coords3D getWorldSizeMinusOne() {
         try {
             return new Coords3D(getWorldSize().decrement(new Coords3D(1, 1, 1)));
@@ -138,6 +145,16 @@ public class TiledWorld implements World, TiledWorldFacade {
             LOG.log(Level.SEVERE, null, ex);
             return new Coords3D();
         }
+    }
+
+    public long getTileAmount() {
+        long n = 1;
+        
+        for(float f : this.getWorldSize().toArray()){
+            n *= (long)f;
+        }
+        
+        return n;
     }
 
     /**

@@ -1,14 +1,15 @@
 package gengine.rendering.squaregrid;
 
+import gengine.rendering.RenderableContainer;
 import gengine.rendering.*;
 import gengine.rendering.WorldRendererOptions.Flags;
-import gengine.util.coords.Coords3D;
-import gengine.util.coords.ValueException;
+import gengine.rendering.overlay.HasOverlays;
+import gengine.rendering.overlay.Overlay;
+import gengine.util.coords.*;
 import gengine.world.TiledWorld;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import gengine.world.tile.Tile;
-import gengine.world.tile.TilesetIndexException;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -94,16 +95,15 @@ public class SquareGridRenderer implements WorldRenderer {
         //        and aaaaah!        
 
         //  TODO: render tiles while rendering entities as well, to allow for tile overlays etc.
-        
         //scaled pixel Height and Width of the tiles
         int scaledHeight = (int) (this.tileheight * wrop.getZoom());
         int scaledWidth = (int) (this.tilewidth * wrop.getZoom());
 
         //pixel offsets of the visible area
         int xoff = (int) (-wrop.getCameraPosition().getX() * scaledWidth
-                + wrop.getCameraOffset().getX() + this.tilewidth / 2 + surface.getWidth()/2);
+                + wrop.getCameraOffset().getX() + this.tilewidth / 2 + surface.getWidth() / 2);
         int yoff = (int) (-wrop.getCameraPosition().getY() * scaledHeight
-                + wrop.getCameraOffset().getY() + this.tileheight / 2 + surface.getHeight()/2);
+                + wrop.getCameraOffset().getY() + this.tileheight / 2 + surface.getHeight() / 2);
 
         //WORLD (tile) coordinates specifying the drawn boundaries
         Coords3D upperVisibleBound;
@@ -128,59 +128,66 @@ public class SquareGridRenderer implements WorldRenderer {
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
 
-        synchronized (lock) {   //TILE RENDERING
+        ArrayList<RenderableContainer> renderedThings = new ArrayList<>((int) world.getTileAmount());
+        ArrayList<WorldEntity> renderedEntities = new ArrayList<>();    //I do this separately as Entities are clickable, unlike tiles
+        //and I actually reuse this later.
+        //TODO: clean that up
 
+        synchronized (lock) {
+            
+            //Add all tiles to the rendered things
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
                     Tile t = world.getWorldtile(new Coords3D(x, y, 0));
-                    Image i = t.render();
-                    if (i == null) {
-                        //tiles that don't render should be simply skipped
-                        //  - this is possibly asking for a major clusterfudge sooner or later
-                        continue;
+                    if (t != null) {
+                        renderedThings.add(new RenderableContainer(new Coords3D(x, y, -1), t));
                     }
-                    g2d.drawImage(
-                            i,
-                            (x * scaledWidth) + xoff - tilewidth/2, //xpos
-                            (y * scaledHeight) + yoff - tileheight/2, //ypos
-                            scaledWidth, //width
-                            scaledHeight, //height
-                            null);
                 }
             }
-        }   //END OF TILE RENDERING
 
-        //ENTITY RENDERING
-        ArrayList<WorldEntity> renderedEntities = new ArrayList<>();
-
-        synchronized (lock) {
-
-            //Fill the renderedEntities list with entities that are visible
+            //Add all WorldEntities to the rendered things
             for (WorldEntity we : world.getEntities()) {
                 if (SquareGridUtils.isWithinIgnoringZ(
                         we.getPos(),
                         lowerVisibleBound,
                         upperVisibleBound)) {
-                    renderedEntities.add(we);
+
+                    renderedEntities.add(we);   //used for mouse click detectiony stuff
+
+                    renderedThings.add(new RenderableContainer(we.getPos(), we));
+
+                    //Render overlays as well
+                    if (we instanceof HasOverlays) {
+                        HasOverlays ho = (HasOverlays) we;
+                        for (Overlay o : ho.getOverlays()) {
+                            try {
+                                if (o != null && o.getOffset() != null) {
+                                    renderedThings.add(new RenderableContainer(new Coords3D(we.getPos().add(o.getOffset())), o));
+                                }
+                            } catch (DimMismatchException ex) {
+                                LOG.log(Level.SEVERE, "Unexpected DimMismatch >:C", ex);
+                            }
+                        }
+                    }
+
                 }
             }
 
         }
 
-        //sort entities by Z (depth) and then by Y (vertical axis) for rendering
-        //Collections.sort(renderedEntities, new SquareGridUtils.EntityZYComparator());
-        for (WorldEntity we : renderedEntities) {
+        //sort renderables by Z (depth) and then by Y (vertical axis) for rendering
+        Collections.sort(renderedThings, new SquareGridUtils.RContainerZYComparator());
 
-            we.render();
+        for (RenderableContainer rc : renderedThings) {
 
-            Image i = we.render();
+            Image i = rc.ren.render();
 
             if (i == null) {
-                LOG.log(Level.WARNING, "Missing entity rendering ({0})", we.toString());
+                LOG.log(Level.WARNING, "Unable to render ({0})", rc.toString());
                 continue;
             }
 
-            Coords3D pos = we.getPos();
+            Coords3D pos = rc.pos;
 
             //draw the entities as the renderedEntities list is already sorted
             // and thus everything is positioned correctly
@@ -193,13 +200,14 @@ public class SquareGridRenderer implements WorldRenderer {
                     (int) (i.getWidth(null) * wrop.getZoom()),
                     (int) (i.getHeight(null) * wrop.getZoom()),
                     null);
-            
-            if(wrop.hasFlag(Flags.DEBUGMODE)){
+
+            if (wrop.hasFlag(Flags.DEBUGMODE)) {
                 //draw lines between entities or something here
             }
         }
 
         synchronized (lock) {
+            //This bit is there to set some variables used by the mouse pos detection etc.
             lastRenderedEntities.clear();
             lastRenderedEntities.addAll(renderedEntities);
 
@@ -208,12 +216,12 @@ public class SquareGridRenderer implements WorldRenderer {
             lastScale[0] = (float) wrop.getZoom();
             lastScale[1] = (float) wrop.getZoom();
         }
-        // END OF ENTITY RENDERING
     }
 
     @Override
     public WorldEntity[] getEntitiesOnPosition(Point mousepos) {
 
+        //TODO: to be replaced with a newer version taking in account tile visibilities etc?
         List<WorldEntity> ents;
         ents = new LinkedList<>();
 
@@ -239,4 +247,5 @@ public class SquareGridRenderer implements WorldRenderer {
 
         return new Point(x, y);
     }
+
 }

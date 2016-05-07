@@ -177,7 +177,7 @@ public class CoordsFixedD implements Coords {
         } else {
             throw new DimMismatchException();
         }
-        
+
         return this;
     }
 
@@ -193,7 +193,7 @@ public class CoordsFixedD implements Coords {
         } else {
             throw new DimMismatchException();
         }
-        
+
         return this;
     }
 
@@ -201,7 +201,7 @@ public class CoordsFixedD implements Coords {
         for (int i = 0; i < this.dim; i++) {
             this.coords[i] *= f;
         }
-        
+
         return this;
     }
 
@@ -234,15 +234,21 @@ public class CoordsFixedD implements Coords {
             this.coords[i] = (float) Math.floor(this.coords[i]);
         }
     }
-    
-    public CoordsFixedD directionVector(){
+
+    public CoordsFixedD directionVector() {
         CoordsFixedD cf = null;
         try {
             cf = new CoordsFixedD(this);
-            cf.multiply(1/cf.vecLength());
+            cf.multiply(1 / cf.vecLength());
         } catch (ValueException | DimMismatchException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
         return cf;
+    }
+
+    public float[] toArray() {
+        float[] ret = new float[this.dim];
+        System.arraycopy(this.coords, 0, ret, 0, this.dim);
+        return ret;
     }
 }

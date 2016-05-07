@@ -4,11 +4,7 @@
 # used for silly tests
 /src/main/java/sillies/
 
-# once used for silly textures (not sources)
-*.png
-
 # used by NetBeans to store stuff like the Main class to run and stuff. Could be re-added at some point in time.
 nbactions.xml
 /src/main/java/gengine/util/AdvancedKeyValueLoader.java
 /src/main/java/gengine/world/tile/TilesetLoader.java
-!/src/main/java/resources/font.png

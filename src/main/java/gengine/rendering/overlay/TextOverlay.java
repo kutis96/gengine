@@ -40,7 +40,7 @@ public class TextOverlay implements Overlay {
 
     @Override
     public Coords3D getOffset() {
-        return null;
+        return this.offset;
     }
 
     public void setOffset(Coords3D offset) {
