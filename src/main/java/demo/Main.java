@@ -25,6 +25,6 @@ public class Main {
         
         Thread main = new Thread(mc);
         
-        main.run();
+        main.start();
     }
 }
