@@ -30,7 +30,7 @@ within those Views.
 A **`WorldView`** is a `View` containing a `RenderingWorker`, rendering a
 `World` into itself using a specified `WorldRenderer`.
 
-##Overlays
+## Overlays
 **`Overlays`** are some handy little things, letting one to attach another `Renderable`
 to a given `Object` (typically certain `WorldEntities`) implementing the `HasOverlays`
 interface.
