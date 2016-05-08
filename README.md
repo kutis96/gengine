@@ -62,6 +62,47 @@ into the trashbin.
 - Built-in scripting engine
     - Enable true external entity loading
     - Enable modding and ease debugging
+- More JUnit tests
+
+---
+
+## File structure
+
+Here's a map of this repo file structure. Not sure you'd actually need one,
+it's all quite straightforward.
+```
+repo
+    ├── README.md
+    ├── docs
+    │   ├── MORE DOCUMENTATION
+    │   ├── IN GLORIOUS MARKDOWN
+    │   └── TO BE FOUND HERE
+    ├── src
+    │   ├── anim                All around animated images.
+    │   ├── events              Event generation and dispatching.
+    │   │   ├── generators          Event generation.
+    │   │   └── receivers           Event receivers.
+    │   ├── logic               Most of the engine logic is here.
+    │   │   ├── callback            Callbacks. Rarely used at this time...
+    │   │   ├── controller          Controllers.
+    │   │   ├── exceptions          Logic exceptions.
+    │   │   ├── facade              Facades masking various things.
+    │   │   ├── view                Views.
+    │   │   └── workers             Various workers.
+    │   ├── rendering           All around actual rendering.
+    │   │   ├── overlay             Overlays
+    │   │   ├── squaregrid          SquareGrid (2D topdown tile) rendering
+    │   │   └── text                Text (monospace) rendering
+    │   ├── util                Utilities
+    │   │   ├── coords              Coordinates
+    │   │   ├── loaders             Loaders
+    │   │   └── parsing             Parsers
+    │   └── world               Worlds
+    │       ├── entity              World entities - the stuff that does stuff
+    │       └── tile                Tiles - the static stuff that does bugger all
+    └── lib
+        └── JUnit jar here somewhere
+```
 
 ---
 
@@ -76,6 +117,8 @@ into the trashbin.
     - Thank you for freely providing the font I'm using.
 * Jakub Mrva
     - Thanks for not killing me much after always coming late... \*cough\* and I'm sorry this project is no exception.
+* JUnit
+    - I've used it because I had to. On the other hand, I'm quite sorry I haven't used it more! Really useful stuff.
 * You
     - Yes, you. Thank you for reading this.
 
