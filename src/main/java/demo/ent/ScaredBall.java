@@ -67,6 +67,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
             if (lastMoved > 30) {
                 try {
+                    //THIS PART IS SOMEHOW BUGGY.
                     Coords3D del = new Coords3D();
                     del.setCoords(new float[]{
                             (float)(Math.random() - 0.5),
