@@ -39,7 +39,7 @@ public class Sentry extends NPCEntity implements ProximityEventReceiver {
     public Sentry(WorldControllerFacade facade) throws IOException {
         super(facade);
 
-        this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
+        this.img = ImageIO.read(this.getClass().getResource("/demo/entity/redball.png"));
 
         this.facade = facade;
         this.weap = new Weapon() {

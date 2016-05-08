@@ -1,11 +1,11 @@
 package gengine.events.generators;
 
 import gengine.world.World;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
- * A generic event generator with a constructor enabling one to get a JFrame
- * reference as well. Useful for grabbing various events off of the JFrame, as
+ * A generic event generator with a constructor enabling one to get a JPanel
+ * reference as well. Useful for grabbing various events off of the JPanel, as
  * expected. This class is _very_ abstract. It's mostly only created so I can
  * use some commonish constructor there.
  *
@@ -13,7 +13,7 @@ import javax.swing.JFrame;
  */
 public abstract class AbstWindowEventGenerator extends AbstEventGenerator {
 
-    public AbstWindowEventGenerator(World w, JFrame f, int period) {
+    public AbstWindowEventGenerator(World w, JPanel f, int period) {
         super(period);
     }
 

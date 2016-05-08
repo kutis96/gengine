@@ -95,17 +95,6 @@ public class RenderingWorker extends Worker {
         }
     }
 
-    /**
-     * Give this RenderingWorker a new WorldRenderer tool to render everything!
-     *
-     * @param renderer
-     */
-    public void setWorldRenderer(WorldRenderer renderer) {
-        synchronized (lock) {
-            this.renderer = renderer;
-        }
-    }
-
     @Override
     public void init() {
 
@@ -150,6 +139,28 @@ public class RenderingWorker extends Worker {
     @Override
     public void die() {
         LOG.severe("DEAD.");
+    }
+
+    /**
+     * Give this RenderingWorker a new WorldRenderer tool to render everything!
+     *
+     * @param renderer
+     */
+    public void setWorldRenderer(WorldRenderer renderer) {
+        synchronized (lock) {
+            this.renderer = renderer;
+        }
+    }
+
+    /**
+     * Get a currently used WorldRenderer.
+     *
+     * @return currently used WorldRenderer.
+     */
+    public WorldRenderer getWorldRenderer() {
+        synchronized (lock) {
+            return this.renderer;
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import gengine.util.coords.ValueException;
 import gengine.world.TiledWorld;
 import gengine.world.WorldSizeException;
 import java.io.*;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +23,8 @@ public class TiledWorldLoader {
     /**
      * Loads a new TiledWorld from the file specified.
      *
-     * @param file File to load the world from
+     *
+     * @param in InputStream to load a TiledWorld from.
      *
      * @return new TiledWorld
      *
@@ -30,11 +32,9 @@ public class TiledWorldLoader {
      * @throws IOException
      * @throws UnsupportedFormatException
      */
-    public static TiledWorld load(File file) throws FileNotFoundException, IOException, UnsupportedFormatException {
+    public static TiledWorld load(InputStream in) throws FileNotFoundException, IOException, UnsupportedFormatException {
 
-        BufferedReader br = new BufferedReader(new FileReader(file));
-
-        LOG.log(Level.FINE, "Loading a new TiledWorld from a file {0}", file.getAbsolutePath());
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
         LinkedList<Integer[][]> map = new LinkedList<>();   //a 'map' to eventually contain all the tile IDs
 
@@ -82,7 +82,7 @@ public class TiledWorldLoader {
                         bit = Integer.parseInt(nextbit);
                     } catch (Exception ex) {
                         LOG.log(Level.SEVERE, null, ex);
-                        throw new UnsupportedFormatException("Integers are required, found '" + nextbit + "' on line " + linecounter + " in " + file.getAbsolutePath() + "\n" + line);
+                        throw new UnsupportedFormatException("Integers are required, found '" + nextbit + "' on line " + linecounter + "\n" + line);
                     }
 
                     vcollumn.add(bit);

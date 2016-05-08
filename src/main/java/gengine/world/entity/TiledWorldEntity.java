@@ -5,9 +5,7 @@ import gengine.rendering.Renderable;
 import gengine.util.coords.Positionable;
 import gengine.util.coords.*;
 import gengine.logic.facade.TiledWorldFacade;
-import gengine.logic.facade.WorldFacade;
 import gengine.world.tile.Tile;
-import gengine.world.tile.TilesetIndexException;
 import java.awt.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +28,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
     public TiledWorldEntity(WorldControllerFacade facade) {
         super(facade);
         this.facade = facade;
+        this.pos = new Coords3D();
     }
 
     private static final Logger LOG = Logger.getLogger(TiledWorldEntity.class.getName());

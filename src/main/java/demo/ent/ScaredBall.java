@@ -36,8 +36,8 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     public ScaredBall(WorldControllerFacade facade) throws IOException {
         super(facade);
 
-        this.img_scared = ImageIO.read(new File("/home/rkutina/testimages/greenball.png"));
-        this.img_normal = ImageIO.read(new File("/home/rkutina/testimages/blueball.png"));
+        this.img_scared = ImageIO.read(this.getClass().getResource("/demo/entity/greenball.png"));
+        this.img_normal = ImageIO.read(this.getClass().getResource("/demo/entity/blueball.png"));
 
     }
 

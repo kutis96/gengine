@@ -1,0 +1,11 @@
+11: water-ani.png,64,64,150,w
+1: grass.png
+2: grass2.png
+3: gr1gr2-1.png
+4: gr1gr2-2.png
+5: sand.png
+6: s1gr2-1.png
+7: s1gr2-2.png
+8: s1gr2-3.png
+9: gr1gr2-3.png
+10: gr1gr2-4.png

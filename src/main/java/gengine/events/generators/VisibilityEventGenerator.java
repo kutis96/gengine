@@ -2,11 +2,8 @@ package gengine.events.generators;
 
 import gengine.events.receivers.VisibilityEventReceiver;
 import gengine.util.coords.*;
-import gengine.world.TiledWorld;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
-import java.util.Iterator;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -73,24 +70,7 @@ public class VisibilityEventGenerator extends AbstWorldEventGenerator {
     }
 
     private boolean checkVisibility(World world, Coords3D pos1, Coords3D pos2) {
-        if (world instanceof TiledWorld) {
-            /*try {*/
-                TiledWorld tw = (TiledWorld) world;
-
-                //do something
-                //ACTUALLY CHECK THE VISIBILITY HERE
-                
-                return false;
-
-            /*} catch (DimMismatchException | ValueException ex) {
-                Logger.getLogger(VisibilityEventGenerator.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
-
-        } else {
-            throw new UnsupportedOperationException("TiledWorld is the only supported world type at this point.");
-        }
-
-        //return false;
+        throw new UnsupportedOperationException("This class is rather unfinished.");
     }
 
 }

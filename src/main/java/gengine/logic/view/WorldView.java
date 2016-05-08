@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * WorldView. A View displaying the current game World.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -19,29 +20,31 @@ public class WorldView extends View {
 
     private static final Logger LOG = Logger.getLogger(WorldView.class.getName());
 
-    private final World world;
-    private final WorldRenderer wren;
+    private final Object lock;
 
     private RenderingWorker renwor;
 
     private Thread workerThread;
 
     public WorldView(World world, WorldRenderer wren) {
-        this.world = world;
-        this.wren = wren;
+        this(wren);
+        this.renwor.setWorld(world);
+    }
+
+    public WorldView(WorldRenderer wren) {
+        this.lock = new Object();
+
+        //TODO: parametrize this
+        int targetFPS = 60;
+        this.renwor = new RenderingWorker(this, 1000 / targetFPS);
+
+        this.renwor.setWorldRenderer(wren);
     }
 
     @Override
     public void initialize(Callback callback) {
 
-        int targetFPS = 60;
-
-        this.renwor = new RenderingWorker(this, 1000 / targetFPS);
-        this.renwor.setWorld(world);
-        this.renwor.setWorldRenderer(wren);
-
         this.workerThread = new Thread(this.renwor);
-
         this.workerThread.start();
 
         if (callback != null) {
@@ -77,5 +80,16 @@ public class WorldView extends View {
         wrop.setCameraPosition(pos);
         this.renwor.setRendererOptions(wrop);
 
+    }
+
+    public void setWorld(World world) {
+        //TODO: check for correct world type
+        synchronized (lock) {
+            this.renwor.setWorld(world);
+        }
+    }
+
+    public WorldRenderer getRenderer() {
+        return this.renwor.getWorldRenderer();
     }
 }

@@ -9,7 +9,6 @@ import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +32,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     public ThePlayer(WorldControllerFacade facade) throws IOException {
         super(facade, 20);
         this.cf = facade;
-        this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
+        this.img = ImageIO.read(this.getClass().getResource("/demo/entity/redball.png"));
     }
 
     @Override

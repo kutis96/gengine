@@ -1,19 +1,20 @@
 package gengine.logic.controller;
 
+import gengine.events.generators.*;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.logic.workers.Simulator;
-import gengine.events.generators.AbstEventGenerator;
 import gengine.logic.callback.NullCallback;
 import gengine.rendering.*;
 import gengine.util.coords.Coords3D;
 import gengine.logic.facade.WorldFacade;
 import gengine.logic.view.WorldView;
+import gengine.logic.workers.GrimReaper;
+import gengine.util.Worker;
 import gengine.world.World;
-import java.awt.BorderLayout;
+import java.util.Arrays;
 import java.util.Stack;
-import java.util.logging.Level;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 
 /**
  * WorldController - contains and controls all world updating and rendering,
@@ -24,36 +25,41 @@ import javax.swing.JPanel;
 public class WorldController implements WorldControllerFacade {
 
     //TODO: window resizing should redraw the world
-
     private static final Logger LOG = Logger.getLogger(WorldController.class.getName());
 
-    private final Simulator sim;
-    private final JPanel jp;
     private final AbstEventGenerator[] evgens;
 
-    private Thread tSim;
-    private Thread[] tEvgens;
+    private final CopyOnWriteArrayList<Worker> workers;
+    private final CopyOnWriteArrayList<Thread> threads;
 
-    private final WorldView wv;
+    private final WorldView worldview;
 
     private final Stack<World> worldStack;
 
-    public WorldController(Simulator sim, World world, JPanel jp, WorldRenderer wren, AbstEventGenerator[] evgens) {
-        this.sim = sim;
-        this.jp = jp;
-        this.jp.setVisible(true);
+    public WorldController(World world, WorldView worldview) throws WorldTypeMismatchException {
 
-        this.wv = new WorldView(world, wren);
-        this.wv.setVisible(true);
+        AbstEventGenerator[] newEvgens = {
+            new ProximityEventGenerator(world, 25),
+            new KeyboardEventGenerator(world, worldview, 50),
+            new MouseEventGenerator(world, worldview, worldview.getRenderer(), 50)
+        };
+        
 
-        this.jp.setLayout(new BorderLayout());
-        this.jp.add(wv, BorderLayout.CENTER);
-        this.jp.doLayout();
+        this.worldview = worldview;
+        this.worldview.setVisible(true);
+        this.worldview.initialize(new NullCallback());
+        
+        this.worldview.setFocusable(true);
+        this.worldview.requestFocus();
 
-        this.evgens = evgens;
+        this.evgens = newEvgens;
 
         this.worldStack = new Stack<>();
         this.worldStack.push(world);
+        this.worldview.setWorld(world);
+
+        this.workers = new CopyOnWriteArrayList<>();
+        this.threads = new CopyOnWriteArrayList<>();
 
         init();
     }
@@ -62,13 +68,12 @@ public class WorldController implements WorldControllerFacade {
      * Sets up the threads to run the Simulator and all the EventGenerators.
      */
     private void init() {
-        this.tSim = new Thread(sim);
+        this.workers.add(new Simulator(this.worldStack.peek(), 20));
+        this.workers.add(new GrimReaper(this.worldStack.peek(), 60));
 
-        this.tEvgens = new Thread[this.evgens.length];
-        for (int i = 0; i < this.evgens.length; i++) {
-            this.tEvgens[i] = new Thread(this.evgens[i]);
-        }
+        this.workers.addAll(Arrays.asList(evgens));
 
+        LOG.info("Initialized");
     }
 
     /**
@@ -76,41 +81,29 @@ public class WorldController implements WorldControllerFacade {
      */
     public void start() {
 
-        if (!this.tSim.isAlive()) {
-            this.tSim.start();
-        }
-
-        this.wv.initialize(new NullCallback());
-
-        for (Thread teg : this.tEvgens) {
-            if (!teg.isAlive()) {
-                teg.start();
-            }
+        for (Worker w : this.workers) {
+            Thread t = new Thread(w);
+            this.threads.add(t);
+            t.start();
         }
 
         LOG.info("Started");
     }
 
+    /**
+     * Stops all the threads. Hopefully.
+     */
     public void stop() {
 
-        this.sim.stop();
-
-        this.wv.deconstruct(new NullCallback());    //TODO: make use of these callbacks
-
-        for (AbstEventGenerator eg : evgens) {
-            eg.stop();
+        for (Worker w : this.workers) {
+            w.stop();
         }
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(WorldController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        //TODO: add checks
     }
 
     public void pause() {
         //TODO: add pause stuffs!
-        //should be basically the same as stop, no?
         this.stop();
     }
 
@@ -121,7 +114,7 @@ public class WorldController implements WorldControllerFacade {
     @Override
     public void changeCamPosition(Coords3D pos) {
 
-        this.wv.changeCamPosition(pos);
+        this.worldview.changeCamPosition(pos);
 
     }
 
@@ -132,28 +125,21 @@ public class WorldController implements WorldControllerFacade {
 
     @Override
     public boolean switchWorlds(Object requestor, World world, boolean save) throws WorldTypeMismatchException {
-        //TODO: check whether the requestor is actually allowed to do this
-        //TODO: actually save the player itself and their stuff before any world switching occurs
-        //      and set them back into the new/old one again. this could be slightly tricky
+        //TODO: 
 
-        if (world.getClass().equals(this.getCurrentWorld().getClass())) { //check whether both worlds are of the same type
-            if (!save) {
-                this.worldStack.pop();
-            }
-            this.worldStack.push(world);
+        if (!save && !this.worldStack.isEmpty()) {
+            this.worldStack.pop();
         }
+
+        this.worldStack.push(world);
+        this.worldview.setWorld(world);
 
         return true;
     }
 
     @Override
     public boolean returnWorlds(Object requestor) {
-        //TODO: check whether the requestor is actually allowed to do this
-
-        if (this.worldStack.size() > 1) {
-            this.worldStack.pop();
-            return true;
-        }
-        return false;
+        //TODO: 
+        throw new UnsupportedOperationException();
     }
 }
