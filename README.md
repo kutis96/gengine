@@ -46,7 +46,7 @@ into the trashbin.
 
     \*) *Not exactly working atm.*
 
-##Planned Features
+## Planned Features
 - Improved event generation
     - Visibility event generation enabling simple pathfinders, automatic sentries, whatever!
 - Improved and extensible loaders
