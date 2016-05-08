@@ -1,7 +1,7 @@
-#Animations and other periodic things
+# Animations and other periodic things
 Animation, much as the rendering, is done at multiple levels in Gengine.
 
-##Tick
+## Tick
 There's this one special method, **`tick(dt)`**, you'd see quite often throughout
 the Gengine. It is meant to be used for all periodic or time-dependent actions
 going on within the `World`. All `Tiles` and `WorldEntities` have it too.
@@ -13,7 +13,7 @@ the `Simulator` then invokes the `tick` at its `World` it looks over.
 The `Tick` is then dispatched to all `WorldEntities` and `Tiles` within that `World`,
 so they can take some action on that.
 
-##AnimatedImage
+## AnimatedImage
 **`AnimatedImage`** is a container containing a set of **`AnimFrames`**,
 which only contain an actual `Image`, and a time period in milliseconds.
 

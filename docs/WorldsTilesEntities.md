@@ -1,4 +1,4 @@
-#A few words about Words, Tiles, and Entities
+# A few words about Words, Tiles, and Entities
 Worlds are just storage containers containing whatever the World is made of,
 and some WorldEntities.
 

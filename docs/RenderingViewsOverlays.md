@@ -1,7 +1,7 @@
-#A couple of words about Rendering
+# A couple of words about Rendering
 Rendering is done at multiple levels in Gengine.
 
-##The Renderable Interface
+## The Renderable Interface
 This interface is a thing that makes any object renderable by any renderer.
 All `WorldEntities`, `Tiles`, `Overlays` etcetera, are mandated to extend it.
 
@@ -9,7 +9,7 @@ This interface basically only contains a `render` method, which returns a
 `java.awt.Image` of sorts. Any extra buffering or loading of such an image
 is to be solved by the classes implementing this interface.
 
-##WorldRenderers
+## WorldRenderers
 WorldRenderers are objects that take a `World`, a fresh pack of `WorldRendererOptions`,
 and they render the heck out of it onto a specified `BufferedImage` surface.
 
@@ -17,7 +17,7 @@ and they render the heck out of it onto a specified `BufferedImage` surface.
 as well as some additional rendering flags, providing an unified container
 for such options.
 
-##Views
+## Views
 The **`Views`** are a fairly recent addition to the Gengine. They extend a `JPanel`,
 and they draw themselves into themselves. Thus it's often very important to
 set them visible before doing anything to them.
@@ -26,7 +26,7 @@ The `Views` also contain at least two additional methods: `initialize` and `deco
 These methods allow `Controllers` to softstart/softkill some `Threads` or `Workers`
 within those Views.
 
-##WorldView
+## WorldView
 A **`WorldView`** is a `View` containing a `RenderingWorker`, rendering a
 `World` into itself using a specified `WorldRenderer`.
 

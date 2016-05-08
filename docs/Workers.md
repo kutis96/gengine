@@ -1,4 +1,4 @@
-#Workers
+# Workers
 A **`Worker`** is a simple, extensible abstract class, implementing the
 `Runnable` interface. It is designed to make periodic operations as easy
 to accomplish as possible.
@@ -16,7 +16,7 @@ It also provides a constructor with a period setting there. It internally
 contains a `Thread.wait(x)` call which may wait for this set period, with
 all the good and bad things that could come out of it.
 
-##Premade Workers
+## Premade Workers
 There are at least three different `Worker` classes implemented,
 to be found in the `gengine.logic.workers` package.
 
