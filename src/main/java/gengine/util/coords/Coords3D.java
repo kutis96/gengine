@@ -87,7 +87,7 @@ public class Coords3D extends CoordsFixedD {
     public Coords3D(int x, int y, int z) {
         super(3);
         try {
-            this.setCoords(new float[]{(int) x, (int) y, (int) z});
+            this.setCoords(new float[]{x, y, z});
         } catch (ValueException ex) {
             Logger.getLogger(Coords3D.class.getName()).log(Level.SEVERE, null, ex);
         }

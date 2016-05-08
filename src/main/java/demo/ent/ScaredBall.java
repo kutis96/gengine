@@ -2,6 +2,7 @@ package demo.ent;
 
 import gengine.events.receivers.MouseEventReceiver;
 import gengine.events.receivers.ProximityEventReceiver;
+import gengine.logic.facade.TiledWorldFacade;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
 import gengine.util.coords.Coords3D;
@@ -36,8 +37,11 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     private volatile long lastScared = 0;
     private long lastMoved = 0;
 
+    private WorldControllerFacade facade;
+    
     public ScaredBall(WorldControllerFacade facade) throws IOException {
         super(facade);
+        this.facade = facade;
 
         this.img_scared = ImageIO.read(this.getClass().getResource("/demo/entity/greenball.png"));
         this.img_normal = ImageIO.read(this.getClass().getResource("/demo/entity/blueball.png"));
@@ -61,15 +65,20 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
             lastScared += dt;
             lastMoved += dt;
 
-            if (lastMoved > 10) {
+            if (lastMoved > 30) {
                 try {
-                    this.advancePos(new Coords3D(
-                            (float) (1 * (Math.random() - 0.5)),
-                            (float) (1 * (Math.random() - 0.5)),
-                            0), true);
+                    Coords3D del = new Coords3D();
+                    del.setCoords(new float[]{
+                            (float)(Math.random() - 0.5),
+                            (float)(Math.random() - 0.5),
+                            (float)0
+                    });
+                    
+                    this.advancePos(del, true);
                 } catch (ValueException ex) {
                     LOG.log(Level.SEVERE, "This is bad", ex);
                 }
+                
                 lastMoved = 0;
             }
 
@@ -79,6 +88,12 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
                 this.olay.setText("Whew.");
             }
         }
+        
+        TiledWorldFacade twf = (TiledWorldFacade) this.facade.getWorldFacade();
+        if(twf.getTile(this.getPos()).isWall()){
+            this.state = STATE_DEAD;
+        }
+        
     }
 
     @Override

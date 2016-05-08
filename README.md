@@ -1,5 +1,6 @@
 # Gengine
-Gengine is a *work-in-progress* "RPG game engine" originally
+Gengine is a *work-in-progress* (as in not **not completely finished**)
+ "RPG game engine" originally
 intended as a project for the A0B36PR2 course at CTU in Prague,
 written by *Richard Kutina*.
 
@@ -63,6 +64,7 @@ into the trashbin.
     - Enable true external entity loading
     - Enable modding and ease debugging
 - More JUnit tests
+- Ability to teleport around and between multiple Worlds.
 
 ---
 
