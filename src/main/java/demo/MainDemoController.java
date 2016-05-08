@@ -1,5 +1,6 @@
 package demo;
 
+import demo.ent.ScaredBall;
 import demo.ent.ThePlayer;
 import gengine.logic.controller.MainController;
 import gengine.logic.controller.WorldController;
@@ -8,6 +9,8 @@ import gengine.rendering.WorldRenderer;
 import gengine.rendering.WorldTypeMismatchException;
 import gengine.rendering.squaregrid.SquareGridRenderer;
 import gengine.util.UnsupportedFormatException;
+import gengine.util.coords.Coords3D;
+import gengine.util.coords.ValueException;
 import gengine.util.loaders.TiledWorldLoader;
 import gengine.util.loaders.TilesetLoader;
 import gengine.world.TiledWorld;
@@ -78,16 +81,29 @@ public class MainDemoController extends MainController {
         this.mainFrame.doLayout();
 
         try {
-            wcon = new WorldController(world, worldView);
+            wcon = new WorldController(this.world, this.worldView);
         } catch (WorldTypeMismatchException ex) {
             LOG.log(Level.SEVERE, null, ex);
             throw new RuntimeException("Mismatched WorldType", ex);
         }
 
         try {
+            Coords3D wsiz = this.world.getWorldSize();
+            
             this.world.addEntity(new ThePlayer(this.wcon));
+            for(int i = 0; i < wsiz.vecLength(); i++){
+                ScaredBall sb = new ScaredBall(wcon);
+                sb.setPos(new Coords3D(
+                        wsiz.getX() * Math.random(),
+                        wsiz.getY() * Math.random(),
+                        0
+                ));
+                this.world.addEntity(sb);
+            }
         } catch (IOException ex) {
             throw new RuntimeException("Error loading Entities!", ex);
+        } catch (ValueException ex) {
+            Logger.getLogger(MainDemoController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         LOG.info("Added entities.");

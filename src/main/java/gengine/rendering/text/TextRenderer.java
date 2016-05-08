@@ -61,6 +61,8 @@ public class TextRenderer {
 
     public Image drawString(String s) {
 
+        LOG.info("Drawing " + s);
+        
         int cols = 0;
         int maxcols = 0;
         int rows = 1;
@@ -82,8 +84,8 @@ public class TextRenderer {
         }
 
         BufferedImage rendered = new BufferedImage(
-                maxcols * hpix + (maxcols - 1) * hspace,
-                rows * vpix + (rows - 1) * vspace,
+                maxcols * hpix + Math.max(1, (maxcols - 1) * hspace),
+                rows * vpix + Math.max(1, (rows - 1)) * vspace,
                 BufferedImage.TYPE_4BYTE_ABGR);
 
         Graphics g = rendered.getGraphics();

@@ -105,11 +105,11 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
                 if (null == t) {
                     //the tile I'm trying to move on is a null, so screw this
                     if (checkForMissingTiles) {
-                        LOG.info("IT IS A NULL! " + npos);
+                        LOG.finer("IT IS A NULL! " + npos);
                         return false;
                     }
                 } else if (checkForWalls && t.isWall()) {
-                    LOG.info("IT IS A WALL!");
+                    LOG.finer("IT IS A WALL!");
                     return false;
                 }
 
