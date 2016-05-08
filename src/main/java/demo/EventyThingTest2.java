@@ -1,8 +1,10 @@
 package demo;
 
+import gengine.logic.controller.WorldController;
+import gengine.logic.facade.WorldControllerFacade;
+import gengine.logic.workers.Simulator;
 import demo.ent.*;
 import gengine.events.generators.*;
-import gengine.logic.*;
 import gengine.util.loaders.TiledWorldLoader;
 import gengine.util.loaders.TilesetLoader;
 import gengine.rendering.WorldRenderer;
@@ -11,8 +13,10 @@ import gengine.util.UnsupportedFormatException;
 import gengine.util.coords.*;
 import gengine.world.*;
 import gengine.world.tile.Tileset;
+import java.awt.BorderLayout;
 import java.io.*;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  *
@@ -27,10 +31,19 @@ public class EventyThingTest2 {
         window.setTitle("Random Gamish Thing");
         window.setSize(1024, 768);
 
-        window.setVisible(true);
 
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
+        JPanel panel = new JPanel();
+        
+        window.setLayout(new BorderLayout());
+        window.add(panel, BorderLayout.CENTER);
+        
+        window.setVisible(true);
+        
+        window.doLayout();
+      
+        
         Tileset ts = TilesetLoader.load(new File("/home/rkutina/testimages/world/imglist.txt"));
 
         TiledWorld w = TiledWorldLoader.load(new File("/home/rkutina/testimages/world/mapa.csv"));
@@ -46,8 +59,8 @@ public class EventyThingTest2 {
             new MouseEventGenerator(w, window, wren, 50)
         };
 
-        Controller ctrl = new Controller(sim, w, window, wren, evgens);
-        ControllerFacade cf = ctrl;
+        WorldController ctrl = new WorldController(sim, w, panel, wren, evgens);
+        WorldControllerFacade cf = ctrl;
 
         for (int i = 0; i < 20; i++) {
             ScaredBall sb1 = new ScaredBall(cf);

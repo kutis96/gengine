@@ -1,9 +1,9 @@
 package demo.ent;
 
 import gengine.events.receivers.ProximityEventReceiver;
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.util.coords.*;
-import gengine.util.facade.TiledWorldFacade;
+import gengine.logic.facade.TiledWorldFacade;
 import gengine.world.entity.*;
 import gengine.world.entity.inventory.items.Weapon;
 import gengine.world.entity.projectiles.Projectile;
@@ -34,9 +34,9 @@ public class Sentry extends NPCEntity implements ProximityEventReceiver {
 
     private Image img;
 
-    private final ControllerFacade facade;
+    private final WorldControllerFacade facade;
 
-    public Sentry(ControllerFacade facade) throws IOException {
+    public Sentry(WorldControllerFacade facade) throws IOException {
         super(facade);
 
         this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));

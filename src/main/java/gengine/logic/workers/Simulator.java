@@ -1,4 +1,4 @@
-package gengine.logic;
+package gengine.logic.workers;
 
 import gengine.events.generators.AbstWorldEventGenerator;
 import gengine.world.World;

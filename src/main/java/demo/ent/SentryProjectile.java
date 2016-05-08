@@ -1,6 +1,6 @@
 package demo.ent;
 
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.world.entity.NPCEntity;
 import gengine.world.entity.inventory.items.Weapon;
 import gengine.world.entity.projectiles.Projectile;
@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
  */
 public class SentryProjectile extends Projectile {
 
-    public SentryProjectile(ControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
+    public SentryProjectile(WorldControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
         super(facade, weapon, perpetrator);
     }
 

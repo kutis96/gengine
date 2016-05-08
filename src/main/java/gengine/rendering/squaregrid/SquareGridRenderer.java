@@ -29,13 +29,15 @@ import java.util.logging.Logger;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class SquareGridRenderer implements WorldRenderer {
-
+    
     private static final Logger LOG = Logger.getLogger(SquareGridRenderer.class.getName());
-
+    
     private final int tilewidth;
     private final int tileheight;
-
-    private final Object lock = new Object();
+    
+    private final Object lock1 = new Object();
+    private final Object lock2 = new Object();
+    
     private List<WorldEntity> lastRenderedEntities;
     private Point lastPixelOffset;
     private final float[] lastScale = {1, 1};
@@ -71,7 +73,7 @@ public class SquareGridRenderer implements WorldRenderer {
         this.lastRenderedEntities = new ArrayList<>();
         this.lastPixelOffset = new Point();
     }
-
+    
     @Override
     public void render(World world, BufferedImage surface, WorldRendererOptions wropt) throws RendererException {
         if (world instanceof TiledWorld) {
@@ -87,7 +89,7 @@ public class SquareGridRenderer implements WorldRenderer {
             throw new RendererException("Invalid World Type detected");
         }
     }
-
+    
     private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException, ValueException {
         //  TODO: Further code cleanup
         //      - probably for this thing off to a completely different class
@@ -110,31 +112,31 @@ public class SquareGridRenderer implements WorldRenderer {
         Coords3D lowerVisibleBound;
 
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES
-//        lowerVisibleBound = new Coords3D(
-//                Math.max(0, (float) Math.floor((double) xoff / scaledWidth) - 1),
-//                Math.max(0, (float) Math.floor((double) yoff / scaledHeight) - 1),
-//                0
-//        );
-//
-//        upperVisibleBound = new Coords3D(
-//                Math.min(world.getWorldSize().getX(), (surface.getWidth() + xoff) / scaledWidth),
-//                Math.min(world.getWorldSize().getY(), (surface.getHeight() + yoff) / scaledHeight),
-//                0
-//        );
-        lowerVisibleBound = new Coords3D();
-        upperVisibleBound = world.getWorldSize();
-        //END OF PIXEL TO WORLD BOUNDARY CONVERSION
+        lowerVisibleBound = new Coords3D(
+                Math.max(0, Math.floor((double) -xoff/scaledWidth)),
+                Math.max(0, Math.floor((double) -yoff/scaledHeight)),
+                0
+        );
+        
+        upperVisibleBound = new Coords3D(
+                Math.min(world.getWorldSize().getX(), 2 + surface.getWidth()/scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
+                Math.min(world.getWorldSize().getY(), 2 + surface.getHeight()/scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
+                0
+        );
+        
+        //to test boundaries, uncomment: LOG.info("L:" + lowerVisibleBound + "\tU:" + upperVisibleBound);
 
+        //END OF PIXEL TO WORLD BOUNDARY CONVERSION
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
-
-        ArrayList<RenderableContainer> renderedThings = new ArrayList<>((int) world.getTileAmount());
-        ArrayList<WorldEntity> renderedEntities = new ArrayList<>();    //I do this separately as Entities are clickable, unlike tiles
+        
+        List<RenderableContainer> renderedThings = new LinkedList<>();
+        List<WorldEntity> renderedEntities = new LinkedList<>();    //I do this separately as Entities are clickable, unlike tiles
         //and I actually reuse this later.
         //TODO: clean that up
 
-        synchronized (lock) {
-            
+        synchronized (lock1) {
+
             //Add all tiles to the rendered things
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
@@ -151,7 +153,7 @@ public class SquareGridRenderer implements WorldRenderer {
                         we.getPos(),
                         lowerVisibleBound,
                         upperVisibleBound)) {
-
+                    
                     renderedEntities.add(we);   //used for mouse click detectiony stuff
 
                     renderedThings.add(new RenderableContainer(we.getPos(), we));
@@ -169,24 +171,24 @@ public class SquareGridRenderer implements WorldRenderer {
                             }
                         }
                     }
-
+                    
                 }
             }
-
+            
         }
 
         //sort renderables by Z (depth) and then by Y (vertical axis) for rendering
         Collections.sort(renderedThings, new SquareGridUtils.RContainerZYComparator());
-
+        
         for (RenderableContainer rc : renderedThings) {
-
+            
             Image i = rc.ren.render();
-
+            
             if (i == null) {
                 LOG.log(Level.WARNING, "Unable to render ({0})", rc.toString());
                 continue;
             }
-
+            
             Coords3D pos = rc.pos;
 
             //draw the entities as the renderedEntities list is already sorted
@@ -200,52 +202,48 @@ public class SquareGridRenderer implements WorldRenderer {
                     (int) (i.getWidth(null) * wrop.getZoom()),
                     (int) (i.getHeight(null) * wrop.getZoom()),
                     null);
-
-            if (wrop.hasFlag(Flags.DEBUGMODE)) {
-                //draw lines between entities or something here
-            }
         }
-
-        synchronized (lock) {
+        
+        synchronized (lock2) {
             //This bit is there to set some variables used by the mouse pos detection etc.
             lastRenderedEntities.clear();
             lastRenderedEntities.addAll(renderedEntities);
-
+            
             lastPixelOffset.setLocation(xoff, yoff);
-
+            
             lastScale[0] = (float) wrop.getZoom();
             lastScale[1] = (float) wrop.getZoom();
         }
     }
-
+    
     @Override
     public WorldEntity[] getEntitiesOnPosition(Point mousepos) {
 
         //TODO: to be replaced with a newer version taking in account tile visibilities etc?
         List<WorldEntity> ents;
         ents = new LinkedList<>();
-
-        synchronized (lock) {
-
+        
+        synchronized (lock2) {
+            
             for (WorldEntity we : lastRenderedEntities) {
-
+                
                 Point p = entityPxCoords(lastPixelOffset, lastScale, we.getPos());
                 p.translate(-mousepos.x, -mousepos.y);
-
+                
                 if (we.mouseHit(p)) {
                     ents.add(we);
                 }
             }
         }
-
+        
         return ents.toArray(new WorldEntity[ents.size()]);
     }
-
+    
     private Point entityPxCoords(Point pixelOffset, float[] scale, Coords3D entityCoordinates) {
         int x = (int) (tilewidth * entityCoordinates.getX() * scale[0] + pixelOffset.x);
         int y = (int) (tileheight * entityCoordinates.getY() * scale[1] + pixelOffset.y);
-
+        
         return new Point(x, y);
     }
-
+    
 }

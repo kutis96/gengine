@@ -1,15 +1,15 @@
-package gengine.logic;
+package gengine.logic.facade;
 
 import gengine.rendering.WorldTypeMismatchException;
 import gengine.util.coords.Coords3D;
-import gengine.util.facade.WorldFacade;
+import gengine.logic.facade.WorldFacade;
 import gengine.world.World;
 
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public interface ControllerFacade {
+public interface WorldControllerFacade {
 
     /**
      * Changes the camera's focus point.

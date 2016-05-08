@@ -1,8 +1,8 @@
-package gengine.rendering.overlay.text;
+package gengine.rendering.text;
 
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -14,18 +14,21 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class FontDrawer {
+public class TextRenderer {
 
-    private static final Logger LOG = Logger.getLogger(FontDrawer.class.getName());
+    private static final Logger LOG = Logger.getLogger(TextRenderer.class.getName());
 
-    private final int xpix, ypix;
+    private final int hpix, vpix;
+    private final int hspace, vspace;
     private final BufferedImage fontImage;
 
-    public FontDrawer() throws IOException {
+    public TextRenderer() throws IOException {
         try {
-            this.xpix = 8;
-            this.ypix = 16;
-            URL url = FontDrawer.class.getResource("/font.png");
+            this.hpix = 8;
+            this.vpix = 16;
+            this.hspace = 1;
+            this.vspace = 0;
+            URL url = TextRenderer.class.getResource("/font_shaded.png");
             LOG.log(Level.INFO, "Loading font resource {0}", url);
             this.fontImage = ImageIO.read(url);
         } catch (Exception ex) {
@@ -34,9 +37,17 @@ public class FontDrawer {
         }
     }
 
-    public Image getCharacter(char c) {
-        int nX = fontImage.getWidth(null) / xpix;
-        int nY = fontImage.getHeight(null) / ypix;
+    public TextRenderer(int xpix, int ypix, int hspace, int vspace, BufferedImage fontImage) {
+        this.hpix = xpix;
+        this.vpix = ypix;
+        this.hspace = hspace;
+        this.vspace = vspace;
+        this.fontImage = fontImage;
+    }
+
+    public Image drawCharacter(char c) {
+        int nX = fontImage.getWidth(null) / hpix;
+        int nY = fontImage.getHeight(null) / vpix;
 
         int x = c % nX;
         int y = c / nX;
@@ -45,7 +56,7 @@ public class FontDrawer {
             return null;
         }
 
-        return this.fontImage.getSubimage(x * xpix, y * ypix, xpix, ypix);
+        return this.fontImage.getSubimage(x * hpix, y * vpix, hpix, vpix);
     }
 
     public Image drawString(String s) {
@@ -68,13 +79,16 @@ public class FontDrawer {
                     break;
                 }
             }
-            System.out.println("r:" + rows + " c:" + cols + " mc:" + maxcols);
         }
 
-        BufferedImage ret = new BufferedImage(maxcols * xpix, rows * ypix, BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics g = ret.getGraphics();
+        BufferedImage rendered = new BufferedImage(
+                maxcols * hpix + (maxcols - 1) * hspace,
+                rows * vpix + (rows - 1) * vspace,
+                BufferedImage.TYPE_4BYTE_ABGR);
 
-        LOG.log(Level.INFO, "The given text contains {0} rows and {1} cols", new Object[]{rows, maxcols});
+        Graphics g = rendered.getGraphics();
+
+        LOG.log(Level.FINE, "The given text contains {0} rows and {1} cols", new Object[]{rows, maxcols});
 
         //actual drawing
         int r = 0;
@@ -87,22 +101,31 @@ public class FontDrawer {
                     break;
                 }
                 default: {
-                    LOG.log(Level.INFO, "{0} {1},{2}", new Object[]{ch, c, r});
-                    g.drawImage(this.getCharacter(ch), c * xpix, r * ypix, null);
+                    g.drawImage(this.drawCharacter(ch),
+                            c * (hpix + hspace),
+                            r * (vpix + vspace), null);
                     c++;
                     break;
                 }
             }
         }
-
-        return ret;
+        
+        return rendered;
     }
 
     public int getCharWidth() {
-        return xpix;
+        return hpix;
     }
 
     public int getCharHeight() {
-        return ypix;
+        return vpix;
+    }
+    
+    public int getHSpacing(){
+        return hspace;
+    }
+    
+    public int getVSpacing(){
+        return vspace;
     }
 }

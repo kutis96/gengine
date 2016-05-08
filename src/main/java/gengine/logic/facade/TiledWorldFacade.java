@@ -1,4 +1,4 @@
-package gengine.util.facade;
+package gengine.logic.facade;
 
 import gengine.util.coords.Coords3D;
 import gengine.world.entity.TiledWorldEntity;

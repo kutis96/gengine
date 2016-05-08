@@ -1,46 +1,55 @@
-package gengine.logic;
+package gengine.logic.controller;
 
+import gengine.logic.facade.WorldControllerFacade;
+import gengine.logic.workers.Simulator;
 import gengine.events.generators.AbstEventGenerator;
+import gengine.logic.callback.NullCallback;
 import gengine.rendering.*;
 import gengine.util.coords.Coords3D;
-import gengine.util.facade.WorldFacade;
+import gengine.logic.facade.WorldFacade;
+import gengine.logic.view.WorldView;
 import gengine.world.World;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.BorderLayout;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
- * Controller - contains and controls all world updating and rendering,
+ * WorldController - contains and controls all world updating and rendering,
  * potentially also event generation.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class Controller implements ControllerFacade, WindowListener {
+public class WorldController implements WorldControllerFacade {
 
     //TODO: window resizing should redraw the world
-    //TODO: add event handling
-    private static final Logger LOG = Logger.getLogger(Controller.class.getName());
+
+    private static final Logger LOG = Logger.getLogger(WorldController.class.getName());
 
     private final Simulator sim;
-    private final JFrame jf;
-    private final WorldRenderer wren;
+    private final JPanel jp;
     private final AbstEventGenerator[] evgens;
 
     private Thread tSim;
     private Thread[] tEvgens;
-    private Thread tRenderer;
 
-    private RenderingWorker renWor;
+    private final WorldView wv;
 
     private final Stack<World> worldStack;
 
-    public Controller(Simulator sim, World world, JFrame jf, WorldRenderer wren, AbstEventGenerator[] evgens) {
+    public WorldController(Simulator sim, World world, JPanel jp, WorldRenderer wren, AbstEventGenerator[] evgens) {
         this.sim = sim;
-        this.jf = jf;
-        this.wren = wren;
+        this.jp = jp;
+        this.jp.setVisible(true);
+
+        this.wv = new WorldView(world, wren);
+        this.wv.setVisible(true);
+
+        this.jp.setLayout(new BorderLayout());
+        this.jp.add(wv, BorderLayout.CENTER);
+        this.jp.doLayout();
+
         this.evgens = evgens;
 
         this.worldStack = new Stack<>();
@@ -60,15 +69,6 @@ public class Controller implements ControllerFacade, WindowListener {
             this.tEvgens[i] = new Thread(this.evgens[i]);
         }
 
-        renWor = new RenderingWorker(jf, 20);
-        renWor.setWorld(this.getCurrentWorld());
-        renWor.setWorldRenderer(wren);
-        WorldRendererOptions wrop = new WorldRendererOptions();
-        wrop.setZoom(1);
-        wrop.addFlag(WorldRendererOptions.Flags.DEBUGMODE);
-        renWor.setRendererOptions(wrop);
-
-        this.tRenderer = new Thread(renWor);
     }
 
     /**
@@ -80,9 +80,7 @@ public class Controller implements ControllerFacade, WindowListener {
             this.tSim.start();
         }
 
-        if (!this.tRenderer.isAlive()) {
-            this.tRenderer.start();
-        }
+        this.wv.initialize(new NullCallback());
 
         for (Thread teg : this.tEvgens) {
             if (!teg.isAlive()) {
@@ -96,7 +94,8 @@ public class Controller implements ControllerFacade, WindowListener {
     public void stop() {
 
         this.sim.stop();
-        this.renWor.stop();
+
+        this.wv.deconstruct(new NullCallback());    //TODO: make use of these callbacks
 
         for (AbstEventGenerator eg : evgens) {
             eg.stop();
@@ -105,7 +104,7 @@ public class Controller implements ControllerFacade, WindowListener {
         try {
             Thread.sleep(100);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WorldController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -122,9 +121,7 @@ public class Controller implements ControllerFacade, WindowListener {
     @Override
     public void changeCamPosition(Coords3D pos) {
 
-        WorldRendererOptions wrop = this.renWor.getRendererOptions();
-        wrop.setCameraPosition(pos);
-        this.renWor.setRendererOptions(wrop);
+        this.wv.changeCamPosition(pos);
 
     }
 
@@ -158,42 +155,5 @@ public class Controller implements ControllerFacade, WindowListener {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-        //Do nothing
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        this.stop();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-    
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-        //Do nothing
-        //maybe pause the thing
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-        //Do nothing
-        //maybe unpause the thing
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-        //maybe unpause the thing
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-        //maybe pause the thing
     }
 }

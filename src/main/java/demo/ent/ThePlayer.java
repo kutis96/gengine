@@ -1,7 +1,7 @@
 package demo.ent;
 
 import gengine.events.receivers.KeyboardEventReceiver;
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
 import gengine.util.coords.*;
 import gengine.world.entity.*;
@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -25,14 +24,13 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
 
-    private final Overlay[] olays = new Overlay[]{
-        new TextOverlay("Player", new Coords3D(0, 0, 9000))
-    };
+    private final TextOverlay olay
+            = new TextOverlay("Player", new Coords3D(0, 0, 9000));
 
     private final Image img;
-    private final ControllerFacade cf;
+    private final WorldControllerFacade cf;
 
-    public ThePlayer(ControllerFacade facade) throws IOException {
+    public ThePlayer(WorldControllerFacade facade) throws IOException {
         super(facade, 20);
         this.cf = facade;
         this.img = ImageIO.read(new File("/home/rkutina/testimages/redball.png"));
@@ -99,6 +97,9 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     private void move(Coords3D direction) {
         this.advancePos(direction, true, true);
+
+        this.olay.setText("Player\n" + this.getPos());
+
         cf.changeCamPosition(this.getPos());
     }
 
@@ -109,7 +110,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     @Override
     public Overlay[] getOverlays() {
-        return Arrays.copyOf(olays, olays.length);
+        return new Overlay[]{this.olay};
     }
 
     @Override

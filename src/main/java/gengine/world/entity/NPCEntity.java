@@ -1,6 +1,6 @@
 package gengine.world.entity;
 
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.world.entity.inventory.Inventory;
 import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Point;
@@ -13,12 +13,12 @@ public abstract class NPCEntity extends TiledWorldEntity {
 
     private Inventory inv;
 
-    public NPCEntity(ControllerFacade facade, int invsize) {
+    public NPCEntity(WorldControllerFacade facade, int invsize) {
         super(facade);
         this.inv = new Inventory(invsize);
     }
 
-    public NPCEntity(ControllerFacade facade) {
+    public NPCEntity(WorldControllerFacade facade) {
         this(facade, 20);
     }
 

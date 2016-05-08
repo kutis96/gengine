@@ -1,6 +1,6 @@
 package gengine.rendering.overlay;
 
-import gengine.rendering.overlay.text.FontDrawer;
+import gengine.rendering.text.TextRenderer;
 import gengine.util.coords.Coords3D;
 import java.awt.Image;
 import java.io.IOException;
@@ -11,19 +11,19 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class TextOverlay implements Overlay {
+public final class TextOverlay implements Overlay {
 
     private static final Logger LOG = Logger.getLogger(TextOverlay.class.getName());
 
-    private final FontDrawer fd;
-    private final Image img;
+    private final TextRenderer fd;
+    private Image img;
 
     private Coords3D offset;
 
     public TextOverlay(String text, Coords3D offset) {
         try {
-            this.fd = new FontDrawer();
-            img = fd.drawString(text);
+            this.fd = new TextRenderer();
+            this.setText(text);
             
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
@@ -45,5 +45,9 @@ public class TextOverlay implements Overlay {
 
     public void setOffset(Coords3D offset) {
         this.offset = offset;
+    }
+
+    public void setText(String text) {
+        this.img = fd.drawString(text);
     }
 }

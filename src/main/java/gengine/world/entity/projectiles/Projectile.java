@@ -1,7 +1,7 @@
 package gengine.world.entity.projectiles;
 
 import gengine.events.receivers.ProximityEventReceiver;
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.util.coords.*;
 import gengine.world.entity.*;
 import gengine.world.entity.inventory.items.Weapon;
@@ -35,7 +35,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
      * @param weapon      Weapon this Projectile was shot from
      * @param perpetrator NPCEntity shooting said Weapon
      */
-    public Projectile(ControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
+    public Projectile(WorldControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
         super(facade);
         this.state = STATE_FLYING;
         this.weapon = weapon;

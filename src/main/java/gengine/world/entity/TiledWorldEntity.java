@@ -1,11 +1,11 @@
 package gengine.world.entity;
 
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.Renderable;
 import gengine.util.coords.Positionable;
 import gengine.util.coords.*;
-import gengine.util.facade.TiledWorldFacade;
-import gengine.util.facade.WorldFacade;
+import gengine.logic.facade.TiledWorldFacade;
+import gengine.logic.facade.WorldFacade;
 import gengine.world.tile.Tile;
 import gengine.world.tile.TilesetIndexException;
 import java.awt.Point;
@@ -25,9 +25,9 @@ import java.util.logging.Logger;
  */
 public abstract class TiledWorldEntity extends WorldEntity implements Positionable, Renderable {
 
-    private final ControllerFacade facade;
+    private final WorldControllerFacade facade;
 
-    public TiledWorldEntity(ControllerFacade facade) {
+    public TiledWorldEntity(WorldControllerFacade facade) {
         super(facade);
         this.facade = facade;
     }

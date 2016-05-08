@@ -1,4 +1,4 @@
-package gengine.logic;
+package gengine.logic.workers;
 
 import gengine.util.Worker;
 import gengine.world.World;

@@ -1,6 +1,6 @@
 package gengine.world.entity;
 
-import gengine.logic.ControllerFacade;
+import gengine.logic.facade.WorldControllerFacade;
 import java.awt.Image;
 
 /**
@@ -9,7 +9,7 @@ import java.awt.Image;
  */
 public abstract class PlayerEntity extends NPCEntity {
 
-    public PlayerEntity(ControllerFacade facade, int invsize) {
+    public PlayerEntity(WorldControllerFacade facade, int invsize) {
         super(facade, invsize);
     }
     

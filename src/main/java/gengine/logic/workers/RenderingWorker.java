@@ -1,4 +1,4 @@
-package gengine.logic;
+package gengine.logic.workers;
 
 import gengine.rendering.*;
 import gengine.util.Worker;
@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  * A Worker Class dedicated to rendering. National heroes right there.
@@ -46,17 +46,20 @@ public class RenderingWorker extends Worker {
     private World world;
     private WorldRenderer renderer;
     private WorldRendererOptions wrop;
-    private final JFrame jf;
+    private final JPanel jp;
+
+    private final Object lock;
 
     /**
      * Construct a new Rendering Worker class. Let the Workers rise!
      *
-     * @param jf     JFrame to render into.
+     * @param jp     JPanel to render into.
      * @param period Period between each rendering goes in milliseconds.
      */
-    public RenderingWorker(JFrame jf, int period) {
+    public RenderingWorker(JPanel jp, int period) {
         super(period);
-        this.jf = jf;
+        this.jp = jp;
+        this.lock = new Object();
     }
 
     /**
@@ -64,8 +67,10 @@ public class RenderingWorker extends Worker {
      *
      * @param wrop
      */
-    public synchronized void setRendererOptions(WorldRendererOptions wrop) {
-        this.wrop = wrop;
+    public void setRendererOptions(WorldRendererOptions wrop) {
+        synchronized (lock) {
+            this.wrop = wrop;
+        }
     }
 
     /**
@@ -73,8 +78,10 @@ public class RenderingWorker extends Worker {
      *
      * @return the WorldRendererOptions, of course!
      */
-    public synchronized WorldRendererOptions getRendererOptions() {
-        return this.wrop;
+    public WorldRendererOptions getRendererOptions() {
+        synchronized (lock) {
+            return this.wrop;
+        }
     }
 
     /**
@@ -82,8 +89,10 @@ public class RenderingWorker extends Worker {
      *
      * @param world
      */
-    public synchronized void setWorld(World world) {
-        this.world = world;
+    public void setWorld(World world) {
+        synchronized (lock) {
+            this.world = world;
+        }
     }
 
     /**
@@ -91,13 +100,15 @@ public class RenderingWorker extends Worker {
      *
      * @param renderer
      */
-    public synchronized void setWorldRenderer(WorldRenderer renderer) {
-        this.renderer = renderer;
+    public void setWorldRenderer(WorldRenderer renderer) {
+        synchronized (lock) {
+            this.renderer = renderer;
+        }
     }
 
     @Override
     public void init() {
-        
+
         if (this.world == null) {
             LOG.severe("World not set, I'm outta here.");
             this.stop();
@@ -111,34 +122,28 @@ public class RenderingWorker extends Worker {
             this.wrop = new WorldRendererOptions();
         }
 
-        Graphics g = this.jf.getGraphics();
-
-        g.setColor(Color.gray);
-
-        g.fillRect(0, 0, jf.getWidth(), jf.getHeight());
-        
-        LOG.info("Initialized.");
+        LOG.info("Initialized. " + this.jp.getSize());
     }
 
     @Override
     public void work(long dt) {
+        synchronized (lock) {
+            try {
+                BufferedImage bi = new BufferedImage(jp.getWidth(), jp.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
-        try {
-            BufferedImage bi = new BufferedImage(jf.getWidth(), jf.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-            
-            Graphics g = bi.getGraphics();
-            g.setColor(Color.gray);
-            g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
-            
-            
-            this.renderer.render(this.world, bi, this.wrop);
-            
-            this.jf.getGraphics().drawImage(bi, 0, 0, jf);
+                Graphics g = bi.getGraphics();
+                g.setColor(Color.gray);
+                g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
 
-        } catch (RendererException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+                this.renderer.render(this.world, bi, this.wrop);
 
-            this.stop();    //we're outta here.
+                this.jp.getGraphics().drawImage(bi, 0, 0, jp);
+
+            } catch (RendererException ex) {
+                LOG.log(Level.SEVERE, null, ex);
+
+                this.stop();    //we're outta here.
+            }
         }
     }
 

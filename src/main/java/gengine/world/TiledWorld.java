@@ -1,7 +1,7 @@
 package gengine.world;
 
-import gengine.util.facade.WorldFacade;
-import gengine.util.facade.TiledWorldFacade;
+import gengine.logic.facade.WorldFacade;
+import gengine.logic.facade.TiledWorldFacade;
 import gengine.rendering.squaregrid.SquareGridUtils;
 import gengine.util.coords.*;
 import gengine.world.entity.WorldEntity;
