@@ -12,7 +12,8 @@ them can and can't do.
 ####A.K.A. The bits and bobs
 Model is any set of data that's there mostly for the sake of the data.
 It can also do some operations on such data, once the Controller tells it so.
-A Model is thus a slave of the Controller.
+A Model is thus a slave of the Controller. Whenever you hear a Model cry about
+the tyranny of the Controllers, don't listen to it.
 
 ##View
 ####A.K.A. The Ugly GUI, Presenter, StuffLikeThat
