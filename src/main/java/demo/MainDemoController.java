@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -47,20 +48,17 @@ public class MainDemoController extends MainController {
         this.mainFrame = mainFrame;
 
         String mapFile = "/demo/world1/world1.map";
-        String tsFile = "/demo/world1/world1.ts";
+
+        String tsBase = "/demo/world1";
+        String tsFile = "world1.ts";
 
         LOG.info("Loading Demo World...");
 
         this.world = TiledWorldLoader.load(
                 this.getClass().getResourceAsStream(mapFile));
 
-        try {
-            this.world.setTileset(
-                    TilesetLoader.load(
-                            new File(this.getClass().getResource(tsFile).toURI())));
-        } catch (URISyntaxException ex) {
-            throw new RuntimeException("Failed to URIfy resource " + tsFile, ex);
-        }
+        this.world.setTileset(
+                TilesetLoader.load(MainDemoController.class.getResourceAsStream(tsBase + "/" + tsFile), tsBase, true));
 
         LOG.info("World loaded.");
 
@@ -89,9 +87,9 @@ public class MainDemoController extends MainController {
 
         try {
             Coords3D wsiz = this.world.getWorldSize();
-            
+
             this.world.addEntity(new ThePlayer(this.wcon));
-            for(int i = 0; i < wsiz.vecLength(); i++){
+            for (int i = 0; i < wsiz.vecLength(); i++) {
                 ScaredBall sb = new ScaredBall(wcon);
                 sb.setPos(new Coords3D(
                         wsiz.getX() * Math.random(),

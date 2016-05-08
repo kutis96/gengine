@@ -60,8 +60,6 @@ public class TextRenderer {
     }
 
     public Image drawString(String s) {
-
-        LOG.info("Drawing " + s);
         
         int cols = 0;
         int maxcols = 0;

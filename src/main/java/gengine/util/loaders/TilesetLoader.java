@@ -9,6 +9,7 @@ import gengine.world.tile.*;
 import gengine.world.tile.tiles.AnimatedTile;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -31,7 +32,9 @@ public class TilesetLoader {
     /**
      * Load a tileset from a given K:V file.
      *
-     * @param f File to load from
+     * @param fis        InputStream of the tileset K:V file
+     * @param base       Base directory of all the tiles
+     * @param asResource true when loading resources, false when loading files
      *
      * @return new Tileset
      *
@@ -40,10 +43,10 @@ public class TilesetLoader {
      *                                    file's format is either unacceptable,
      *                                    or totally cursed.
      */
-    public static Tileset load(File f) throws IOException, UnsupportedFormatException {
+    public static Tileset load(InputStream fis, String base, boolean asResource) throws IOException, UnsupportedFormatException {
 
         //load Key:Value values from the given file
-        Map<String, String[]> kv = ExtendedKeyValLoader.load(new FileInputStream(f));
+        Map<String, String[]> kv = ExtendedKeyValLoader.load(fis);
 
         Tileset tileset = new Tileset();
 
@@ -62,7 +65,11 @@ public class TilesetLoader {
             Tile tile;
 
             try {
-                tile = loadAnimTile(f.getParent(), vStrA);
+                if (asResource) {
+                    tile = loadAnimTile(TilesetLoader.class.getResourceAsStream(base + "/" + vStrA[0]), vStrA);
+                } else {
+                    tile = loadAnimTile(new FileInputStream(base + "/" + vStrA[0]), vStrA);
+                }
 
                 tileset.setTileWithId(index, tile);
             } catch (TilesetIndexException ex) {
@@ -78,22 +85,7 @@ public class TilesetLoader {
         return tileset;
     }
 
-    private static AnimatedTile loadAnimTile(String parent, String[] options) throws IOException, ParserException {
-
-        File tilefile;
-
-        try {
-
-            tilefile = new File(parent + "/" + options[0]);
-
-        } catch (ArrayIndexOutOfBoundsException npe) {
-            LOG.log(Level.SEVERE, null, npe);
-            throw new IOException("Invalid options found in the Tileset loader.");
-        }
-
-        if (!tilefile.exists()) {
-            throw new IOException("File '" + tilefile.getCanonicalPath() + "' was not found.");
-        }
+    private static AnimatedTile loadAnimTile(InputStream fis, String[] options) throws IOException, ParserException {
 
         SwitchTemplate tempWall = new SwitchTemplate("(?i)w(all)?");
         SwitchTemplate tempNumber = new SwitchTemplate("(-)?[1-9]([0-9]+)?");
@@ -140,7 +132,7 @@ public class TilesetLoader {
         int ysize = intParams[1];   //Y size
         int aperi = intParams[2];   //anim. period
 
-        BufferedImage img = ImageIO.read(tilefile);
+        BufferedImage img = ImageIO.read(fis);
 
         if (xsize == -1 && ysize == -1) {
             //determine the tilesize from an image, assuming square tiles.
@@ -155,11 +147,10 @@ public class TilesetLoader {
 
         List<AnimFrame> frames = new LinkedList<>();
 
-        LOG.log(Level.INFO, "Loading new AnimatedTile. ({4})\nAssumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1000. / aperi, tilefile.getAbsolutePath(), (isWall) ? "is" : "is not"});
+        LOG.log(Level.INFO, "Loading new AnimatedTile. Assumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1000. / aperi, (isWall) ? "is" : "is not"});
 
-        
         for (int x = 0; x < img.getWidth(); x += xsize) {
-            
+
             for (int y = 0; y < img.getHeight(); y += ysize) {
 
                 BufferedImage i = img.getSubimage(x, y, xsize, ysize);
@@ -168,19 +159,19 @@ public class TilesetLoader {
 
                 frames.add(af);
             }
-            
+
         }
 
         AnimatedTile ret = new AnimatedTile(new AnimatedImage(frames.toArray(new AnimFrame[frames.size()])));
 
         ret.setWall(isWall);
-        
-        if(ret.isWall() != isWall){
+
+        if (ret.isWall() != isWall) {
             throw new IOException("WTF");
         }
-        
+
         return ret;
-        
+
     }
 
 }
