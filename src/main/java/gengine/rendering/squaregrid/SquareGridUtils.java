@@ -101,8 +101,8 @@ public class SquareGridUtils {
         public int compare(final RenderableContainer a, RenderableContainer b) {
             Coords3D ac = a.pos;
             Coords3D bc = b.pos;
-
-            if ((int) ac.getZ() == (int) bc.getZ()) {
+            
+            if (Float.compare(ac.getZ(), bc.getZ()) == 0) {
 
                 if (ac.getY() < bc.getY()) {
                     return -1;

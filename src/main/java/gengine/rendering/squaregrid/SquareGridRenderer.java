@@ -121,7 +121,7 @@ public class SquareGridRenderer implements WorldRenderer {
         upperVisibleBound = new Coords3D(
                 Math.min(world.getWorldSize().getX(), 2 + surface.getWidth()/scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
                 Math.min(world.getWorldSize().getY(), 2 + surface.getHeight()/scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
-                0
+                world.getWorldSize().getZ()
         );
         
         //to test boundaries, uncomment: LOG.info("L:" + lowerVisibleBound + "\tU:" + upperVisibleBound);
@@ -140,9 +140,11 @@ public class SquareGridRenderer implements WorldRenderer {
             //Add all tiles to the rendered things
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
-                    Tile t = world.getWorldtile(new Coords3D(x, y, 0));
-                    if (t != null) {
-                        renderedThings.add(new RenderableContainer(new Coords3D(x, y, -1), t));
+                    for (int z = (int) lowerVisibleBound.getZ(); z < upperVisibleBound.getZ(); z++) {
+                        Tile t = world.getWorldtile(new Coords3D(x, y, z));
+                        if (t != null) {
+                            renderedThings.add(new RenderableContainer(new Coords3D(x, y, z-0.125), t));
+                        }
                     }
                 }
             }
@@ -185,7 +187,7 @@ public class SquareGridRenderer implements WorldRenderer {
             Image i = rc.ren.render();
             
             if (i == null) {
-                LOG.log(Level.WARNING, "Unable to render ({0})", rc.toString());
+                //null tiles will be ignored
                 continue;
             }
             
