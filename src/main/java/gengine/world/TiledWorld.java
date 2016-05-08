@@ -149,11 +149,11 @@ public class TiledWorld implements World, TiledWorldFacade {
 
     public long getTileAmount() {
         long n = 1;
-        
-        for(float f : this.getWorldSize().toArray()){
-            n *= (long)f;
+
+        for (float f : this.getWorldSize().toArray()) {
+            n *= (long) f;
         }
-        
+
         return n;
     }
 
@@ -183,13 +183,15 @@ public class TiledWorld implements World, TiledWorldFacade {
     }
 
     @Override
-    public void addEntity(WorldEntity entity) {
+    public boolean addEntity(WorldEntity entity) {
         if (entity instanceof TiledWorldEntity) {
             synchronized (this.entLock) {
                 this.entities.add((TiledWorldEntity) entity);
             }
+            return true;
         } else {
             LOG.log(Level.SEVERE, "Tried to add invalid entity type! {0} {1}", new Object[]{entity.toString(), entity.getClass().getName()});
+            return false;
         }
     }
 
@@ -242,13 +244,5 @@ public class TiledWorld implements World, TiledWorldFacade {
     public void setTile(Coords3D coordinates, Tile tile) {
         //TODO: synchronize
         this.setWorldtile(tile, coordinates);
-    }
-
-    @Override
-    public boolean spawnEntity(TiledWorldEntity twe) {
-        synchronized (this.entLock) {
-            this.entities.add(twe);
-        }
-        return true;
     }
 }

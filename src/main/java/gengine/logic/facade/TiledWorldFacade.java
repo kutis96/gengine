@@ -1,7 +1,6 @@
 package gengine.logic.facade;
 
 import gengine.util.coords.Coords3D;
-import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.Tile;
 
 /**
@@ -35,13 +34,4 @@ public interface TiledWorldFacade extends WorldFacade {
      * @return World size
      */
     public Coords3D getWorldSize();
-
-    /**
-     * Adds an entity into the world.
-     *
-     * @param twe TiledWorldEntity to spawn.
-     *
-     * @return true on success, false never.
-     */
-    public boolean spawnEntity(TiledWorldEntity twe);
 }

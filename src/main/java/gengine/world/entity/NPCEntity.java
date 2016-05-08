@@ -2,6 +2,7 @@ package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.world.entity.inventory.Inventory;
+import gengine.world.entity.inventory.ItemStack;
 import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Point;
 
@@ -13,8 +14,11 @@ public abstract class NPCEntity extends TiledWorldEntity {
 
     private Inventory inv;
 
+    private final WorldControllerFacade facade;
+
     public NPCEntity(WorldControllerFacade facade, int invsize) {
         super(facade);
+        this.facade = facade;
         this.inv = new Inventory(invsize);
     }
 
@@ -36,6 +40,7 @@ public abstract class NPCEntity extends TiledWorldEntity {
 
     @Override
     public abstract void resetState();
+
     @Override
     public abstract boolean mouseHit(Point point);
 

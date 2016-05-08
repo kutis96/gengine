@@ -13,11 +13,12 @@ import java.awt.Point;
 public class GrabbableItemEntity extends TiledWorldEntity {
 
     private final ItemStack is;
-
     private final Image img;
+    private final WorldEntity dropper;
 
-    public GrabbableItemEntity(WorldControllerFacade facade, ItemStack is) {
+    public GrabbableItemEntity(WorldEntity dropper, WorldControllerFacade facade, ItemStack is) {
         super(facade);
+        this.dropper = dropper;
         this.is = is;
         this.img = is.getPrototype().render();
     }
@@ -50,6 +51,10 @@ public class GrabbableItemEntity extends TiledWorldEntity {
     @Override
     public Image render() {
         return this.img;
+    }
+
+    public WorldEntity getDropper() {
+        return this.dropper;
     }
 
 }

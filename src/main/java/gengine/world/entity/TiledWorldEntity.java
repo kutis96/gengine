@@ -5,6 +5,7 @@ import gengine.rendering.Renderable;
 import gengine.util.coords.Positionable;
 import gengine.util.coords.*;
 import gengine.logic.facade.TiledWorldFacade;
+import gengine.world.entity.inventory.ItemStack;
 import gengine.world.tile.Tile;
 import java.awt.Point;
 import java.util.logging.Level;
@@ -151,5 +152,26 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      */
     @Override
     public abstract boolean mouseHit(Point point);
+
+    /**
+     * Try to drop an ItemStack. Generates a new GrabbableItemEntity and spawns
+     * it.
+     *
+     * @param droppedItem an ItemStack to drop
+     * @param dropper     WorldEntity supposed to drop this item
+     * @param facade      WorldControllerFacade to spawn the new
+     *                    GrabbableItemEntity with
+     *
+     * @return true on success, false on failure.
+     */
+    public static boolean dropItemStack(ItemStack droppedItem, WorldEntity dropper, WorldControllerFacade facade) {
+        //W: this could end up being a bit fishy
+        //TODO: replace 'this' with parameters and make this thing static
+
+        GrabbableItemEntity gie = new GrabbableItemEntity(dropper, facade, droppedItem);
+        gie.setPos(dropper.getPos());
+
+        return facade.spawnEntity(gie);
+    }
 
 }

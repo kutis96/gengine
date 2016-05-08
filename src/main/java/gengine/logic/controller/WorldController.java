@@ -11,6 +11,7 @@ import gengine.logic.view.WorldView;
 import gengine.logic.workers.GrimReaper;
 import gengine.util.Worker;
 import gengine.world.World;
+import gengine.world.entity.WorldEntity;
 import java.util.Arrays;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,12 +44,11 @@ public class WorldController implements WorldControllerFacade {
             new KeyboardEventGenerator(world, worldview, 50),
             new MouseEventGenerator(world, worldview, worldview.getRenderer(), 50)
         };
-        
 
         this.worldview = worldview;
         this.worldview.setVisible(true);
         this.worldview.initialize(new NullCallback());
-        
+
         this.worldview.setFocusable(true);
         this.worldview.requestFocus();
 
@@ -108,7 +108,9 @@ public class WorldController implements WorldControllerFacade {
     }
 
     private World getCurrentWorld() {
-        return this.worldStack.peek();
+        synchronized (this.worldStack) {
+            return this.worldStack.peek();
+        }
     }
 
     @Override
@@ -126,20 +128,29 @@ public class WorldController implements WorldControllerFacade {
     @Override
     public boolean switchWorlds(Object requestor, World world, boolean save) throws WorldTypeMismatchException {
         //TODO: 
+        synchronized (this.worldStack) {
 
-        if (!save && !this.worldStack.isEmpty()) {
-            this.worldStack.pop();
+            if (!save && !this.worldStack.isEmpty()) {
+                this.worldStack.pop();
+            }
+
+            this.worldStack.push(world);
+            this.worldview.setWorld(world);
+
+            return true;
         }
-
-        this.worldStack.push(world);
-        this.worldview.setWorld(world);
-
-        return true;
     }
 
     @Override
     public boolean returnWorlds(Object requestor) {
         //TODO: 
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean spawnEntity(WorldEntity we) {
+        synchronized (this.worldStack) {
+            return this.worldStack.peek().addEntity(we);
+        }
     }
 }

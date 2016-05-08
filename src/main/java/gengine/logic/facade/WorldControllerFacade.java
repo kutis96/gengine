@@ -2,8 +2,8 @@ package gengine.logic.facade;
 
 import gengine.rendering.WorldTypeMismatchException;
 import gengine.util.coords.Coords3D;
-import gengine.logic.facade.WorldFacade;
 import gengine.world.World;
+import gengine.world.entity.WorldEntity;
 
 /**
  *
@@ -50,4 +50,13 @@ public interface WorldControllerFacade {
      * @return true on a successful switch
      */
     public boolean returnWorlds(Object requestor);
+
+    /**
+     * Adds an entity into the world.
+     *
+     * @param twe TiledWorldEntity to spawn.
+     *
+     * @return true on success, false never.
+     */
+    public boolean spawnEntity(WorldEntity twe);
 }

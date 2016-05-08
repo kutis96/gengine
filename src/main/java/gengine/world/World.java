@@ -28,8 +28,10 @@ public interface World {
      * Adds a WorldEntity to this World.
      *
      * @param entity WorldEntity to add to this world.
+     *
+     * @return true on success, false on failure.
      */
-    public void addEntity(WorldEntity entity);
+    public boolean addEntity(WorldEntity entity);
 
     /**
      * Removes a WorldEntity from this World.
