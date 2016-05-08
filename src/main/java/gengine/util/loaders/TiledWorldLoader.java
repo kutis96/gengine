@@ -117,9 +117,9 @@ public class TiledWorldLoader {
         int maxZ = 0;
 
         Integer[][][] m = map.toArray(new Integer[map.size()][][]);
-        for (int x = 0; x < m.length; x++) {
-            for (int y = 0; y < m[x].length; y++) {
-                for (int z = 0; z < m[x][y].length; z++) {
+        for (int y = 0; y < m.length; y++) {
+            for (int x = 0; x < m[y].length; x++) {
+                for (int z = 0; z < m[y][x].length; z++) {
                     maxX = (x > maxX) ? x : maxX;
                     maxY = (y > maxY) ? y : maxY;
                     maxZ = (z > maxZ) ? z : maxZ;
@@ -142,8 +142,8 @@ public class TiledWorldLoader {
 
         for (int x = 0; x < m.length; x++) {
             for (int y = 0; y < m[x].length; y++) {
-                for (int z = 0; z < m[x][y].length; z++) {
-                    world.setWorldtile(m[x][y][z], new Coords3D(x, y, z));
+                for (int z = 0; z < m[y][x].length; z++) {
+                    world.setWorldtile(m[y][x][z], new Coords3D(x, y, z));
                 }
             }
         }
