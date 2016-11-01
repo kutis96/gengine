@@ -1,7 +1,7 @@
 package gengine.rendering.squaregrid;
 
 import gengine.rendering.RenderableContainer;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.WorldEntity;
 import java.util.Comparator;
 
@@ -38,9 +38,9 @@ public class SquareGridUtils {
 
         @Override
         public int compare(final WorldEntity a, final WorldEntity b) {
-            if (a.getPos().getCoords()[dir] < b.getPos().getCoords()[dir]) {
+            if (a.getPos().getInternalVector()[dir] < b.getPos().getInternalVector()[dir]) {
                 return -1;
-            } else if (a.getPos().getCoords()[dir] > b.getPos().getCoords()[dir]) {
+            } else if (a.getPos().getInternalVector()[dir] > b.getPos().getInternalVector()[dir]) {
                 return 1;
             } else {
                 return 0;
@@ -59,13 +59,13 @@ public class SquareGridUtils {
      * @return True when a specified coordinate is indeed within the specified
      *         rectangle, false otherwise.
      */
-    public static boolean isWithin(Coords3D point, Coords3D lower, Coords3D higher) {
+    public static boolean isWithin(Neco3D point, Neco3D lower, Neco3D higher) {
         //I figured this would be a fair bit faster than looping through the actual coordinates with a silly loop
         //but CodeQuality happened. grumble grumble.
 
         for (int i = 0; i < 3; i++) {
-            if (!(lower.getCoords()[i] <= point.getCoords()[i]
-                    && point.getCoords()[i] <= higher.getCoords()[i])) {
+            if (!(lower.getInternalVector()[i] <= point.getInternalVector()[i]
+                    && point.getInternalVector()[i] <= higher.getInternalVector()[i])) {
 
                 return false;
             }
@@ -85,10 +85,10 @@ public class SquareGridUtils {
      * @return True when a specified coordinate is indeed within the specified
      *         rectangle, false otherwise.
      */
-    public static boolean isWithinIgnoringZ(Coords3D point, Coords3D lower, Coords3D higher) {
+    public static boolean isWithinIgnoringZ(Neco3D point, Neco3D lower, Neco3D higher) {
         //I figured this would be a fair bit faster than looping through the actual coordinates with a silly loop 
-        return (lower.getX() <= point.getX() && point.getX() <= higher.getX())
-                && (lower.getY() <= point.getY() && point.getY() <= higher.getY());
+        return (lower.getXint() <= point.getXint() && point.getXint() <= higher.getXint())
+                && (lower.getYint() <= point.getYint() && point.getYint() <= higher.getYint());
     }
 
     /**
@@ -99,14 +99,14 @@ public class SquareGridUtils {
 
         @Override
         public int compare(final RenderableContainer a, RenderableContainer b) {
-            Coords3D ac = a.pos;
-            Coords3D bc = b.pos;
+            Neco3D ac = a.pos;
+            Neco3D bc = b.pos;
             
-            if (Float.compare(ac.getZ(), bc.getZ()) == 0) {
+            if (ac.getZint() == bc.getZint()) {
 
-                if (ac.getY() < bc.getY()) {
+                if (ac.getYint() < bc.getYint()) {
                     return -1;
-                } else if (ac.getY() > bc.getY()) {
+                } else if (ac.getYint() > bc.getYint()) {
                     return 1;
                 } else {
                     return 0;

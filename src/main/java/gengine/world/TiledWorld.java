@@ -3,7 +3,7 @@ package gengine.world;
 import gengine.logic.facade.WorldFacade;
 import gengine.logic.facade.TiledWorldFacade;
 import gengine.rendering.squaregrid.SquareGridUtils;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.*;
@@ -40,7 +40,7 @@ public class TiledWorld implements World, TiledWorldFacade {
      *
      * @throws WorldSizeException Thrown when an invalid world size is supplied.
      */
-    public TiledWorld(Coords3D size) throws WorldSizeException {
+    public TiledWorld(Neco3D size) throws WorldSizeException {
 
         if (size == null) {
             throw new WorldSizeException("Invalid world size: null supplied");
@@ -64,18 +64,14 @@ public class TiledWorld implements World, TiledWorldFacade {
      *
      * @return tile on the given position
      */
-    public Tile getWorldtile(Coords3D pos) {
+    public Tile getWorldtile(Neco3D pos) {
 
-        try {
-            new Coords3D(pos).roundAll();
-        } catch (ValueException ex) {
-            LOG.warning("WTF rounding");
-        }
+        Neco3D rpos = pos.roundAll();
 
-        if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSizeMinusOne())) {
+        if (SquareGridUtils.isWithin(rpos, new Neco3D(), this.getWorldSizeMinusOne())) {
             try {
                 return this.tileset.getTileFromId(
-                        this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()]
+                        this.tileIDmap[(int) rpos.getX()][(int) rpos.getY()][(int) rpos.getZ()]
                 );
             } catch (NullPointerException | ArrayIndexOutOfBoundsException | TilesetIndexException ex) {
                 LOG.log(Level.SEVERE, null, ex);
@@ -91,9 +87,9 @@ public class TiledWorld implements World, TiledWorldFacade {
      * Sets a given tile in this World to a specified Tile.
      *
      * @param tileID the ID of a tile to set
-     * @param pos    the position to place the tile on
+     * @param pos the position to place the tile on
      */
-    public void setWorldtile(int tileID, Coords3D pos) {
+    public void setWorldtile(int tileID, Neco3D pos) {
         this.tileIDmap[(int) pos.getX()][(int) pos.getY()][(int) pos.getZ()] = tileID;
     }
 
@@ -101,9 +97,9 @@ public class TiledWorld implements World, TiledWorldFacade {
      * Sets a given tile in this World to a specified Tile.
      *
      * @param tile
-     * @param pos  the position to place the tile on
+     * @param pos the position to place the tile on
      */
-    public void setWorldtile(Tile tile, Coords3D pos) {
+    public void setWorldtile(Tile tile, Neco3D pos) {
 
         int id = this.tileset.getTileID(tile);
 
@@ -119,20 +115,25 @@ public class TiledWorld implements World, TiledWorldFacade {
      * Returns the size of this world. If it just so happens the world's tile
      * array is null, a null is returned.
      *
-     * @return Coords3D containing the size of the world array. May return null
-     *         when something goes horribly wrong.
+     * @return Neco3D containing the size of the world array. May return null
+     * when something goes horribly wrong. The Neco3D actually contains the size
+     * in its internal vector UNADJUSTED, that is it can be read from its
+     * internal vector directly. Adjusting it may go horribly wrong.
      */
     @Override
-    public Coords3D getWorldSize() {
+    public Neco3D getWorldSize() {
         if (this.tileIDmap == null) {
             //TODO: change this to an exception
             return null;
         }
 
-        return new Coords3D(
-                this.tileIDmap.length, //X
-                this.tileIDmap[0].length, //Y
-                this.tileIDmap[0][0].length //Z
+        return new Neco3D(
+                new int[]{
+                    this.tileIDmap.length, //X
+                    this.tileIDmap[0].length, //Y
+                    this.tileIDmap[0][0].length //Z
+                },
+                false //true: perform an adjustment -- arg is not a direct internal vector format
         );
     }
 
@@ -140,22 +141,17 @@ public class TiledWorld implements World, TiledWorldFacade {
      * Returns the worldsize minus one on each dimension. Fairly useful for
      * iterating over the whole thing etc.
      *
-     * @return Coords3D containing the size of the world array, minus (1,1,1)
+     * @return Neco3D containing the size of the world array, minus (1,1,1)
      */
-    private Coords3D getWorldSizeMinusOne() {
-        try {
-            return new Coords3D(getWorldSize().decrement(new Coords3D(1, 1, 1)));
-        } catch (ValueException | DimMismatchException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-            return new Coords3D();
-        }
+    private Neco3D getWorldSizeMinusOne() {
+        return new Neco3D(getWorldSize().sub(Neco3D.EYE));
     }
 
     public long getTileAmount() {
         long n = 1;
 
-        for (float f : this.getWorldSize().toArray()) {
-            n *= (long) f;
+        for (int i : this.getWorldSize().getInternalVector()) {
+            n *= (long) i;
         }
 
         return n;
@@ -239,13 +235,13 @@ public class TiledWorld implements World, TiledWorldFacade {
     }
 
     @Override
-    public Tile getTile(Coords3D coordinates) {
+    public Tile getTile(Neco3D coordinates) {
         //TODO: synchronize
         return this.getWorldtile(coordinates);
     }
 
     @Override
-    public void setTile(Coords3D coordinates, Tile tile) {
+    public void setTile(Neco3D coordinates, Tile tile) {
         //TODO: synchronize
         this.setWorldtile(tile, coordinates);
     }

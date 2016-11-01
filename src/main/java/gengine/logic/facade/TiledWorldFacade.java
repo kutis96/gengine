@@ -1,6 +1,6 @@
 package gengine.logic.facade;
 
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.tile.Tile;
 
 /**
@@ -18,7 +18,7 @@ public interface TiledWorldFacade extends WorldFacade {
      *
      * @return tile if the tile exists, null otherwise.
      */
-    public Tile getTile(Coords3D coordinates);
+    public Tile getTile(Neco3D coordinates);
 
     /**
      * Sets a tile on a given coordinate.
@@ -26,12 +26,13 @@ public interface TiledWorldFacade extends WorldFacade {
      * @param coordinates
      * @param tile
      */
-    public void setTile(Coords3D coordinates, Tile tile);
+    public void setTile(Neco3D coordinates, Tile tile);
 
     /**
      * Returns the size of the World.
      *
-     * @return World size
+     * @return World size in an unadjusted Neco3D. To get the actual numbers,
+     * access the internal array.
      */
-    public Coords3D getWorldSize();
+    public Neco3D getWorldSize();
 }

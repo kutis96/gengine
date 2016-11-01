@@ -2,10 +2,9 @@ package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.Renderable;
-import gengine.util.coords.Positionable;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
+import gengine.util.neco.NecoPositionable;
 import java.awt.Point;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,13 +18,13 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class WorldEntity implements Positionable, Renderable {
+public abstract class WorldEntity implements NecoPositionable, Renderable {
 
     private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
 
     public static final int STATE_DEAD = 0xDEAD;
     public static final int STATE_UNDEFINED = -1;
-    Coords3D pos;
+    Neco3D pos;
 
 
     /**
@@ -47,7 +46,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * @return coordinates of this entity
      */
     @Override
-    public Coords3D getPos() {
+    public Neco3D getPos() {
         return this.pos;
     }
 
@@ -73,7 +72,7 @@ public abstract class WorldEntity implements Positionable, Renderable {
      * @param pos new position
      */
     @Override
-    public void setPos(Coords3D pos) {
+    public void setPos(Neco3D pos) {
         this.pos = pos;
     }
 
@@ -84,12 +83,8 @@ public abstract class WorldEntity implements Positionable, Renderable {
      *
      * @param pos
      */
-    public void advancePos(Coords3D pos) {
-        try {
-            this.pos.increment(pos);
-        } catch (DimMismatchException | ValueException ex) {
-            LOG.log(Level.SEVERE, null, ex);
-        }
+    public void advancePos(Neco3D pos) {
+        this.pos.increment(pos);
     }
 
     /**

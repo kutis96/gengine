@@ -1,7 +1,7 @@
 package gengine.world;
 
 import gengine.logic.facade.WorldFacade;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.WorldEntity;
 
 /**
@@ -15,7 +15,7 @@ public interface World {
      *
      * @return returns the size of the World.
      */
-    public Coords3D getWorldSize();
+    public Neco3D getWorldSize();
 
     /**
      * Updates the World.

@@ -1,6 +1,6 @@
 package gengine.rendering;
 
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 
 /**
  * A container containing a Renderable and its position.
@@ -9,10 +9,10 @@ import gengine.util.coords.Coords3D;
  */
 public class RenderableContainer {
 
-    public final Coords3D pos;
+    public final Neco3D pos;
     public final Renderable ren;
 
-    public RenderableContainer(Coords3D position, Renderable renderable) {
+    public RenderableContainer(Neco3D position, Renderable renderable) {
         this.pos = position;
         this.ren = renderable;
     }

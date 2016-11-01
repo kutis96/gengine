@@ -2,12 +2,11 @@ package gengine.world.entity.projectiles;
 
 import gengine.events.receivers.ProximityEventReceiver;
 import gengine.logic.facade.WorldControllerFacade;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.*;
 import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Image;
 import java.awt.Point;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -23,7 +22,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
     public static final int STATE_FLYING = 101;
     public static final int STATE_CRASHED = 102;
 
-    private Coords3D velocity;
+    private Neco3D velocity;
     private final Weapon weapon;
     private final NPCEntity perpetrator;
 
@@ -31,8 +30,8 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
 
     /**
      *
-     * @param facade      Facade to interface the world with
-     * @param weapon      Weapon this Projectile was shot from
+     * @param facade Facade to interface the world with
+     * @param weapon Weapon this Projectile was shot from
      * @param perpetrator NPCEntity shooting said Weapon
      */
     public Projectile(WorldControllerFacade facade, Weapon weapon, NPCEntity perpetrator) {
@@ -54,19 +53,15 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
 
     @Override
     public void tick(long dt) {
-        try {
-            if (this.state == STATE_FLYING && this.advancePos((Coords3D) new Coords3D(velocity).multiply(dt), true, true)) {
-                //flight!
-                //do some flying around
-                this.fly(dt);
-            } else {
-                //crash!
-                //crash and stuff
-                this.state = STATE_CRASHED;
-                this.crash(dt);
-            }
-        } catch (ValueException ex) {
-            LOG.log(Level.SEVERE, null, ex);
+        if (this.state == STATE_FLYING && this.advancePos((Neco3D) new Neco3D(velocity).multiply(dt), true, true)) {
+            //flight!
+            //do some flying around
+            this.fly(dt);
+        } else {
+            //crash!
+            //crash and stuff
+            this.state = STATE_CRASHED;
+            this.crash(dt);
         }
     }
 
@@ -121,7 +116,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
      *
      * @param velocity
      */
-    public void setVelocity(Coords3D velocity) {
+    public void setVelocity(Neco3D velocity) {
         this.velocity = velocity;
     }
 }

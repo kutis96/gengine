@@ -19,6 +19,11 @@ public class Neco3D {
         this.xyz = intvec;
     }
 
+    public Neco3D() {
+        //
+        this.xyz = new int[]{0, 0, 0};
+    }
+
     /**
      * Constructor suitable for making a copy of a Neco3D vector.
      *
@@ -46,6 +51,18 @@ public class Neco3D {
      */
     public int[] getInternalVector() {
         return Arrays.copyOf(this.xyz, this.xyz.length);
+    }
+
+    public void increment(Neco3D vec) {
+        for (int i = 0; i < 3; i++) {
+            this.xyz[i] += vec.xyz[i];
+        }
+    }
+
+    public void decrement(Neco3D vec) {
+        for (int i = 0; i < 3; i++) {
+            this.xyz[i] -= vec.xyz[i];
+        }
     }
 
     public Neco3D add(Neco3D vec) {
@@ -125,7 +142,7 @@ public class Neco3D {
         return new Neco3D(this).divide(this.vecLength());
     }
 
-    public int[] getRounded() {
+    public int[] getAdjusted() {
         int[] rxyz = new int[3];
 
         for (int i = 0; i < 3; i++) {
@@ -143,5 +160,36 @@ public class Neco3D {
         }
 
         return dxyz;
+    }
+
+    public double getX() {
+        return this.xyz[0] / (double) N_PER_UNIT;
+    }
+
+    public double getY() {
+        return this.xyz[1] / (double) N_PER_UNIT;
+    }
+
+    public double getZ() {
+        return this.xyz[2] / (double) N_PER_UNIT;
+    }
+    
+    public int getXint() {return this.xyz[0];}
+    public int getYint() {return this.xyz[1];}
+    public int getZint() {return this.xyz[2];}
+
+    @Override
+    public String toString() {
+        return "[" + this.getX() + ", " + this.getY() + ", " + this.getZ() + "]";
+    }
+
+    public Neco3D roundAll() {
+        int[] nxyz = new int[3];
+
+        for (int i = 0; i < 3; i++) {
+            nxyz[i] = this.xyz[i] - (this.xyz[i] % N_PER_UNIT);
+        }
+
+        return new Neco3D(nxyz);
     }
 }

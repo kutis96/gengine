@@ -2,9 +2,8 @@ package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.Renderable;
-import gengine.util.coords.Positionable;
-import gengine.util.coords.*;
 import gengine.logic.facade.TiledWorldFacade;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.inventory.ItemStack;
 import gengine.world.tile.Tile;
 import java.awt.Point;
@@ -22,14 +21,14 @@ import java.util.logging.Logger;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public abstract class TiledWorldEntity extends WorldEntity implements Positionable, Renderable {
+public abstract class TiledWorldEntity extends WorldEntity implements Renderable {
 
     private final WorldControllerFacade facade;
 
     public TiledWorldEntity(WorldControllerFacade facade) {
         super(facade);
         this.facade = facade;
-        this.pos = new Coords3D();
+        this.pos = new Neco3D();
     }
 
     private static final Logger LOG = Logger.getLogger(TiledWorldEntity.class.getName());
@@ -40,7 +39,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      * @return coordinates of this entity
      */
     @Override
-    public Coords3D getPos() {
+    public Neco3D getPos() {
         return super.getPos();
     }
 
@@ -65,7 +64,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      * @param pos new position
      */
     @Override
-    public void setPos(Coords3D pos) {
+    public void setPos(Neco3D pos) {
         super.setPos(pos);
     }
 
@@ -77,44 +76,38 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      * @param pos
      */
     @Override
-    public void advancePos(Coords3D pos) {
+    public void advancePos(Neco3D pos) {
         super.advancePos(pos);
     }
 
-    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {
+    public boolean advancePos(Neco3D pos, boolean checkForMissingTiles) {
         return this.advancePos(pos, checkForMissingTiles, true);
     }
 
-    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
+    public boolean advancePos(Neco3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
 
         synchronized (this.facade) {
 
             TiledWorldFacade twfacade = (TiledWorldFacade) this.facade.getWorldFacade();
 
-            try {
-                Coords3D npos = new Coords3D(new Coords3D(this.pos).add(pos));
+            Neco3D npos = new Neco3D(this.pos).add(pos);
 
-                Tile t = twfacade.getTile(npos);
+            Tile t = twfacade.getTile(npos);
 
-                if (null == t) {
-                    //the tile I'm trying to move on is a null, so screw this
-                    if (checkForMissingTiles) {
-                        LOG.finer("IT IS A NULL! " + npos);
-                        return false;
-                    }
-                } else if (checkForWalls && t.isWall()) {
-                    LOG.finer("IT IS A WALL!");
+            if (null == t) {
+                //the tile I'm trying to move on is a null, so screw this
+                if (checkForMissingTiles) {
+                    LOG.finer("IT IS A NULL! " + npos);
                     return false;
                 }
-
-                this.advancePos(pos);
-                
-                return true;
-                
-            } catch (DimMismatchException | ValueException ex) {
-                LOG.log(Level.SEVERE, null, ex);
+            } else if (checkForWalls && t.isWall()) {
+                LOG.finer("IT IS A WALL!");
                 return false;
             }
+
+            this.advancePos(pos);
+
+            return true;
 
         }
     }
@@ -138,13 +131,12 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      * need to use this for reals.)
      *
      * @param point A point, referenced to the CENTER of the rendered image (in
-     *              case of the SquareGridRenderer, but there isn't much else
-     *              implemented at this point.)The IsometricWorldRenderer
-     *              references its images to the BOTTOM CENTER of the image.
-     *              [citation needed]
+     * case of the SquareGridRenderer, but there isn't much else implemented at
+     * this point.)The IsometricWorldRenderer references its images to the
+     * BOTTOM CENTER of the image. [citation needed]
      *
      * @return true when a given point actually mouseHit the thing, false when
-     *         not.
+     * not.
      */
     @Override
     public abstract boolean mouseHit(Point point);
@@ -154,9 +146,9 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      * it.
      *
      * @param droppedItem an ItemStack to drop
-     * @param dropper     WorldEntity supposed to drop this item
-     * @param facade      WorldControllerFacade to spawn the new
-     *                    GrabbableItemEntity with
+     * @param dropper WorldEntity supposed to drop this item
+     * @param facade WorldControllerFacade to spawn the new GrabbableItemEntity
+     * with
      *
      * @return true on success, false on failure.
      */
