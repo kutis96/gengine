@@ -118,10 +118,10 @@ public class Neco3D {
     public double vecLength() {
         long sum = 0;
         for (int i = 0; i < 3; i++) {
-            sum += this.xyz[i] * this.xyz[i];
+            sum += ((long)this.xyz[i] * (long)this.xyz[i]);
         }
 
-        return Math.sqrt(sum);
+        return Math.sqrt(sum) / N_PER_UNIT;
     }
 
     public boolean equals(Neco3D thing) {
