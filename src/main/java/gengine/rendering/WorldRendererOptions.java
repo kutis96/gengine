@@ -1,6 +1,6 @@
 package gengine.rendering;
 
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 
 /**
  * A container used to store various options for the Renderers.
@@ -9,9 +9,9 @@ import gengine.util.coords.Coords3D;
  */
 public class WorldRendererOptions {
 
-    private Coords3D cameraOffset = new Coords3D();
+    private Neco3D cameraOffset = new Neco3D();
 
-    private Coords3D cameraPosition = new Coords3D();
+    private Neco3D cameraPosition = new Neco3D();
 
     private double zoom = 1;
 
@@ -32,21 +32,21 @@ public class WorldRendererOptions {
     //END OF FLAG HANDLING
     
     //CAMERA OFFSET IO
-    public Coords3D getCameraOffset() {
+    public Neco3D getCameraOffset() {
         return cameraOffset;
     }
 
-    public void setCameraOffset(Coords3D cameraOffset) {
+    public void setCameraOffset(Neco3D cameraOffset) {
         this.cameraOffset = cameraOffset;
     }
     //END OF CAMERA OFFSET IO
 
     //CAMERA POS IO
-    public Coords3D getCameraPosition() {
+    public Neco3D getCameraPosition() {
         return cameraPosition;
     }
 
-    public void setCameraPosition(Coords3D cameraPosition) {
+    public void setCameraPosition(Neco3D cameraPosition) {
         this.cameraPosition = cameraPosition;
     }
     //END OF CAMERA POS IO

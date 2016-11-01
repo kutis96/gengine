@@ -2,10 +2,9 @@ package gengine.rendering.squaregrid;
 
 import gengine.rendering.RenderableContainer;
 import gengine.rendering.*;
-import gengine.rendering.WorldRendererOptions.Flags;
 import gengine.rendering.overlay.HasOverlays;
 import gengine.rendering.overlay.Overlay;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
 import gengine.world.TiledWorld;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
@@ -29,15 +28,15 @@ import java.util.logging.Logger;
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class SquareGridRenderer implements WorldRenderer {
-    
+
     private static final Logger LOG = Logger.getLogger(SquareGridRenderer.class.getName());
-    
+
     private final int tilewidth;
     private final int tileheight;
-    
+
     private final Object lock1 = new Object();
     private final Object lock2 = new Object();
-    
+
     private List<WorldEntity> lastRenderedEntities;
     private Point lastPixelOffset;
     private final float[] lastScale = {1, 1};
@@ -73,24 +72,18 @@ public class SquareGridRenderer implements WorldRenderer {
         this.lastRenderedEntities = new ArrayList<>();
         this.lastPixelOffset = new Point();
     }
-    
+
     @Override
     public void render(World world, BufferedImage surface, WorldRendererOptions wropt) throws RendererException {
         if (world instanceof TiledWorld) {
-            try {
-                this.render((TiledWorld) world, surface, wropt);
-            } catch (ValueException ex) {
-                String msg = "Found a ValueException inside the renderer somewhere.";
-                LOG.log(Level.SEVERE, msg, ex);
-                throw new RendererException(msg);
-            }
+            this.render((TiledWorld) world, surface, wropt);
         } else {
             LOG.severe("Invalid World Type detected!");
             throw new RendererException("Invalid World Type detected");
         }
     }
-    
-    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException, ValueException {
+
+    private void render(TiledWorld world, BufferedImage surface, WorldRendererOptions wrop) throws RendererException {
         //  TODO: Further code cleanup
         //      - probably for this thing off to a completely different class
         //        and parametrize everything, also use some functions for coordinate conversion
@@ -108,28 +101,31 @@ public class SquareGridRenderer implements WorldRenderer {
                 + wrop.getCameraOffset().getY() + this.tileheight / 2 + surface.getHeight() / 2);
 
         //WORLD (tile) coordinates specifying the drawn boundaries
-        Coords3D upperVisibleBound;
-        Coords3D lowerVisibleBound;
+        Neco3D upperVisibleBound;
+        Neco3D lowerVisibleBound;
 
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES
-        lowerVisibleBound = new Coords3D(
-                Math.max(0, Math.floor((double) -xoff/scaledWidth)),
-                Math.max(0, Math.floor((double) -yoff/scaledHeight)),
-                0
+        lowerVisibleBound = new Neco3D(
+                new double[]{
+                    Math.max(0, Math.floor((double) -xoff / scaledWidth)),
+                    Math.max(0, Math.floor((double) -yoff / scaledHeight)),
+                    0
+                }
         );
-        
-        upperVisibleBound = new Coords3D(
-                Math.min(world.getWorldSize().getX(), 2 + surface.getWidth()/scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
-                Math.min(world.getWorldSize().getY(), 2 + surface.getHeight()/scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
-                world.getWorldSize().getZ()
-        );
-        
-        //to test boundaries, uncomment: LOG.info("L:" + lowerVisibleBound + "\tU:" + upperVisibleBound);
 
+        upperVisibleBound = new Neco3D(
+                new double[]{
+                    Math.min(world.getWorldSize()[0], 2 + surface.getWidth() / scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
+                    Math.min(world.getWorldSize()[1], 2 + surface.getHeight() / scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
+                    world.getWorldSize()[2]
+                }
+        );
+
+        //to test boundaries, uncomment: LOG.info("L:" + lowerVisibleBound + "\tU:" + upperVisibleBound);
         //END OF PIXEL TO WORLD BOUNDARY CONVERSION
         Graphics2D g2d = surface.createGraphics();
         surface.setAccelerationPriority(1);
-        
+
         List<RenderableContainer> renderedThings = new LinkedList<>();
         List<WorldEntity> renderedEntities = new LinkedList<>();    //I do this separately as Entities are clickable, unlike tiles
         //and I actually reuse this later.
@@ -141,9 +137,9 @@ public class SquareGridRenderer implements WorldRenderer {
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
                     for (int z = (int) lowerVisibleBound.getZ(); z < upperVisibleBound.getZ(); z++) {
-                        Tile t = world.getWorldtile(new Coords3D(x, y, z));
+                        Tile t = world.getWorldtile(new Neco3D(new int[]{x, y, z}, true));
                         if (t != null) {
-                            renderedThings.add(new RenderableContainer(new Coords3D(x, y, z-0.125), t));
+                            renderedThings.add(new RenderableContainer(new Neco3D(new double[]{x, y, z - 0.125}), t));
                         }
                     }
                 }
@@ -155,7 +151,7 @@ public class SquareGridRenderer implements WorldRenderer {
                         we.getPos(),
                         lowerVisibleBound,
                         upperVisibleBound)) {
-                    
+
                     renderedEntities.add(we);   //used for mouse click detectiony stuff
 
                     renderedThings.add(new RenderableContainer(we.getPos(), we));
@@ -164,34 +160,30 @@ public class SquareGridRenderer implements WorldRenderer {
                     if (we instanceof HasOverlays) {
                         HasOverlays ho = (HasOverlays) we;
                         for (Overlay o : ho.getOverlays()) {
-                            try {
-                                if (o != null && o.getOffset() != null) {
-                                    renderedThings.add(new RenderableContainer(new Coords3D(we.getPos().add(o.getOffset())), o));
-                                }
-                            } catch (DimMismatchException ex) {
-                                LOG.log(Level.SEVERE, "Unexpected DimMismatch >:C", ex);
+                            if (o != null && o.getOffset() != null) {
+                                renderedThings.add(new RenderableContainer(new Neco3D(we.getPos().add(o.getOffset())), o));
                             }
                         }
                     }
-                    
+
                 }
             }
-            
+
         }
 
         //sort renderables by Z (depth) and then by Y (vertical axis) for rendering
         Collections.sort(renderedThings, new SquareGridUtils.RContainerZYComparator());
-        
+
         for (RenderableContainer rc : renderedThings) {
-            
+
             Image i = rc.ren.render();
-            
+
             if (i == null) {
                 //null tiles will be ignored
                 continue;
             }
-            
-            Coords3D pos = rc.pos;
+
+            Neco3D pos = rc.pos;
 
             //draw the entities as the renderedEntities list is already sorted
             // and thus everything is positioned correctly
@@ -205,47 +197,47 @@ public class SquareGridRenderer implements WorldRenderer {
                     (int) (i.getHeight(null) * wrop.getZoom()),
                     null);
         }
-        
+
         synchronized (lock2) {
             //This bit is there to set some variables used by the mouse pos detection etc.
             lastRenderedEntities.clear();
             lastRenderedEntities.addAll(renderedEntities);
-            
+
             lastPixelOffset.setLocation(xoff, yoff);
-            
+
             lastScale[0] = (float) wrop.getZoom();
             lastScale[1] = (float) wrop.getZoom();
         }
     }
-    
+
     @Override
     public WorldEntity[] getEntitiesOnPosition(Point mousepos) {
 
         //TODO: to be replaced with a newer version taking in account tile visibilities etc?
         List<WorldEntity> ents;
         ents = new LinkedList<>();
-        
+
         synchronized (lock2) {
-            
+
             for (WorldEntity we : lastRenderedEntities) {
-                
+
                 Point p = entityPxCoords(lastPixelOffset, lastScale, we.getPos());
                 p.translate(-mousepos.x, -mousepos.y);
-                
+
                 if (we.mouseHit(p)) {
                     ents.add(we);
                 }
             }
         }
-        
+
         return ents.toArray(new WorldEntity[ents.size()]);
     }
-    
-    private Point entityPxCoords(Point pixelOffset, float[] scale, Coords3D entityCoordinates) {
+
+    private Point entityPxCoords(Point pixelOffset, float[] scale, Neco3D entityCoordinates) {
         int x = (int) (tilewidth * entityCoordinates.getX() * scale[0] + pixelOffset.x);
         int y = (int) (tileheight * entityCoordinates.getY() * scale[1] + pixelOffset.y);
-        
+
         return new Point(x, y);
     }
-    
+
 }

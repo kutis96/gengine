@@ -5,7 +5,7 @@ import gengine.logic.workers.RenderingWorker;
 import gengine.logic.exceptions.ItJustKeepsGoingException;
 import gengine.rendering.WorldRenderer;
 import gengine.rendering.WorldRendererOptions;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.World;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,7 +74,7 @@ public class WorldView extends View {
         }
     }
 
-    public void changeCamPosition(Coords3D pos) {
+    public void changeCamPosition(Neco3D pos) {
 
         WorldRendererOptions wrop = this.renwor.getRendererOptions();
         wrop.setCameraPosition(pos);

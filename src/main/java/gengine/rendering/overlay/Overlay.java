@@ -1,13 +1,13 @@
 package gengine.rendering.overlay;
 
 import gengine.rendering.Renderable;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public interface Overlay extends Renderable {
-    
-    public Coords3D getOffset();
+
+    public Neco3D getOffset();
 }

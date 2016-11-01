@@ -1,7 +1,7 @@
 package gengine.logic.facade;
 
 import gengine.rendering.WorldTypeMismatchException;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 
@@ -16,7 +16,7 @@ public interface WorldControllerFacade {
      *
      * @param pos
      */
-    public void changeCamPosition(Coords3D pos);
+    public void changeCamPosition(Neco3D pos);
 
     /**
      * Gets the WorldFacade to be used by various entities.

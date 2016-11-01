@@ -3,7 +3,7 @@ package demo.ent;
 import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.*;
 import gengine.world.entity.inventory.items.Weapon;
 import java.awt.Image;
@@ -24,7 +24,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     private static final Logger LOG = Logger.getLogger(ThePlayer.class.getName());
 
     private final TextOverlay olay
-            = new TextOverlay("Player", new Coords3D(0, 0, 9000));
+            = new TextOverlay("Player", new Neco3D(new int[]{0, 0, 100}, true));
 
     private final Image img;
     private final WorldControllerFacade cf;
@@ -47,7 +47,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     @Override
     public void tick(long dt) {
-        this.advancePos(new Coords3D());
+        this.advancePos(new Neco3D());
     }
 
     @Override
@@ -59,19 +59,19 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP: {
-                move(new Coords3D(0, -1, 0));
+                move(new Neco3D(new int[]{0, -1, 0}, true));
                 break;
             }
             case KeyEvent.VK_DOWN: {
-                move(new Coords3D(0, 1, 0));
+                move(new Neco3D(new int[]{0, 1, 0}, true));
                 break;
             }
             case KeyEvent.VK_LEFT: {
-                move(new Coords3D(-1, 0, 0));
+                move(new Neco3D(new int[]{-1, 0, 0}, true));
                 break;
             }
             case KeyEvent.VK_RIGHT: {
-                move(new Coords3D(1, 0, 0));
+                move(new Neco3D(new int[]{1, 0, 0}, true));
                 break;
             }
             default:
@@ -94,7 +94,7 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
         return false;
     }
 
-    private void move(Coords3D direction) {
+    private void move(Neco3D direction) {
         this.advancePos(direction, true, true);
 
         this.olay.setText("Player\n" + this.getPos());

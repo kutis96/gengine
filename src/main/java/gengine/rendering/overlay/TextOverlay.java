@@ -1,10 +1,8 @@
 package gengine.rendering.overlay;
 
 import gengine.rendering.text.BasicMonoTextRenderer;
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import java.awt.Image;
-import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -18,9 +16,9 @@ public final class TextOverlay implements Overlay {
     private final BasicMonoTextRenderer fd;
     private Image img;
 
-    private Coords3D offset;
+    private Neco3D offset;
 
-    public TextOverlay(String text, Coords3D offset) {
+    public TextOverlay(String text, Neco3D offset) {
         this.fd = new BasicMonoTextRenderer();
         this.setText(text);
 
@@ -33,11 +31,11 @@ public final class TextOverlay implements Overlay {
     }
 
     @Override
-    public Coords3D getOffset() {
+    public Neco3D getOffset() {
         return this.offset;
     }
 
-    public void setOffset(Coords3D offset) {
+    public void setOffset(Neco3D offset) {
         this.offset = offset;
     }
 

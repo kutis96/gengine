@@ -5,11 +5,11 @@ import gengine.logic.facade.WorldControllerFacade;
 import gengine.logic.workers.Simulator;
 import gengine.logic.callback.NullCallback;
 import gengine.rendering.*;
-import gengine.util.coords.Coords3D;
 import gengine.logic.facade.WorldFacade;
 import gengine.logic.view.WorldView;
 import gengine.logic.workers.GrimReaper;
 import gengine.util.Worker;
+import gengine.util.neco.Neco3D;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import java.util.Arrays;
@@ -114,7 +114,7 @@ public class WorldController implements WorldControllerFacade {
     }
 
     @Override
-    public void changeCamPosition(Coords3D pos) {
+    public void changeCamPosition(Neco3D pos) {
 
         this.worldview.changeCamPosition(pos);
 

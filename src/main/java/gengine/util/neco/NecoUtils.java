@@ -27,6 +27,10 @@ public class NecoUtils {
         return delta.normalize();
     }
 
+    public static double distanceBetween(Neco3D a, Neco3D b){
+        return a.sub(b).vecLength();
+    }
+    
     public static boolean isInside(Neco3D what, Neco3D lower, Neco3D upper) {
         for (int i = 0; i < 3; i++) {
             if (lower.xyz[i] < what.xyz[i] && what.xyz[i] < upper.xyz[i]) {

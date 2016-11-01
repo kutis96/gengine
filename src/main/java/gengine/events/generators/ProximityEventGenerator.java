@@ -1,8 +1,9 @@
 package gengine.events.generators;
 
 import gengine.events.receivers.ProximityEventReceiver;
-import gengine.util.coords.Coords3D;
 import gengine.world.World;
+import gengine.util.neco.Neco3D;
+import gengine.util.neco.NecoUtils;
 import gengine.world.entity.WorldEntity;
 import java.util.logging.Logger;
 
@@ -17,7 +18,7 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
     private static final Logger LOG = Logger.getLogger(ProximityEventGenerator.class.getName());
 
     private final World world;
-    
+
     public ProximityEventGenerator(World world, int period) {
         super(world, period);
         this.world = world;
@@ -30,7 +31,7 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
         //30 SLEEP
         //40 GOTO 10
         //RUN
-        
+
         LOG.info("Initialized.");
     }
 
@@ -45,7 +46,7 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
                     ProximityEventReceiver receiver = (ProximityEventReceiver) we;
 
                     float maxDistance = receiver.getProxDistance();
-                    Coords3D pos = we.getPos();
+                    Neco3D pos = we.getPos();
 
                     for (WorldEntity wx : worldEntities) {
                         if (!wx.equals(we)) {
@@ -71,7 +72,7 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
     @Override
     public void die() {
         //BREAK
-        
+
         LOG.info("Successfuly dead.");
     }
 
@@ -102,8 +103,8 @@ public class ProximityEventGenerator extends AbstWorldEventGenerator {
      * @return Distance between point A and point B.
      *
      */
-    private float getAbsDistance(Coords3D a, Coords3D b) {
-        return a.distanceTo(b);
+    private float getAbsDistance(Neco3D a, Neco3D b) {
+        return (float)NecoUtils.distanceBetween(a, b);
     }
 
 }

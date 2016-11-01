@@ -5,9 +5,7 @@ import gengine.events.receivers.ProximityEventReceiver;
 import gengine.logic.facade.TiledWorldFacade;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
-import gengine.util.coords.Coords3D;
-import gengine.util.coords.DimMismatchException;
-import gengine.util.coords.ValueException;
+import gengine.util.neco.Neco3D;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.Tile;
@@ -45,10 +43,10 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     private long msSinceLastMovement = 0;
 
     private static int flee_for = 2000; //ms
-    
-    private Coords3D fleeFrom = new Coords3D();
-    
-    private Coords3D velocity = new Coords3D();
+
+    private Neco3D fleeFrom = new Neco3D();
+
+    private Neco3D velocity = new Neco3D();
 
     private WorldControllerFacade facade;
 
@@ -59,7 +57,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         this.img_scared = ImageIO.read(this.getClass().getResource("/demo/entity/greenball.png"));
         this.img_normal = ImageIO.read(this.getClass().getResource("/demo/entity/blueball.png"));
 
-        this.olay = new TextOverlay("", new Coords3D(0, 0, 9000));
+        this.olay = new TextOverlay("", new Neco3D(new int[]{0, 0, 100}, true));
     }
 
     @Override
@@ -80,14 +78,13 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
         switch (intstate) {
             case FLIGHT: {
-                
-                
+
                 flee(dt);
 
                 if (msSinceLastStateChange > flee_for) {
                     changeState(State.PRE_NORMAL);
                 }
-                
+
                 this.olay.setText(this.velocity.toString());
             }
             break;
@@ -100,7 +97,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
             case NORMAL: {
                 wander();
-                
+
                 if (msSinceLastStateChange > flee_for) {
                     this.olay.setText("");
                     changeState(State.NORMAL);
@@ -123,57 +120,46 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         this.intstate = state;
         this.msSinceLastStateChange = 0;
     }
-    
-    private void flee(long dt) {
-        if(msSinceLastMovement > 30){ 
-            try {
-                
-                Coords3D nvel = new Coords3D(this.fleeFrom);
-                nvel.subtract(this.getPos());
-                nvel.normalize();
-                //nvel.multiply((float) -1);
-                
-                this.velocity = nvel;
 
-                this.applyvelocity(dt);
-                
-            } catch (ValueException | DimMismatchException ex) {
-                LOG.log(Level.SEVERE, "This is bad", ex);
-            }
+    private void flee(long dt) {
+        if (msSinceLastMovement > 30) {
+            Neco3D nvel = new Neco3D(this.fleeFrom);
+            nvel.sub(this.getPos());
+            nvel.normalize();
+            //nvel.multiply((float) -1);
+
+            this.velocity = nvel;
+
+            this.applyvelocity(dt);
         }
     }
 
     private void wander() {
         //wander~
     }
-    
-    private void applyvelocity(long dt){
-        try {
-            this.advancePos((Coords3D) new Coords3D(velocity).multiply((float)(dt/1000.)));
-        } catch (ValueException ex) {
-            LOG.log(Level.SEVERE, "This is bad indeed", ex);
-        }
+
+    private void applyvelocity(long dt) {
+        this.advancePos((Neco3D) new Neco3D(velocity).multiply((float) (dt / 1000.)));
     }
 
-    
     @Override
-    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
+    public boolean advancePos(Neco3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
         this.msSinceLastMovement = 0;
         return super.advancePos(pos, checkForMissingTiles, checkForWalls);
     }
 
     @Override
-    public void advancePos(Coords3D pos) {
+    public void advancePos(Neco3D pos) {
         this.msSinceLastMovement = 0;
         super.advancePos(pos);
     }
-    
+
     @Override
-    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {
+    public boolean advancePos(Neco3D pos, boolean checkForMissingTiles) {
         this.msSinceLastMovement = 0;
         return super.advancePos(pos, checkForMissingTiles);
     }
-    
+
     @Override
     public Image render() {
         switch (intstate) {
@@ -192,9 +178,9 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
                 + "\nRun away!");
 
         this.fleeFrom = closeEntity.getPos();
-        
+
         this.changeState(State.FLIGHT);
-        
+
         this.msSinceLastMovement = 0;
         this.msSinceLastStateChange = 0;
     }
@@ -215,7 +201,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         this.changeState(State.FLIGHT);
 
         this.olay.setText("IT CLICKED ME!");
-        
+
         this.fleeFrom = this.getPos();
 
         //this.msSinceLastMovement = 0;

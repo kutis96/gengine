@@ -9,10 +9,9 @@ import gengine.rendering.WorldRenderer;
 import gengine.rendering.WorldTypeMismatchException;
 import gengine.rendering.squaregrid.SquareGridRenderer;
 import gengine.util.UnsupportedFormatException;
-import gengine.util.coords.Coords3D;
-import gengine.util.coords.ValueException;
 import gengine.util.loaders.TiledWorldLoader;
 import gengine.util.loaders.TilesetLoader;
+import gengine.util.neco.Neco3D;
 import gengine.world.TiledWorld;
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -82,23 +81,23 @@ public class MainDemoController extends MainController {
         }
 
         try {
-            Coords3D wsiz = this.world.getWorldSize();
+            Neco3D wsiz = new Neco3D(this.world.getWorldSize(), true);
 
             this.world.addEntity(new ThePlayer(this.wcon));
-            
+
             for (int i = 0; i < wsiz.vecLength(); i++) {
                 ScaredBall sb = new ScaredBall(wcon);
-                sb.setPos(new Coords3D(
-                        wsiz.getX() * Math.random(),
-                        wsiz.getY() * Math.random(),
-                        0
+                sb.setPos(new Neco3D(
+                        new double[]{
+                            wsiz.getX() * Math.random(),
+                            wsiz.getY() * Math.random(),
+                            0
+                        }
                 ));
                 this.world.addEntity(sb);
             }
         } catch (IOException ex) {
             throw new RuntimeException("Error loading Entities!", ex);
-        } catch (ValueException ex) {
-            Logger.getLogger(MainDemoController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         LOG.info("Added entities.");

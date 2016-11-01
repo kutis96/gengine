@@ -1,7 +1,8 @@
 package gengine.events.generators;
 
 import gengine.events.receivers.VisibilityEventReceiver;
-import gengine.util.coords.*;
+import gengine.util.neco.Neco3D;
+import gengine.util.neco.NecoUtils;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import java.util.logging.Logger;
@@ -45,11 +46,11 @@ public class VisibilityEventGenerator extends AbstWorldEventGenerator {
                     VisibilityEventReceiver receiver = (VisibilityEventReceiver) we;
 
                     float maxDistance = receiver.getVisDistance();
-                    Coords3D pos = we.getPos();
+                    Neco3D pos = we.getPos();
 
                     for (WorldEntity wx : worldEntities) {
                         if (!wx.equals(we)) {
-                            float distance = pos.distanceTo(wx.getPos());
+                            float distance = (float)NecoUtils.distanceBetween(pos, wx.getPos());
 
                             if (distance <= maxDistance
                                     && checkVisibility(this.world, pos, wx.getPos())) {
@@ -69,7 +70,7 @@ public class VisibilityEventGenerator extends AbstWorldEventGenerator {
         LOG.info("Successfuly dead.");
     }
 
-    private boolean checkVisibility(World world, Coords3D pos1, Coords3D pos2) {
+    private boolean checkVisibility(World world, Neco3D pos1, Neco3D pos2) {
         throw new UnsupportedOperationException("This class is rather unfinished.");
     }
 

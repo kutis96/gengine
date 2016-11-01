@@ -1,12 +1,11 @@
 package gengine.util.loaders;
 
 import gengine.util.UnsupportedFormatException;
-import gengine.util.coords.Coords3D;
-import gengine.util.coords.ValueException;
+import gengine.util.neco.Neco3D;
 import gengine.world.TiledWorld;
 import gengine.world.WorldSizeException;
 import java.io.*;
-import java.net.URL;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,23 +126,22 @@ public class TiledWorldLoader {
             }
         }
 
-        Coords3D worldDimensions;
-        worldDimensions = new Coords3D(maxX + 1, maxY + 1, maxZ + 1);
+        int[] worldDimensions = new int[]{maxX + 1, maxY + 1, maxZ + 1};
 
-        LOG.log(Level.FINE, "World dimensions assesed: {0}", worldDimensions.toString());
+        LOG.log(Level.FINE, "World dimensions assesed: {0}", Arrays.toString(worldDimensions));
 
         TiledWorld world;
         try {
             world = new TiledWorld(worldDimensions);
         } catch (WorldSizeException ex) {
-            LOG.log(Level.SEVERE, "Unsupported world size: " + worldDimensions.toString(), ex);
+            LOG.log(Level.SEVERE, "Unsupported world size: " + Arrays.toString(worldDimensions), ex);
             throw new UnsupportedFormatException("Unsupported world size: " + worldDimensions.toString() + "\n" + ex.getMessage());
         }
 
         for (int x = 0; x < m.length; x++) {
             for (int y = 0; y < m[x].length; y++) {
                 for (int z = 0; z < m[y][x].length; z++) {
-                    world.setWorldtile(m[y][x][z], new Coords3D(x, y, z));
+                    world.setWorldtile(m[y][x][z], new Neco3D(new int[]{x, y, z}, true));
                 }
             }
         }
