@@ -85,6 +85,7 @@ public class MainDemoController extends MainController {
             Coords3D wsiz = this.world.getWorldSize();
 
             this.world.addEntity(new ThePlayer(this.wcon));
+            
             for (int i = 0; i < wsiz.vecLength(); i++) {
                 ScaredBall sb = new ScaredBall(wcon);
                 sb.setPos(new Coords3D(

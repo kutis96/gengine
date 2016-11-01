@@ -7,17 +7,22 @@ import java.awt.Image;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class AnimatedImage {
+public class SimpleAnimatedImage implements AnimImage {
 
-    private final AnimFrame[] frames;
+    private final Image[] frames;
     private int currentFrame;
+    private int ms_per_frame;
     private long dtSum;
 
     /**
      * @param frames a bunch of frames to animate
+     * @param ms_per_frame milliseconds per frame of animation - 25FPS:
+     * 40ms/frame, 50FPS: 20ms/frame, 60FPS: 16.67ms/frame, 100FPS:
+     * 10ms/frame...
      */
-    public AnimatedImage(AnimFrame[] frames) {
+    public SimpleAnimatedImage(Image[] frames, int ms_per_frame) {
         this.frames = frames;
+        this.ms_per_frame = ms_per_frame;
         this.currentFrame = 0;
     }
 
@@ -26,12 +31,13 @@ public class AnimatedImage {
      *
      * @return current frame
      */
+    @Override
     public Image getCurrentImage() {
         if (frames == null || frames.length == 0) {
             return null;
         }
 
-        return frames[currentFrame].img;
+        return frames[currentFrame];
     }
 
     /**
@@ -39,15 +45,23 @@ public class AnimatedImage {
      *
      * @param dt time elapsed since the last update in milliseconds
      */
+    @Override
     public void tick(long dt) {
         dtSum += dt;
 
-        if (dtSum >= this.frames[currentFrame].dt) {
+        if (dtSum >= this.ms_per_frame) {
 
-            dtSum = dtSum - this.frames[currentFrame].dt;
+            dtSum = dtSum - this.ms_per_frame;
 
             currentFrame = (currentFrame + 1) % frames.length;
         }
     }
 
+    public int getMsPerFrame() {
+        return ms_per_frame;
+    }
+
+    public void setMsPerFrame(int ms_per_frame) {
+        this.ms_per_frame = ms_per_frame;
+    }
 }

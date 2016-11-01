@@ -24,8 +24,8 @@ public abstract class WorldEntity implements Positionable, Renderable {
     private static final Logger LOG = Logger.getLogger(WorldEntity.class.getName());
 
     public static final int STATE_DEAD = 0xDEAD;
-    public static final int STATE_UNDEFINED = 0;
-    private Coords3D pos;
+    public static final int STATE_UNDEFINED = -1;
+    Coords3D pos;
 
 
     /**

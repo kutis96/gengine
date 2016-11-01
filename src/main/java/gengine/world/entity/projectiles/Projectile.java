@@ -65,7 +65,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
                 this.state = STATE_CRASHED;
                 this.crash(dt);
             }
-        } catch (ValueException | DimMismatchException ex) {
+        } catch (ValueException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
     }

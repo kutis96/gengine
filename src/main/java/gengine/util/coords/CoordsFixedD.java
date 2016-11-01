@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//TODO: remove CoordsFixedD in favor of Coords3D, and use that universally
+
 /**
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
@@ -197,7 +199,7 @@ public class CoordsFixedD implements Coords {
         return this;
     }
 
-    public CoordsFixedD multiply(float f) throws DimMismatchException {
+    public CoordsFixedD multiply(float f) {
         for (int i = 0; i < this.dim; i++) {
             this.coords[i] *= f;
         }
@@ -240,7 +242,7 @@ public class CoordsFixedD implements Coords {
         try {
             cf = new CoordsFixedD(this);
             cf.multiply(1 / cf.vecLength());
-        } catch (ValueException | DimMismatchException ex) {
+        } catch (ValueException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
         return cf;
@@ -250,5 +252,11 @@ public class CoordsFixedD implements Coords {
         float[] ret = new float[this.dim];
         System.arraycopy(this.coords, 0, ret, 0, this.dim);
         return ret;
+    }
+    
+    public final void normalize(){
+        float size = this.vecLength();
+        
+        this.multiply((float)(1./size));
     }
 }

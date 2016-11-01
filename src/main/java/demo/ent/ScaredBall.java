@@ -6,9 +6,11 @@ import gengine.logic.facade.TiledWorldFacade;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
 import gengine.util.coords.Coords3D;
+import gengine.util.coords.DimMismatchException;
 import gengine.util.coords.ValueException;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
+import gengine.world.tile.Tile;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -31,14 +33,25 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     private TextOverlay olay;
 
-    private static final int STATE_SCARED = 1;
-    private static final int STATE_NORMAL = 2;
-    private volatile int state;
-    private volatile long lastScared = 0;
-    private long lastMoved = 0;
+    private enum State {
+        NORMAL,
+        PRE_NORMAL,
+        FLIGHT,
+        DEAD
+    };
+
+    private volatile State intstate = State.NORMAL;
+    private volatile long msSinceLastStateChange = 0;
+    private long msSinceLastMovement = 0;
+
+    private static int flee_for = 2000; //ms
+    
+    private Coords3D fleeFrom = new Coords3D();
+    
+    private Coords3D velocity = new Coords3D();
 
     private WorldControllerFacade facade;
-    
+
     public ScaredBall(WorldControllerFacade facade) throws IOException {
         super(facade);
         this.facade = facade;
@@ -51,59 +64,123 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public int getState() {
-        return state;
+        return intstate.ordinal();
     }
 
     @Override
     public void resetState() {
-        this.state = STATE_NORMAL;
+        this.intstate = State.NORMAL;
     }
 
     @Override
     public void tick(long dt) {
-        if (state == STATE_SCARED) {
-            lastScared += dt;
-            lastMoved += dt;
 
-            if (lastMoved > 30) {
-                try {
-                    //THIS PART IS SOMEHOW BUGGY.
-                    Coords3D del = new Coords3D();
-                    del.setCoords(new float[]{
-                            (float)(Math.random() - 0.5),
-                            (float)(Math.random() - 0.5),
-                            (float)0
-                    });
-                    
-                    this.advancePos(del, true);
-                } catch (ValueException ex) {
-                    LOG.log(Level.SEVERE, "This is bad", ex);
+        msSinceLastStateChange += dt;
+        msSinceLastMovement += dt;
+
+        switch (intstate) {
+            case FLIGHT: {
+                
+                
+                flee(dt);
+
+                if (msSinceLastStateChange > flee_for) {
+                    changeState(State.PRE_NORMAL);
                 }
                 
-                lastMoved = 0;
+                this.olay.setText(this.velocity.toString());
             }
+            break;
 
-            if (lastScared > 1000) {
-                state = STATE_NORMAL;
-
+            case PRE_NORMAL: {
                 this.olay.setText("Whew.");
+                changeState(State.NORMAL);
+            }
+            break;
+
+            case NORMAL: {
+                wander();
+                
+                if (msSinceLastStateChange > flee_for) {
+                    this.olay.setText("");
+                    changeState(State.NORMAL);
+                }
+            }
+            break;
+        }
+
+        TiledWorldFacade twf = (TiledWorldFacade) this.facade.getWorldFacade();
+
+        Tile t = twf.getTile(this.getPos());
+
+        if (t == null || t.isWall()) {
+            this.intstate = State.DEAD;
+        }
+
+    }
+
+    private void changeState(State state) {
+        this.intstate = state;
+        this.msSinceLastStateChange = 0;
+    }
+    
+    private void flee(long dt) {
+        if(msSinceLastMovement > 30){ 
+            try {
+                
+                Coords3D nvel = new Coords3D(this.fleeFrom);
+                nvel.subtract(this.getPos());
+                nvel.normalize();
+                //nvel.multiply((float) -1);
+                
+                this.velocity = nvel;
+
+                this.applyvelocity(dt);
+                
+            } catch (ValueException | DimMismatchException ex) {
+                LOG.log(Level.SEVERE, "This is bad", ex);
             }
         }
-        
-        TiledWorldFacade twf = (TiledWorldFacade) this.facade.getWorldFacade();
-        if(twf.getTile(this.getPos()).isWall()){
-            this.state = STATE_DEAD;
+    }
+
+    private void wander() {
+        //wander~
+    }
+    
+    private void applyvelocity(long dt){
+        try {
+            this.advancePos((Coords3D) new Coords3D(velocity).multiply((float)(dt/1000.)));
+        } catch (ValueException ex) {
+            LOG.log(Level.SEVERE, "This is bad indeed", ex);
         }
-        
+    }
+
+    
+    @Override
+    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
+        this.msSinceLastMovement = 0;
+        return super.advancePos(pos, checkForMissingTiles, checkForWalls);
     }
 
     @Override
+    public void advancePos(Coords3D pos) {
+        this.msSinceLastMovement = 0;
+        super.advancePos(pos);
+    }
+    
+    @Override
+    public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {
+        this.msSinceLastMovement = 0;
+        return super.advancePos(pos, checkForMissingTiles);
+    }
+    
+    @Override
     public Image render() {
-        switch (state) {
-            case STATE_SCARED:
+        switch (intstate) {
+            case FLIGHT:
                 return img_scared;
             default:
-            case STATE_NORMAL:
+            case NORMAL:
                 return img_normal;
         }
     }
@@ -113,10 +190,13 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
         this.olay.setText(" Aaaah!"
                 + "\nRun away!");
-        this.state = STATE_SCARED;
 
-        this.lastMoved = 0;
-        this.lastScared = 0;
+        this.fleeFrom = closeEntity.getPos();
+        
+        this.changeState(State.FLIGHT);
+        
+        this.msSinceLastMovement = 0;
+        this.msSinceLastStateChange = 0;
     }
 
     @Override
@@ -126,19 +206,20 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public boolean mouseHit(Point point) {
-        if (Point.distance(point.x, point.y, 0, 0) <= this.img_normal.getHeight(null) / 2) {
-            return true;
-        }
-        return false;
+        return Point.distance(point.x, point.y, 0, 0) <= this.img_normal.getHeight(null) / 2;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        this.state = STATE_SCARED;
-        this.olay.setText("IT CLICKED ME!");
 
-        this.lastMoved = 0;
-        this.lastScared = 200;
+        this.changeState(State.FLIGHT);
+
+        this.olay.setText("IT CLICKED ME!");
+        
+        this.fleeFrom = this.getPos();
+
+        //this.msSinceLastMovement = 0;
+        //this.msSinceLastStateChange = 200;
     }
 
     @Override

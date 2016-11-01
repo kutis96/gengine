@@ -1,7 +1,6 @@
 package gengine.util.loaders;
 
-import gengine.anim.AnimFrame;
-import gengine.anim.AnimatedImage;
+import gengine.anim.SimpleAnimatedImage;
 import gengine.util.*;
 import gengine.util.parsing.ParserException;
 import gengine.util.parsing.switcher.*;
@@ -9,7 +8,6 @@ import gengine.world.tile.*;
 import gengine.world.tile.tiles.AnimatedTile;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -32,16 +30,15 @@ public class TilesetLoader {
     /**
      * Load a tileset from a given K:V file.
      *
-     * @param fis        InputStream of the tileset K:V file
-     * @param base       Base directory of all the tiles
+     * @param fis InputStream of the tileset K:V file
+     * @param base Base directory of all the tiles
      * @param asResource true when loading resources, false when loading files
      *
      * @return new Tileset
      *
      * @throws IOException
      * @throws UnsupportedFormatException thrown when the K:V loader thinks the
-     *                                    file's format is either unacceptable,
-     *                                    or totally cursed.
+     * file's format is either unacceptable, or totally cursed.
      */
     public static Tileset load(InputStream fis, String base, boolean asResource) throws IOException, UnsupportedFormatException {
 
@@ -145,7 +142,7 @@ public class TilesetLoader {
             ysize = xsize;
         }
 
-        List<AnimFrame> frames = new LinkedList<>();
+        List<BufferedImage> images = new LinkedList<>();
 
         LOG.log(Level.INFO, "Loading new AnimatedTile. Assumed size: {0}, {1}. Assumed period: {2}ms ({3}Hz). It {5} a wall.", new Object[]{xsize, ysize, aperi, 1000. / aperi, (isWall) ? "is" : "is not"});
 
@@ -155,19 +152,22 @@ public class TilesetLoader {
 
                 BufferedImage i = img.getSubimage(x, y, xsize, ysize);
 
-                AnimFrame af = new AnimFrame(i, aperi);
-
-                frames.add(af);
+                images.add(i);
             }
 
         }
 
-        AnimatedTile ret = new AnimatedTile(new AnimatedImage(frames.toArray(new AnimFrame[frames.size()])));
+        AnimatedTile ret = new AnimatedTile(
+                new SimpleAnimatedImage(
+                        images.toArray(new BufferedImage[images.size()]),
+                        aperi
+                ));
 
         ret.setWall(isWall);
 
+        //TODO: move this to some test
         if (ret.isWall() != isWall) {
-            throw new IOException("WTF");
+            throw new RuntimeException("Wallness setter is broken!");
         }
 
         return ret;

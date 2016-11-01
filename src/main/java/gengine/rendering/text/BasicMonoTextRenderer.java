@@ -14,30 +14,44 @@ import javax.imageio.ImageIO;
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
-public class TextRenderer {
+public class BasicMonoTextRenderer {
 
-    private static final Logger LOG = Logger.getLogger(TextRenderer.class.getName());
+    private static final Logger LOG = Logger.getLogger(BasicMonoTextRenderer.class.getName());
 
     private final int hpix, vpix;
     private final int hspace, vspace;
-    private final BufferedImage fontImage;
+    private static BufferedImage fontImage;
+    private static boolean loadedSuccessfully;
 
-    public TextRenderer() throws IOException {
+    static {
+        
+        try {
+            URL url = BasicMonoTextRenderer.class.getResource("/font_shaded.png");
+            LOG.log(Level.INFO, "Loading font resource {0}", url);
+            fontImage = ImageIO.read(url);
+            
+            loadedSuccessfully = true;
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+            
+            loadedSuccessfully = false;
+        }
+        
+    }
+    
+    public BasicMonoTextRenderer() {
         try {
             this.hpix = 8;
             this.vpix = 16;
             this.hspace = 1;
             this.vspace = 0;
-            URL url = TextRenderer.class.getResource("/font_shaded.png");
-            LOG.log(Level.INFO, "Loading font resource {0}", url);
-            this.fontImage = ImageIO.read(url);
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, "Failed to load font resource", ex);
             throw ex;
         }
     }
 
-    public TextRenderer(int xpix, int ypix, int hspace, int vspace, BufferedImage fontImage) {
+    public BasicMonoTextRenderer(int xpix, int ypix, int hspace, int vspace, BufferedImage fontImage) {        
         this.hpix = xpix;
         this.vpix = ypix;
         this.hspace = hspace;

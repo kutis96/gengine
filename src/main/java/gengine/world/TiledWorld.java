@@ -66,7 +66,11 @@ public class TiledWorld implements World, TiledWorldFacade {
      */
     public Tile getWorldtile(Coords3D pos) {
 
-        pos.roundAll();
+        try {
+            new Coords3D(pos).roundAll();
+        } catch (ValueException ex) {
+            LOG.warning("WTF rounding");
+        }
 
         if (SquareGridUtils.isWithin(pos, new Coords3D(), this.getWorldSizeMinusOne())) {
             try {

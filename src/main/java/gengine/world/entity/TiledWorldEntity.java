@@ -34,8 +34,6 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
 
     private static final Logger LOG = Logger.getLogger(TiledWorldEntity.class.getName());
 
-    private Coords3D pos;
-
     /**
      * Gets the WorldEntity's position
      *
@@ -43,7 +41,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      */
     @Override
     public Coords3D getPos() {
-        return this.pos;
+        return super.getPos();
     }
 
     /**
@@ -68,7 +66,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      */
     @Override
     public void setPos(Coords3D pos) {
-        this.pos = pos;
+        super.setPos(pos);
     }
 
     /**
@@ -80,11 +78,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
      */
     @Override
     public void advancePos(Coords3D pos) {
-        try {
-            this.pos.increment(pos);
-        } catch (DimMismatchException | ValueException ex) {
-            LOG.log(Level.SEVERE, "", ex);
-        }
+        super.advancePos(pos);
     }
 
     public boolean advancePos(Coords3D pos, boolean checkForMissingTiles) {
@@ -98,7 +92,7 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
             TiledWorldFacade twfacade = (TiledWorldFacade) this.facade.getWorldFacade();
 
             try {
-                Coords3D npos = new Coords3D(this.pos.add(pos));
+                Coords3D npos = new Coords3D(new Coords3D(this.pos).add(pos));
 
                 Tile t = twfacade.getTile(npos);
 
@@ -114,11 +108,13 @@ public abstract class TiledWorldEntity extends WorldEntity implements Positionab
                 }
 
                 this.advancePos(pos);
+                
+                return true;
+                
             } catch (DimMismatchException | ValueException ex) {
                 LOG.log(Level.SEVERE, null, ex);
                 return false;
             }
-            return true;
 
         }
     }
