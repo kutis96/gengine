@@ -1,6 +1,6 @@
 package gengine.world.tile.tiles;
 
-import gengine.util.coords.Coords3D;
+import gengine.util.neco.Neco3D;
 import gengine.world.tile.Tile;
 import java.awt.Image;
 
@@ -22,7 +22,7 @@ public class NullTile extends Tile {
     }
 
     @Override
-    public boolean canSeeThrough(Coords3D direction, Coords3D offset) {
+    public boolean canSeeThrough(Neco3D direction, Neco3D offset) {
         //null tiles are always see-through. it's basically just 'air' or 'vacuum' of the world.
         return true;
     }

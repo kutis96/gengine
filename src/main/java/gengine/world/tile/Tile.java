@@ -1,7 +1,7 @@
 package gengine.world.tile;
 
-import gengine.util.coords.Coords3D;
 import gengine.rendering.Renderable;
+import gengine.util.neco.Neco3D;
 
 /**
  * Tile, used in TileWorlds to create the static environment out of.
@@ -30,7 +30,7 @@ public abstract class Tile implements Renderable {
      * @return True when one can see through the given tile in the specified
      *         direction and offset, false if not.
      */
-    public abstract boolean canSeeThrough(Coords3D direction, Coords3D offset);
+    public abstract boolean canSeeThrough(Neco3D direction, Neco3D offset);
 
     /**
      * A function to be used by various pathfinding algorithms to detect whether
