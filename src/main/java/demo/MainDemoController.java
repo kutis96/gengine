@@ -15,6 +15,7 @@ import gengine.util.neco.Neco3D;
 import gengine.world.TiledWorld;
 import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -56,7 +57,11 @@ public class MainDemoController extends MainController {
                 TilesetLoader.load(MainDemoController.class.getResourceAsStream(tsBase + "/" + tsFile), tsBase, true));
 
         LOG.info("World loaded.");
+        
+        LOG.info(Arrays.toString(this.world.getWorldSize()));
 
+        
+        LOG.info("Hello!");
     }
 
     @Override
@@ -81,16 +86,16 @@ public class MainDemoController extends MainController {
         }
 
         try {
-            Neco3D wsiz = new Neco3D(this.world.getWorldSize(), true);
+            int[] wsiz = this.world.getWorldSize();
 
             this.world.addEntity(new ThePlayer(this.wcon));
 
-            for (int i = 0; i < wsiz.vecLength(); i++) {
+            for (int i = 0; i < 10; i++) {
                 ScaredBall sb = new ScaredBall(wcon);
                 sb.setPos(new Neco3D(
                         new double[]{
-                            wsiz.getX() * Math.random(),
-                            wsiz.getY() * Math.random(),
+                            wsiz[0] * Math.random(),
+                            wsiz[1] * Math.random(),
                             0
                         }
                 ));

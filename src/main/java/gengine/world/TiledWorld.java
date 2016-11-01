@@ -65,9 +65,9 @@ public class TiledWorld implements World, TiledWorldFacade {
      * @return tile on the given position
      */
     public Tile getWorldtile(Neco3D pos) {
-
+        
         Neco3D rpos = pos.roundAll();
-
+        
         if (SquareGridUtils.isWithin(rpos, new Neco3D(), new Neco3D(this.getWorldSizeMinusOne(), true))) {
             try {
                 return this.tileset.getTileFromId(

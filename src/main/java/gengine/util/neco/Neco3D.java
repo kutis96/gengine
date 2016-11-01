@@ -35,7 +35,7 @@ public class Neco3D {
 
     public Neco3D(double[] dvec) {
         for (int i = 0; i < Math.min(dvec.length, 3); i++) {
-            this.xyz[i] = (int) (dvec[i] / N_PER_UNIT);
+            this.xyz[i] = (int) (dvec[i] * N_PER_UNIT);
         }
     }
 

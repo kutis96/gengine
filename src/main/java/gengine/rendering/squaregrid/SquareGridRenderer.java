@@ -105,21 +105,23 @@ public class SquareGridRenderer implements WorldRenderer {
         Neco3D lowerVisibleBound;
 
         //CONVERT PIXEL BOUNDARIES TO WORLD BOUNDARIES
-        lowerVisibleBound = new Neco3D(
-                new double[]{
-                    Math.max(0, Math.floor((double) -xoff / scaledWidth)),
-                    Math.max(0, Math.floor((double) -yoff / scaledHeight)),
-                    0
-                }
-        );
+        lowerVisibleBound
+                = new Neco3D(
+                        new int[]{
+                            (int)Math.max(0, Math.floor((double) -xoff / scaledWidth)),
+                            (int)Math.max(0, Math.floor((double) -yoff / scaledHeight)),
+                            0
+                        }, true
+                );
 
-        upperVisibleBound = new Neco3D(
-                new double[]{
-                    Math.min(world.getWorldSize()[0], 2 + surface.getWidth() / scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
-                    Math.min(world.getWorldSize()[1], 2 + surface.getHeight() / scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
-                    world.getWorldSize()[2]
-                }
-        );
+        upperVisibleBound
+                = new Neco3D(
+                        new int[]{
+                            (int)Math.min(world.getWorldSize()[0], 2 + surface.getWidth() / scaledWidth + lowerVisibleBound.getX()), //surface.getWidth() / scaledWidth + lowerVisibleBound.getX()),
+                            (int)Math.min(world.getWorldSize()[1], 2 + surface.getHeight() / scaledHeight + lowerVisibleBound.getY()), //surface.getHeight() / scaledHeight + lowerVisibleBound.getY()),
+                            world.getWorldSize()[2]
+                        }, true
+                );
 
         //to test boundaries, uncomment: LOG.info("L:" + lowerVisibleBound + "\tU:" + upperVisibleBound);
         //END OF PIXEL TO WORLD BOUNDARY CONVERSION
@@ -137,13 +139,18 @@ public class SquareGridRenderer implements WorldRenderer {
             for (int x = (int) lowerVisibleBound.getX(); x < upperVisibleBound.getX(); x++) {
                 for (int y = (int) lowerVisibleBound.getY(); y < upperVisibleBound.getY(); y++) {
                     for (int z = (int) lowerVisibleBound.getZ(); z < upperVisibleBound.getZ(); z++) {
-                        Tile t = world.getWorldtile(new Neco3D(new int[]{x, y, z}, true));
-                        if (t != null) {
-                            renderedThings.add(new RenderableContainer(new Neco3D(new double[]{x, y, z - 0.125}), t));
+                        Tile tile = world.getWorldtile(new Neco3D(new int[]{x, y, z}, true));
+                        if (tile != null) {
+                            renderedThings.add(
+                                    new RenderableContainer(
+                                            new Neco3D(new int[]{x, y, z - 1}, true),
+                                            tile));
                         }
                     }
                 }
             }
+
+            System.out.println("Ntiles added to render blob");
 
             //Add all WorldEntities to the rendered things
             for (WorldEntity we : world.getEntities()) {
@@ -234,8 +241,8 @@ public class SquareGridRenderer implements WorldRenderer {
     }
 
     private Point entityPxCoords(Point pixelOffset, float[] scale, Neco3D entityCoordinates) {
-        int x = (int) (tilewidth * entityCoordinates.getX() * scale[0] + pixelOffset.x);
-        int y = (int) (tileheight * entityCoordinates.getY() * scale[1] + pixelOffset.y);
+        int x = (int) (tilewidth * entityCoordinates.getX() * scale[0]) + pixelOffset.x;
+        int y = (int) (tileheight * entityCoordinates.getY() * scale[1]) + pixelOffset.y;
 
         return new Point(x, y);
     }

@@ -113,9 +113,9 @@ public class SquareGridUtils {
                 }
             }
 
-            if (ac.getZ() < bc.getZ()) {
+            if (ac.getZint() < bc.getZint()) {
                 return -1;
-            } else if (ac.getZ() > bc.getZ()) {
+            } else if (ac.getZint() > bc.getZint()) {
                 return 1;
             } else {
                 return 0;
