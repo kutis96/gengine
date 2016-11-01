@@ -149,9 +149,7 @@ public class SquareGridRenderer implements WorldRenderer {
                     }
                 }
             }
-
-            System.out.println("Ntiles added to render blob");
-
+ 
             //Add all WorldEntities to the rendered things
             for (WorldEntity we : world.getEntities()) {
                 if (SquareGridUtils.isWithinIgnoringZ(
