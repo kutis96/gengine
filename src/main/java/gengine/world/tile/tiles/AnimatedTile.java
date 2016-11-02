@@ -1,7 +1,7 @@
 package gengine.world.tile.tiles;
 
 import gengine.anim.AnimImage;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.tile.Tile;
 import java.awt.Image;
 

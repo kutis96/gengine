@@ -1,6 +1,6 @@
 package gengine.events.generators;
 
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ public class LinearIterator implements Iterator<Neco3D> {
 
         double a = maxAbs(deltaOrig.getFloaty());
 
-        delta = new Neco3D(deltaOrig.multiply(1 / a));
+        delta = new Neco3D(deltaOrig.multiplyD(1 / a));
 
         LOG.log(Level.FINE, "pos1:  {0}", pos1);
         LOG.log(Level.FINE, "pos2:  {0}", pos2);

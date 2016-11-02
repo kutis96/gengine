@@ -1,6 +1,8 @@
-package gengine.util.neco;
+package gengine.util.coords;
 
 /**
+ * A generic 'trait' enabling one to get or set positions of an object! How
+ * brilliant.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -18,8 +20,6 @@ public interface NecoPositionable {
      * some objects are meant to be static for some reason.
      *
      * @param pos The new coordinates
-     *
-     * @throws DimMismatchException thrown on dimension mismatch
      */
     public void setPos(Neco3D pos);
 }

@@ -3,7 +3,7 @@ package gengine.world;
 import gengine.logic.facade.WorldFacade;
 import gengine.logic.facade.TiledWorldFacade;
 import gengine.rendering.squaregrid.SquareGridUtils;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.*;

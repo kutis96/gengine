@@ -3,9 +3,10 @@ package demo.ent;
 import gengine.events.receivers.KeyboardEventReceiver;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.entity.*;
-import gengine.world.entity.inventory.items.Weapon;
+import gengine.inventory.items.Weapon;
+import gengine.logic.facade.TiledWorldFacade;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -95,9 +96,22 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     }
 
     private void move(Neco3D direction) {
-        this.advancePos(direction, true, true);
+        if (isJesus()) {
+            //Jesus can walk on water!
+            this.advancePos(direction, false, false);
+        } else {
+            this.advancePos(direction, true, true);
+        }
 
-        this.olay.setText("Player\n" + this.getPos());
+        if (this.cf.getWorldFacade() instanceof TiledWorldFacade) {
+            //let's assume we're using a tiled world
+            TiledWorldFacade twf = (TiledWorldFacade) this.cf.getWorldFacade();
+
+            this.olay.setText((isJesus() ? "Jesus\n" : "Player\n") + this.getPos() + "\n" + twf.getTile(this.getPos()));
+
+        } else {
+            LOG.severe("Fuck.");
+        }
 
         cf.changeCamPosition(this.getPos());
     }
@@ -120,5 +134,9 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     @Override
     public void animateOverlays(long dt) {
         //do nothing
+    }
+
+    private boolean isJesus() {
+        return true;    //usable for testing :3
     }
 }

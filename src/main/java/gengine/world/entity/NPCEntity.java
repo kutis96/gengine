@@ -1,9 +1,9 @@
 package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
-import gengine.world.entity.inventory.Inventory;
-import gengine.world.entity.inventory.ItemStack;
-import gengine.world.entity.inventory.items.Weapon;
+import gengine.inventory.Inventory;
+import gengine.inventory.ItemStack;
+import gengine.inventory.items.Weapon;
 import java.awt.Point;
 
 /**

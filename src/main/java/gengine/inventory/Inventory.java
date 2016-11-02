@@ -1,6 +1,6 @@
-package gengine.world.entity.inventory;
+package gengine.inventory;
 
-import gengine.world.entity.inventory.items.InventoryItem;
+import gengine.inventory.items.InventoryItem;
 import java.util.ArrayList;
 
 /**

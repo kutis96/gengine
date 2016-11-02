@@ -1,4 +1,4 @@
-package gengine.world.entity.inventory.items;
+package gengine.inventory.items;
 
 import gengine.rendering.Renderable;
 
@@ -18,12 +18,4 @@ public abstract class InventoryItem implements Renderable {
         return 99;
     }
 
-    /**
-     * A value specifying the item's level. Totally your regular RPG-style.
-     *
-     * @return item's level, defaults to 1.
-     */
-    public int getLevel() {
-        return 1;
-    }
 }

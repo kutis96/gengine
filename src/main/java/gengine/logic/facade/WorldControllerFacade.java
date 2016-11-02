@@ -1,11 +1,17 @@
 package gengine.logic.facade;
 
 import gengine.rendering.WorldTypeMismatchException;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 
 /**
+ * A facade distributed to WorldEntities in order to provide some access to some
+ * of the controller's functions, and possibly to the world around them.
+ *
+ * I have chosen this somewhat indirect method, as it enables for some
+ * decoupling between the actual controller logic and what is provided to the
+ * entities themselves.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
@@ -29,11 +35,11 @@ public interface WorldControllerFacade {
      * Tries to switch to a different world.
      *
      * @param requestor An object, typically WorldEntity, requesting this
-     *                  operation
-     * @param world     World to switch into
-     * @param save      when true, the current world would still be kept in
-     *                  memory, so it's easy to return back to it. when false,
-     *                  the new world would completely overwrite the old one.
+     * operation
+     * @param world World to switch into
+     * @param save when true, the current world would still be kept in memory,
+     * so it's easy to return back to it. when false, the new world would
+     * completely overwrite the old one.
      *
      * @return true on a successful switch
      *
@@ -45,7 +51,7 @@ public interface WorldControllerFacade {
      * Tries to return to the last saved world.
      *
      * @param requestor An object, typically WorldEntity, requesting this
-     *                  operation
+     * operation
      *
      * @return true on a successful switch
      */
@@ -54,9 +60,9 @@ public interface WorldControllerFacade {
     /**
      * Adds an entity into the world.
      *
-     * @param twe TiledWorldEntity to spawn.
+     * @param we WorldEntity to spawn.
      *
      * @return true on success, false never.
      */
-    public boolean spawnEntity(WorldEntity twe);
+    public boolean spawnEntity(WorldEntity we);
 }

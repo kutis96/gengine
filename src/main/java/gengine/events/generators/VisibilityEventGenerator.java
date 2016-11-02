@@ -1,8 +1,8 @@
 package gengine.events.generators;
 
 import gengine.events.receivers.VisibilityEventReceiver;
-import gengine.util.neco.Neco3D;
-import gengine.util.neco.NecoUtils;
+import gengine.util.coords.Neco3D;
+import gengine.util.coords.NecoUtils;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import java.util.logging.Logger;

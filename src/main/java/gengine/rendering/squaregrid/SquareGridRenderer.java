@@ -4,7 +4,7 @@ import gengine.rendering.RenderableContainer;
 import gengine.rendering.*;
 import gengine.rendering.overlay.HasOverlays;
 import gengine.rendering.overlay.Overlay;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.TiledWorld;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;

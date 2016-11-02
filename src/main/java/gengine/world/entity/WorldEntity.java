@@ -2,8 +2,8 @@ package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.Renderable;
-import gengine.util.neco.Neco3D;
-import gengine.util.neco.NecoPositionable;
+import gengine.util.coords.Neco3D;
+import gengine.util.coords.NecoPositionable;
 import java.awt.Point;
 import java.util.logging.Logger;
 

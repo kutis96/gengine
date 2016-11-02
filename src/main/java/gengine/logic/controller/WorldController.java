@@ -9,7 +9,7 @@ import gengine.logic.facade.WorldFacade;
 import gengine.logic.view.WorldView;
 import gengine.logic.workers.GrimReaper;
 import gengine.util.Worker;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.World;
 import gengine.world.entity.WorldEntity;
 import java.util.Arrays;

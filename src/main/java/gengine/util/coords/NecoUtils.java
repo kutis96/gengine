@@ -1,15 +1,16 @@
-package gengine.util.neco;
+package gengine.util.coords;
 
-import static gengine.util.neco.Neco3D.*;
+import static gengine.util.coords.Neco3D.*;
 
 /**
+ * A suite of utility functions for Neco3D, the new coordinate system.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class NecoUtils {
 
     public static Neco3D generateRandom(double magnitude) {
-        return generateRandom(ZERO, EYE.multiply(magnitude));
+        return generateRandom(ZERO, EYE.multiplyD(magnitude));
     }
 
     public static Neco3D generateRandom(Neco3D offset, Neco3D magnitude) {
@@ -27,15 +28,15 @@ public class NecoUtils {
         return delta.normalize();
     }
 
-    public static double distanceBetween(Neco3D a, Neco3D b){
+    public static double distanceBetween(Neco3D a, Neco3D b) {
         return a.sub(b).vecLength();
     }
-    
+
     public static boolean isInside(Neco3D what, Neco3D lower, Neco3D upper) {
         for (int i = 0; i < 3; i++) {
             if (lower.xyz[i] < what.xyz[i] && what.xyz[i] < upper.xyz[i]) {
                 continue;
-            }else{
+            } else {
                 return false;
             }
         }

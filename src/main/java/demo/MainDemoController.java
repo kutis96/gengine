@@ -11,7 +11,7 @@ import gengine.rendering.squaregrid.SquareGridRenderer;
 import gengine.util.UnsupportedFormatException;
 import gengine.util.loaders.TiledWorldLoader;
 import gengine.util.loaders.TilesetLoader;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.TiledWorld;
 import java.awt.BorderLayout;
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class MainDemoController extends MainController {
 
             this.world.addEntity(new ThePlayer(this.wcon));
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 50; i++) {
                 ScaredBall sb = new ScaredBall(wcon);
                 sb.setPos(new Neco3D(
                         new double[]{

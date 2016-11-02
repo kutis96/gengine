@@ -5,7 +5,7 @@ import gengine.logic.workers.RenderingWorker;
 import gengine.logic.exceptions.ItJustKeepsGoingException;
 import gengine.rendering.WorldRenderer;
 import gengine.rendering.WorldRendererOptions;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.World;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -1,7 +1,7 @@
 package gengine.world.entity;
 
 import gengine.logic.facade.WorldControllerFacade;
-import gengine.world.entity.inventory.ItemStack;
+import gengine.inventory.ItemStack;
 import java.awt.Image;
 import java.awt.Point;
 

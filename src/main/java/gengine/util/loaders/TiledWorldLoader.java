@@ -1,7 +1,7 @@
 package gengine.util.loaders;
 
 import gengine.util.UnsupportedFormatException;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.TiledWorld;
 import gengine.world.WorldSizeException;
 import java.io.*;

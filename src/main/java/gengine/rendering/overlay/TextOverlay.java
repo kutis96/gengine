@@ -1,7 +1,7 @@
 package gengine.rendering.overlay;
 
 import gengine.rendering.text.BasicMonoTextRenderer;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import java.awt.Image;
 import java.util.logging.Logger;
 

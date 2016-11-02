@@ -1,7 +1,7 @@
 package gengine.world.tile;
 
 import gengine.rendering.Renderable;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 
 /**
  * Tile, used in TileWorlds to create the static environment out of.

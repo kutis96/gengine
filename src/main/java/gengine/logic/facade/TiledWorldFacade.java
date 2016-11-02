@@ -1,6 +1,6 @@
 package gengine.logic.facade;
 
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.tile.Tile;
 
 /**

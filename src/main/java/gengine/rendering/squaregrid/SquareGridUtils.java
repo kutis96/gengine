@@ -1,7 +1,7 @@
 package gengine.rendering.squaregrid;
 
 import gengine.rendering.RenderableContainer;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.entity.WorldEntity;
 import java.util.Comparator;
 

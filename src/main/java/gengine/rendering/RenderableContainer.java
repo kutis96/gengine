@@ -1,6 +1,6 @@
 package gengine.rendering;
 
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 
 /**
  * A container containing a Renderable and its position.

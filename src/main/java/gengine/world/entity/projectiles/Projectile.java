@@ -2,9 +2,9 @@ package gengine.world.entity.projectiles;
 
 import gengine.events.receivers.ProximityEventReceiver;
 import gengine.logic.facade.WorldControllerFacade;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
 import gengine.world.entity.*;
-import gengine.world.entity.inventory.items.Weapon;
+import gengine.inventory.items.Weapon;
 import java.awt.Image;
 import java.awt.Point;
 import java.util.logging.Logger;
@@ -53,7 +53,7 @@ public abstract class Projectile extends TiledWorldEntity implements ProximityEv
 
     @Override
     public void tick(long dt) {
-        if (this.state == STATE_FLYING && this.advancePos((Neco3D) new Neco3D(velocity).multiply(dt), true, true)) {
+        if (this.state == STATE_FLYING && this.advancePos((Neco3D) new Neco3D(velocity).multiplyD(dt), true, true)) {
             //flight!
             //do some flying around
             this.fly(dt);

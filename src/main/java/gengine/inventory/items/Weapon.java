@@ -1,4 +1,4 @@
-package gengine.world.entity.inventory.items;
+package gengine.inventory.items;
 
 /**
  * An abstract weapon class to be extended by any actual weapons.

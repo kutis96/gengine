@@ -5,7 +5,8 @@ import gengine.events.receivers.ProximityEventReceiver;
 import gengine.logic.facade.TiledWorldFacade;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.overlay.*;
-import gengine.util.neco.Neco3D;
+import gengine.util.coords.Neco3D;
+import gengine.util.coords.NecoUtils;
 import gengine.world.entity.WorldEntity;
 import gengine.world.entity.TiledWorldEntity;
 import gengine.world.tile.Tile;
@@ -13,7 +14,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
@@ -84,8 +84,6 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
                 if (msSinceLastStateChange > flee_for) {
                     changeState(State.PRE_NORMAL);
                 }
-
-                this.olay.setText(this.velocity.toString());
             }
             break;
 
@@ -122,16 +120,19 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     }
 
     private void flee(long dt) {
-        if (msSinceLastMovement > 30) {
-            Neco3D nvel = new Neco3D(this.fleeFrom);
-            nvel.sub(this.getPos());
-            nvel.normalize();
-            //nvel.multiply((float) -1);
+        Neco3D nvel = new Neco3D(this.fleeFrom)
+                .sub(this.getPos())
+                .normalize().multiplyI(-3);
 
-            this.velocity = nvel;
+        Neco3D jitter = NecoUtils.generateRandom(
+                new Neco3D(new int[]{-Neco3D.N_PER_UNIT/2, -Neco3D.N_PER_UNIT/2, 0}, false),
+                new Neco3D(new int[]{1, 1, 0}, true).multiplyI(5));
 
-            this.applyvelocity(dt);
-        }
+        //nvel.increment(jitter);
+        
+        
+        this.velocity = nvel;
+        this.applyvelocity(dt);
     }
 
     private void wander() {
@@ -139,7 +140,12 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     }
 
     private void applyvelocity(long dt) {
-        this.advancePos((Neco3D) new Neco3D(velocity).multiply((float) (dt / 1000.)));
+
+        this.advancePos(
+                velocity.multiplyD((double) dt / 1000.),
+                true,
+                true
+        );
     }
 
     @Override
@@ -187,7 +193,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public float getProxDistance() {
-        return (float) 1.5;
+        return (float) 2.;
     }
 
     @Override
@@ -202,7 +208,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
         this.olay.setText("IT CLICKED ME!");
 
-        this.fleeFrom = this.getPos();
+        this.fleeFrom = this.getPos().roundAll();
 
         //this.msSinceLastMovement = 0;
         //this.msSinceLastStateChange = 200;

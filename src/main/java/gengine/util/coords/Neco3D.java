@@ -1,15 +1,27 @@
-package gengine.util.neco;
+package gengine.util.coords;
 
 import java.util.Arrays;
 
 /**
+ * Neco3D - the NEw COordinate system. I've decided to use fixed point arithmetic
+ * here over floating point stuff I used before, hoping for less rounding
+ * errors, a possibly greater performance, etcetera.
+ * 
+ * I am not quite sure whether
+ * those goals have been attained, but I have managed to somehow port everything
+ * from the old floaty system to this, and it somehow even works. I'm a happy
+ * camper for now.
+ *
+ * I will quite possibly create some interface for all sorts of positioning
+ * systems later, so one could pick between say a fixed point one or this Neco
+ * one.
  *
  * @author Richard Kutina <kutinric@fel.cvut.cz>
  */
 public class Neco3D {
 
     public static Neco3D ZERO = new Neco3D(new int[]{0, 0, 0});
-    public static Neco3D EYE = new Neco3D(new int[]{1, 1, 1}).multiply(Neco3D.N_PER_UNIT);
+    public static Neco3D EYE = new Neco3D(new int[]{1, 1, 1}).multiplyI(Neco3D.N_PER_UNIT);
 
     public static int N_PER_UNIT = 10000; //this sets the granularity
 
@@ -85,31 +97,31 @@ public class Neco3D {
         return new Neco3D(nxyz);
     }
 
-    public Neco3D multiply(int x) {
+    public Neco3D multiplyI(int x) {
         int[] nxyz = new int[3];
 
         for (int i = 0; i < 3; i++) {
-            nxyz[i] = (int) nxyz[i] * x;
+            nxyz[i] = (int) this.xyz[i] * x;
         }
 
         return new Neco3D(nxyz);
     }
 
-    public Neco3D multiply(double d) {
+    public Neco3D multiplyD(double d) {
         int[] nxyz = new int[3];
 
         for (int i = 0; i < 3; i++) {
-            nxyz[i] = (int) (nxyz[i] * d);
+            nxyz[i] = (int) (this.xyz[i] * d);
         }
 
         return new Neco3D(nxyz);
     }
 
-    public Neco3D divide(double d) {
+    public Neco3D divideD(double d) {
         int[] nxyz = new int[3];
 
         for (int i = 0; i < 3; i++) {
-            nxyz[i] = (int) (nxyz[i] / d);
+            nxyz[i] = (int) (this.xyz[i] / d);
         }
 
         return new Neco3D(nxyz);
@@ -118,7 +130,7 @@ public class Neco3D {
     public double vecLength() {
         long sum = 0;
         for (int i = 0; i < 3; i++) {
-            sum += ((long)this.xyz[i] * (long)this.xyz[i]);
+            sum += ((long) this.xyz[i] * (long) this.xyz[i]);
         }
 
         return Math.sqrt(sum) / N_PER_UNIT;
@@ -139,7 +151,7 @@ public class Neco3D {
             return ZERO;
         }
 
-        return new Neco3D(this).divide(this.vecLength());
+        return new Neco3D(this).divideD(this.vecLength());
     }
 
     public int[] getAdjusted() {
@@ -173,10 +185,18 @@ public class Neco3D {
     public double getZ() {
         return this.xyz[2] / (double) N_PER_UNIT;
     }
-    
-    public int getXint() {return this.xyz[0];}
-    public int getYint() {return this.xyz[1];}
-    public int getZint() {return this.xyz[2];}
+
+    public int getXint() {
+        return this.xyz[0];
+    }
+
+    public int getYint() {
+        return this.xyz[1];
+    }
+
+    public int getZint() {
+        return this.xyz[2];
+    }
 
     @Override
     public String toString() {

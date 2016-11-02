@@ -3,8 +3,8 @@ package gengine.world.entity;
 import gengine.logic.facade.WorldControllerFacade;
 import gengine.rendering.Renderable;
 import gengine.logic.facade.TiledWorldFacade;
-import gengine.util.neco.Neco3D;
-import gengine.world.entity.inventory.ItemStack;
+import gengine.util.coords.Neco3D;
+import gengine.inventory.ItemStack;
 import gengine.world.tile.Tile;
 import java.awt.Point;
 import java.util.logging.Level;
@@ -84,28 +84,26 @@ public abstract class TiledWorldEntity extends WorldEntity implements Renderable
         return this.advancePos(pos, checkForMissingTiles, true);
     }
 
-    public boolean advancePos(Neco3D pos, boolean checkForMissingTiles, boolean checkForWalls) {
+    public boolean advancePos(Neco3D del, boolean checkForMissingTiles, boolean checkForWalls) {
 
         synchronized (this.facade) {
 
             TiledWorldFacade twfacade = (TiledWorldFacade) this.facade.getWorldFacade();
 
-            Neco3D npos = new Neco3D(this.pos).add(pos);
+            Neco3D npos = this.pos.add(del);
 
             Tile t = twfacade.getTile(npos);
 
-            if (null == t) {
+            if (checkForMissingTiles && null == t) {
                 //the tile I'm trying to move on is a null, so screw this
-                if (checkForMissingTiles) {
-                    LOG.finer("IT IS A NULL! " + npos);
-                    return false;
-                }
+                LOG.log(Level.FINER, "IT IS A NULL! {0}", npos);
+                return false;
             } else if (checkForWalls && t.isWall()) {
                 LOG.finer("IT IS A WALL!");
                 return false;
             }
 
-            this.advancePos(pos);
+            this.advancePos(del);
 
             return true;
 

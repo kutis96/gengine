@@ -1,12 +1,13 @@
 TODO:
-    - Add entity handling and rendering
-    - Add event handling and event generation
-    - Add click/mousehover handling
     - Add window handling
     - Create a proper controller/a set of controllers
-    - Add world loading/saving
     - Add entity loading/saving
     - Add some menus etc.
 
-Done:
-    - Add entity handling and rendering [only in square grid so far]
+    - Add entity loading
+    - Add more tests!
+    - Add an option for a floating point coordinate system?
+    - Create/finish ResourceManager - something to take care of actual image loading etc
+    - Modify and test world loading and switching
+    - Implement a simple entity configuration thing that can be changed in runtime
+    - Create a console which could be used to change entity configuration or to view their internal states

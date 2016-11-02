@@ -1,10 +1,12 @@
 package gengine.logic.workers;
 
 import gengine.rendering.*;
+import gengine.rendering.text.BasicMonoTextRenderer;
 import gengine.util.Worker;
 import gengine.world.World;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +19,8 @@ import javax.swing.JPanel;
  */
 public class RenderingWorker extends Worker {
 
+    Image text = new BasicMonoTextRenderer().drawString("Gengine pre-Alpha");
+    
     private static final Logger LOG = Logger.getLogger(RenderingWorker.class.getName());
 
     // Here's a piece of literature
@@ -125,6 +129,8 @@ public class RenderingWorker extends Worker {
                 g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
 
                 this.renderer.render(this.world, bi, this.wrop);
+                
+                bi.getGraphics().drawImage(text, 0, 0, null);
 
                 this.jp.getGraphics().drawImage(bi, 0, 0, jp);
 
