@@ -30,12 +30,12 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
     private final Image img_normal;
 
     private TextOverlay olay;
-
+    
     private enum State {
         NORMAL,
         PRE_NORMAL,
         FLIGHT,
-        DEAD
+        DEAD;
     };
 
     private volatile State intstate = State.NORMAL;
@@ -62,7 +62,7 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
 
     @Override
     public int getState() {
-        return intstate.ordinal();
+        return (intstate == State.DEAD ? 0xDEAD : intstate.ordinal());
     }
 
     @Override
@@ -77,6 +77,10 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         msSinceLastMovement += dt;
 
         switch (intstate) {
+            case DEAD: {
+                break;
+            }
+
             case FLIGHT: {
 
                 flee(dt);
@@ -109,14 +113,17 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
         Tile t = twf.getTile(this.getPos());
 
         if (t == null || t.isWall()) {
-            this.intstate = State.DEAD;
+            changeState(State.DEAD);
+            this.olay.setText("Dead.");
         }
 
     }
 
     private void changeState(State state) {
-        this.intstate = state;
-        this.msSinceLastStateChange = 0;
+        if (this.intstate != State.DEAD) {
+            this.intstate = state;
+            this.msSinceLastStateChange = 0;
+        }
     }
 
     private void flee(long dt) {
@@ -125,12 +132,10 @@ public class ScaredBall extends TiledWorldEntity implements ProximityEventReceiv
                 .normalize().multiplyI(-3);
 
         Neco3D jitter = NecoUtils.generateRandom(
-                new Neco3D(new int[]{-Neco3D.N_PER_UNIT/2, -Neco3D.N_PER_UNIT/2, 0}, false),
+                new Neco3D(new int[]{-Neco3D.N_PER_UNIT / 2, -Neco3D.N_PER_UNIT / 2, 0}, false),
                 new Neco3D(new int[]{1, 1, 0}, true).multiplyI(5));
 
         //nvel.increment(jitter);
-        
-        
         this.velocity = nvel;
         this.applyvelocity(dt);
     }

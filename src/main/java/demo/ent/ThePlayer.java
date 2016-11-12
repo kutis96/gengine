@@ -30,6 +30,8 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     private final Image img;
     private final WorldControllerFacade cf;
 
+    private boolean isJesus = false;
+
     public ThePlayer(WorldControllerFacade facade) throws IOException {
         super(facade, 20);
         this.cf = facade;
@@ -58,26 +60,57 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP: {
-                move(new Neco3D(new int[]{0, -1, 0}, true));
-                break;
+        if (e.isShiftDown()) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP: {
+                    move(new Neco3D(new double[]{0, -0.1, 0}));
+                    break;
+                }
+                case KeyEvent.VK_DOWN: {
+                    move(new Neco3D(new double[]{0, 0.1, 0}));
+                    break;
+                }
+                case KeyEvent.VK_LEFT: {
+                    move(new Neco3D(new double[]{-0.1, 0, 0}));
+                    break;
+                }
+                case KeyEvent.VK_RIGHT: {
+                    move(new Neco3D(new double[]{0.1, 0, 0}));
+                    break;
+                }
+                case KeyEvent.VK_J: {
+                    this.isJesus = true;
+                    break;
+                }
+                default:
+                    break;  //do nothing
             }
-            case KeyEvent.VK_DOWN: {
-                move(new Neco3D(new int[]{0, 1, 0}, true));
-                break;
+        } else {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP: {
+                    move(new Neco3D(new int[]{0, -1, 0}, true));
+                    break;
+                }
+                case KeyEvent.VK_DOWN: {
+                    move(new Neco3D(new int[]{0, 1, 0}, true));
+                    break;
+                }
+                case KeyEvent.VK_LEFT: {
+                    move(new Neco3D(new int[]{-1, 0, 0}, true));
+                    break;
+                }
+                case KeyEvent.VK_RIGHT: {
+                    move(new Neco3D(new int[]{1, 0, 0}, true));
+                    break;
+                }
+                case KeyEvent.VK_J: {
+                    this.isJesus = false;
+                    break;
+                }
+                default:
+                    break;  //do nothing
             }
-            case KeyEvent.VK_LEFT: {
-                move(new Neco3D(new int[]{-1, 0, 0}, true));
-                break;
-            }
-            case KeyEvent.VK_RIGHT: {
-                move(new Neco3D(new int[]{1, 0, 0}, true));
-                break;
-            }
-            default:
-                break;  //do nothing
-            }
+        }
     }
 
     @Override
@@ -107,7 +140,10 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
             //let's assume we're using a tiled world
             TiledWorldFacade twf = (TiledWorldFacade) this.cf.getWorldFacade();
 
-            this.olay.setText((isJesus() ? "Jesus\n" : "Player\n") + this.getPos() + "\n" + twf.getTile(this.getPos()));
+            this.olay.setText(
+                    (isJesus() ? "Jesus\n" : "Player\n")
+                    + this.getPos() + "\n"
+                    + (twf.getTile(this.getPos()).isWall() ? "Iz a wall!" : "Not a wall."));
 
         } else {
             LOG.severe("Fuck.");
@@ -137,6 +173,6 @@ public class ThePlayer extends PlayerEntity implements KeyboardEventReceiver, Ha
     }
 
     private boolean isJesus() {
-        return true;    //usable for testing :3
+        return this.isJesus;    //usable for testing :3
     }
 }

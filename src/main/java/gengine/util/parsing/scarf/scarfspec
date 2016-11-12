@@ -1,0 +1,41 @@
+/ comment
+/*
+ multiline comment!
+*/
+
+Type:identifier {
+    Type:identifier {
+        ...
+    }
+
+    identifier {
+        Type:identifier{
+            ...
+        }
+
+        ...
+    }
+
+    Type:identifier {
+        value, value
+    }
+
+    Type : identifier { value }
+    
+    Vector:position {
+        1.24, 1.46, -1.e-5
+    }
+
+    Integer:lives { -245 }
+
+    String:name {This is a string!}
+}
+
+rpar := '{'
+lpar := '}'
+idstring := [A-Za-z_][A-Za-z0-9_]b
+type := idstring
+ident:= idstring
+type_and_ident := type ':' ident
+
+line := (type_and_ident | ident) rpar [ line | value ] lpar
